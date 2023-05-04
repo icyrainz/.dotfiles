@@ -1,0 +1,21 @@
+- defaults:
+    link:
+      relink: true
+
+- clean: ['~']
+
+- link:
+    ~/.zshrc:
+      path: zshrc
+      force: true
+    ~/.config/nvim: 
+      path: nvim
+      force: true
+    ~/.config/kitty: 
+      path: kitty
+      force: true
+
+- shell:
+    - [git submodule update --init --recursive, Installing submodules]
+    - nvim --headless -c 'autocmd User PackerComplete quitall' -c PackerSync
+    - brew install font-code-new-roman-nerd-font
