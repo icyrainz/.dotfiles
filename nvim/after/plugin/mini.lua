@@ -1,12 +1,23 @@
 require('mini.ai').setup()
+
 require('mini.basics').setup()
+
 -- require('mini.animate').setup()
+--
 require('mini.bracketed').setup()
-require('mini.splitjoin').setup()
-require('mini.surround').setup()
+
+require('mini.bufremove').setup()
+
 require('mini.comment').setup()
+
+require('mini.splitjoin').setup()
+
+require('mini.surround').setup()
+
 require('mini.indentscope').setup()
+
 -- require('mini.jump').setup()
+
 require('mini.move').setup( {
     mappings = {
         -- Move visual selection in Visual mode. Defaults are Alt (Meta) + hjkl.
@@ -16,9 +27,10 @@ require('mini.move').setup( {
         up = 'K',
     }
 })
-require('mini.cursorword').setup()
-require('mini.map').setup()
 
+require('mini.cursorword').setup()
+
+require('mini.map').setup()
 vim.keymap.set('n', '<leader>mc', MiniMap.close, { desc = 'Close MiniMap' })
 vim.keymap.set('n', '<leader>mf', MiniMap.toggle_focus, { desc = 'Toggle MiniMap focus' })
 vim.keymap.set('n', '<leader>mo', MiniMap.open, { desc = 'Open MiniMap' })
@@ -28,3 +40,5 @@ vim.keymap.set('n', '<leader>mt', MiniMap.toggle , { desc = 'Toggle MiniMap' })
 
 require('mini.tabline').setup()
 require('mini.statusline').setup()
+
+require('mini.trailspace').setup()    

@@ -7,7 +7,6 @@ vim.g.mapleader = " "
 vim.keymap.set("n", "<C-CR>", "moO<Esc>`o", { desc = "Insert line above" })
 vim.keymap.set("n", "<S-CR>", "moo<Esc>`o", { desc = "Insert line below" })
 
--- Move selected lines in visual mode up and down
 -- vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv", { desc = "Move line down" })
 -- vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv", { desc = "Move line up" })
 
@@ -20,21 +19,12 @@ vim.keymap.set("x", "<leader>p", "\"_dP", { desc = "Paste without yanking" })
 -- vim.keymap.set("n", "<leader>d", "\"+d")
 -- vim.keymap.set("v", "<leader>d", "\"+d")
 
--- Select all lines in file
 vim.keymap.set("n", "<leader>a", "ggVG", { desc = "Select all" })
 
--- Split line
 vim.keymap.set("n", "<leader>s", "i<CR><Esc>^", { desc = "Split line" })
 
--- Replace currently selected word
 vim.keymap.set("n", "c*", "*``cgn", { desc = "Replace word" })
 vim.keymap.set("n", "c#", "#``cgN", { desc = "Replace word reverse" })
-
--- Disable arrows
-vim.keymap.set("n", "<Up>", ":resize -2<CR>")
-vim.keymap.set("n", "<Down>", ":resize +2<CR>")
-vim.keymap.set("n", "<Left>", ":vertical resize +2<CR>")
-vim.keymap.set("n", "<Right>", ":vertical resize -2<CR>")
 
 vim.keymap.set("i", "<C-h>", "<Left>", { desc = "Move cursor left" })
 vim.keymap.set("i", "<C-l>", "<Right>", { desc = "Move cursor right" })
