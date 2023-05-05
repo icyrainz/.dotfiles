@@ -41,3 +41,9 @@ end)
 lsp.skip_server_setup({ 'rust_analyzer', 'tsserver' })
 
 lsp.setup()
+
+require('mason-tool-installer').setup({
+    ensure_installed = { "codelldb", "prettier", "prettierd" },
+    auto_update = true,
+    run_on_start = true,
+})

@@ -60,6 +60,7 @@ return require('packer').startup(function(use)
       'VonHeikemen/lsp-zero.nvim',
       branch = 'v2.x',
   }
+  use 'WhoIsSethDaniel/mason-tool-installer.nvim'
 
   -- Autocompletion
   use 'hrsh7th/nvim-cmp'
@@ -78,6 +79,7 @@ return require('packer').startup(function(use)
 
   -- Typescript stuffs
   use 'jose-elias-alvarez/typescript.nvim'
+  use 'MunifTanjim/prettier.nvim'
 
   -- Debugger
   use 'mfussenegger/nvim-dap'
