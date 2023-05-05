@@ -66,6 +66,8 @@ return require('packer').startup(function(use)
   use 'hrsh7th/cmp-nvim-lsp'
   use 'L3MON4D3/LuaSnip'
 
+  use 'jose-elias-alvarez/null-ls.nvim'
+
   -- Rust stuffs
   use 'simrat39/rust-tools.nvim'
   use 'rust-lang/rust.vim'
@@ -73,6 +75,10 @@ return require('packer').startup(function(use)
       'saecki/crates.nvim',
       tag = 'v0.3.0'
   }
+
+  -- Typescript stuffs
+  use 'jose-elias-alvarez/typescript.nvim'
+  use 'MunifTanjim/prettier.nvim'
 
   -- Debugger
   use 'mfussenegger/nvim-dap'
@@ -157,6 +163,8 @@ return require('packer').startup(function(use)
   use 'echasnovski/mini.nvim'
 
   use 'tamago324/lir.nvim'
+
+  use 'lewis6991/gitsigns.nvim'
 
   -- Automatically set up your configuration after cloning packer.nvim
   -- Put this at the end after all plugins

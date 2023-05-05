@@ -11,7 +11,7 @@ require'lir'.setup {
   },
   mappings = {
     ['l']     = actions.edit,
-    ['<CR>']     = actions.edit,
+    ['<CR>']  = actions.edit,
     ['<C-s>'] = actions.split,
     ['<C-v>'] = actions.vsplit,
     ['<C-t>'] = actions.tabedit,

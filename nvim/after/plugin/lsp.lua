@@ -37,4 +37,6 @@ lsp.on_attach(function(client, bufnr)
   vim.keymap.set("i", "<C-j>", function() vim.lsp.buf.signature_help() end, opts("Signature help"))
 end)
 
+lsp.skip_server_setup({ 'rust_analyzer', 'tsserver' })
+
 lsp.setup()
