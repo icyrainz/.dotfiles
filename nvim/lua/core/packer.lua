@@ -78,7 +78,6 @@ return require('packer').startup(function(use)
 
   -- Typescript stuffs
   use 'jose-elias-alvarez/typescript.nvim'
-  use 'MunifTanjim/prettier.nvim'
 
   -- Debugger
   use 'mfussenegger/nvim-dap'
