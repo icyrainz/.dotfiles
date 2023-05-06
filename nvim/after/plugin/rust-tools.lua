@@ -19,8 +19,8 @@ local opt = {
             vim.keymap.set("n", "<leader>ri", ":RustEnableInlayHints<CR>", { buffer = bufnr, desc = "Rust: Enable inlay hints" })
             vim.keymap.set("n", "<leader>ro", ":RustDisableInlayHints<CR>", { buffer = bufnr, desc = "Rust: Disable inlay hints" })
 
-            vim.keymap.set("n", "<leader>rb", ":Cbuild<CR>", { buffer = bufnr, desc = "Cargo: Build" })
-            vim.keymap.set("n", "<F5>", ":Crun<CR>", { buffer = bufnr, desc = "Cargo: Run" })
+            vim.keymap.set("n", "<leader>cb", ":Cbuild<CR>", { buffer = bufnr, desc = "Cargo: Build" })
+            vim.keymap.set("n", "<leader>cr", ":Crun<CR>", { buffer = bufnr, desc = "Cargo: Run" })
 
             vim.keymap.set("n", "<leader>rf", ":RustFmt<CR>", { buffer = bufnr, desc = "Rust: Format" })
         end,
