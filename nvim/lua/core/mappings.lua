@@ -43,6 +43,6 @@ vim.keymap.set("n", "<C-l>", "<C-w>l", { desc = "Move to right window" })
 
 vim.keymap.set("n", "<leader>bd", ":bd<CR>", { desc = "Delete buffer" })
 
-vim.keymap.set("n", "<leader>qc", ":cclose<CR>", { desc = "Close quickfix" })
+vim.keymap.set("n", "<leader>q", ":cclose<CR>", { desc = "Close quickfix" })
 
 

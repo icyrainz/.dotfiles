@@ -3,8 +3,8 @@ local function opts(desc)
   return { desc = 'dap: ' .. desc }
 end
 
+vim.keymap.set('n', '<F8>', function() require('dap').terminate() end, opts("terminate"))
 vim.keymap.set('n', '<F9>', function() require('dap').continue() end, opts("continue"))
-vim.keymap.set('n', '<F6>', function() require('dap').terminate() end, opts("terminate"))
 vim.keymap.set('n', '<F10>', function() require('dap').step_over() end, opts("step over"))
 vim.keymap.set('n', '<F11>', function() require('dap').step_into() end, opts("step into"))
 vim.keymap.set('n', '<F12>', function() require('dap').step_out() end, opts("step out"))
