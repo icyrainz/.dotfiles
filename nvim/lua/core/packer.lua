@@ -122,7 +122,7 @@ return require('packer').startup(function(use)
   -- }
 
   -- Utilities
-  use 'theprimeagen/harpoon'
+  -- use 'theprimeagen/harpoon'
   -- use {
   --     'numToStr/Comment.nvim',
   --     config = function()
