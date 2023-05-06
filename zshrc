@@ -7,3 +7,5 @@ source ~/.config/zsh/extra.zsh
 
 alias v="nvim"
 alias lgit="lazygit"
+
+fpath+=~/.zfunc

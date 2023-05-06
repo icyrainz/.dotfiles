@@ -167,6 +167,8 @@ return require('packer').startup(function(use)
 
   use 'lewis6991/gitsigns.nvim'
 
+  use 'weilbith/nvim-code-action-menu'
+
   -- Automatically set up your configuration after cloning packer.nvim
   -- Put this at the end after all plugins
   if packer_bootstrap then

@@ -8,6 +8,9 @@
     ~/.zshrc:
       path: zshrc
       force: true
+    ~/.zfunc:
+      path: zfunc
+      force: true
     ~/.config/nvim: 
       path: nvim
       force: true

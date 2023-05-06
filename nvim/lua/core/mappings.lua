@@ -33,8 +33,6 @@ vim.keymap.set("i", "<C-k>", "<Esc>O", { desc = "Insert empty line above" })
 -- vim.keymap.set("n", "g[", "<cmd>cn<CR>", { desc = "Next quickfix" })
 -- vim.keymap.set("n", "g]", "<cmd>cp<CR>", { desc = "Previous quickfix" })
 
-vim.keymap.set("", "~", "<C-w>q", { desc = "Close window" })
-
 vim.keymap.set("n", "<C-h>", "<C-w>h", { desc = "Move to left window" })
 vim.keymap.set("n", "<C-j>", "<C-w>j", { desc = "Move to bottom window" })
 vim.keymap.set("n", "<C-k>", "<C-w>k", { desc = "Move to top window" })
@@ -44,3 +42,7 @@ vim.keymap.set("n", "<C-l>", "<C-w>l", { desc = "Move to right window" })
 -- vim.keymap.set("v", ">", ">gv", { desc = "Shift right" })
 
 vim.keymap.set("n", "<leader>bd", ":bd<CR>", { desc = "Delete buffer" })
+
+vim.keymap.set("n", "<leader>qc", ":cclose<CR>", { desc = "Close quickfix" })
+
+

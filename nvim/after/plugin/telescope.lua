@@ -10,3 +10,14 @@ vim.keymap.set('n', '<leader>fe', "<cmd> Telescope file_browser <CR>", opts("Fil
 vim.keymap.set('n', '<leader>fg', builtin.live_grep, opts("Live grep"))
 vim.keymap.set('n', '<leader>fb', builtin.buffers, opts("Buffers"))
 vim.keymap.set('n', '<leader>fh', builtin.help_tags, opts("Help tags"))
+
+local telescope = require("telescope")
+telescope.setup({
+    defaults = {
+        file_ignore_patterns = {
+            "node_modules",
+            "target",
+            "dotbot",
+        }
+    }
+})
