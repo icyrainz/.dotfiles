@@ -65,7 +65,10 @@ return require('packer').startup(function(use)
   -- Autocompletion
   use 'hrsh7th/nvim-cmp'
   use 'hrsh7th/cmp-nvim-lsp'
+  use 'hrsh7th/cmp-path'
+  use 'hrsh7th/cmp-buffer'
   use 'L3MON4D3/LuaSnip'
+  use 'saadparwaiz1/cmp_luasnip'
 
   use 'jose-elias-alvarez/null-ls.nvim'
 
@@ -133,7 +136,9 @@ return require('packer').startup(function(use)
 
   -- use 'nvim-lualine/lualine.nvim'
 
-  use "github/copilot.vim"
+  -- use "github/copilot.vim"
+  use 'zbirenbaum/copilot.lua'
+  use 'zbirenbaum/copilot-cmp'
 
   -- use 'ThePrimeagen/vim-be-good'
 
@@ -157,7 +162,6 @@ return require('packer').startup(function(use)
 
   use 'tommcdo/vim-exchange'
   use 'tpope/vim-abolish'
-  -- use 'PeterRincker/vim-argumentative'
 
   use 'folke/trouble.nvim'
 
