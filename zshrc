@@ -1,11 +1,20 @@
-eval "$(starship init zsh)"
-eval "$(zoxide init zsh)"
-eval "$(thefuck --alias)"
-
-source ~/Github/zsh-autocomplete/zsh-autocomplete.plugin.zsh
+source ~/.config/zsh/aliases.zsh
 source ~/.config/zsh/extra.zsh
 
-alias v="nvim"
-alias lgit="lazygit"
+fpath+=~/.config/zsh/completions
 
-fpath+=~/.zfunc
+[[ -d ~/.antidote ]] ||
+    git clone https://github.com/mattmc3/antidote ~/.antidote
+
+# source ~/.antidote/antidote.zsh
+# antidote load ~/.config/zsh/zsh_plugins.txt
+
+zsh_plugins=~/.config/zsh/zsh_plugins
+if [[ ! ${zsh_plugins}.zsh -nt ${zsh_plugins}.txt ]]; then
+  (
+    source ~/.antidote/antidote.zsh
+    antidote bundle <${zsh_plugins}.txt >${zsh_plugins}.zsh
+  )
+fi
+
+source ${zsh_plugins}.zsh
