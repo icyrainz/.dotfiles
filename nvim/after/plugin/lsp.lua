@@ -5,6 +5,8 @@ lsp.preset("recommended")
 lsp.ensure_installed({
   'rust_analyzer',
   'tsserver',
+  'eslint',
+  'lua_ls',
 })
 
 -- local cmp = require('cmp')
@@ -19,7 +21,14 @@ lsp.ensure_installed({
 -- lsp.setup_nvim_cmp({
 --   mapping = cmp_mappings
 -- })
+lsp.set_sign_icons({
+  error = "✘",
+  warn = "▲",
+  hint = "⚑",
+  info = "»",
+})
 
+require('lspconfig').lua_ls.setup(lsp.nvim_lua_ls())
 
 local function opts(desc)
   return { desc = 'lsp: ' .. desc, buffer = bufnr, remap = false }
@@ -52,8 +61,29 @@ cmp.setup({
     { name = 'copilot' },
     { name = 'nvim_lsp' },
     { name = 'path' },
-    { name = 'buffer', keyword_length = 3 },
+    { name = 'buffer',  keyword_length = 3 },
     { name = 'luasnip', keuword_length = 2 },
+  },
+  window = {
+    completion = cmp.config.window.bordered(),
+    documentation = cmp.config.window.bordered(),
+  },
+  formatting = {
+    fields = { "menu", "abbr", "kind" },
+
+    format = function(entry, item)
+      local menu_icon = {
+        copilot = "",
+        nvim_lsp = "λ",
+        luasnip = "⋗",
+        buffer = "Ω",
+        path = "🖫",
+        nvim_lua = "Π",
+      }
+
+      item.menu = menu_icon[entry.source.name]
+      return item
+    end,
   },
   mapping = {
     ['<C-f>'] = cmp_action.luasnip_jump_forward(),
@@ -61,15 +91,15 @@ cmp.setup({
     ["<Tab>"] = cmp_action.luasnip_supertab(),
     ["<S-Tab>"] = cmp_action.luasnip_shift_supertab(),
     ['<C-Space>'] = cmp.mapping.complete(),
-    ['<CR>'] = cmp.mapping.confirm({ 
+    ['<CR>'] = cmp.mapping.confirm({
       behavior = cmp.ConfirmBehavior.Replace,
-      select = false 
+      select = false
     }),
   }
 })
 
 require('mason-tool-installer').setup({
-    ensure_installed = { "codelldb", "prettier", "prettierd" },
-    auto_update = true,
-    run_on_start = true,
+  ensure_installed = { "codelldb", "prettier", "prettierd" },
+  auto_update = true,
+  run_on_start = true,
 })
