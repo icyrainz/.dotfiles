@@ -1,0 +1,22 @@
+font:
+  size: 17.0
+  normal:
+    family: Agave Nerd Font Mono
+    style: Regular
+
+  bold:
+    family: Agave Nerd Font Mono
+    style: Bold
+
+  italic:
+    family: Agave Nerd Font Mono
+    style: Italic
+
+  bold_italic:
+    family: Agave Nerd Font Mono
+    style: Bold Italic
+
+window:
+  opacity: 0.9
+  option_as_alt: OnlyLeft
+

@@ -14,6 +14,8 @@
       path: nvim
     ~/.config/kitty: 
       path: kitty
+    ~/.config/alacritty:
+      path: alacritty
 
 - shell:
     - [git submodule update --init --recursive, Installing submodules]
