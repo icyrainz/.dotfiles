@@ -10,8 +10,6 @@ local opt = {
     },
     server = {
         on_attach = function(client, bufnr)
-            -- vim.keymap.set("n", "<C-Space>", require("rust-tools").hover_actions.hover_actions, { buffer = bufnr })
-
             vim.keymap.set("n", "<leader>rr", ":RustRunnables<CR>", { buffer = bufnr, desc = "Rust: Runnables" })
             vim.keymap.set("n", "<leader>rd", ":RustDebuggables<CR>", { buffer = bufnr, desc = "Rust: Debuggables" })
             vim.keymap.set("n", "<leader>ra", ":RustCodeAction<CR>", { buffer = bufnr, desc = "Rust: Code action" })

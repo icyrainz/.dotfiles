@@ -29,22 +29,24 @@ lsp.set_sign_icons({
 })
 
 require('lspconfig').lua_ls.setup(lsp.nvim_lua_ls())
+require('lspconfig').eslint.setup({})
+require('lspconfig').tsserver.setup({})
 
-local function opts(desc)
+local function opts(bufnr, desc)
   return { desc = 'lsp: ' .. desc, buffer = bufnr, remap = false }
 end
 
 lsp.on_attach(function(client, bufnr)
-  vim.keymap.set("n", "K", function() vim.lsp.buf.hover() end, opts("Hover"))
-  vim.keymap.set("n", "<leader>ws", function() vim.lsp.buf.workspace_symbol() end, opts("Workspace symbol"))
+  vim.keymap.set("n", "K", function() vim.lsp.buf.hover() end, opts(bufnr, "Hover"))
+  vim.keymap.set("n", "<leader>ws", function() vim.lsp.buf.workspace_symbol() end, opts(bufnr, "Workspace symbol"))
   -- vim.keymap.set("n", "<leader>vd", function() vim.diagnostic.open_float() end, opts("Open diagnostics float"))
   -- vim.keymap.set("n", "]d", function() vim.diagnostic.goto_next() end, opts("Go to next diagnostic"))
   -- vim.keymap.set("n", "[d", function() vim.diagnostic.goto_prev() end, opts("Go to previous diagnostic"))
-  vim.keymap.set("n", "<leader>wa", function() vim.lsp.buf.code_action() end, opts("Code action"))
+  vim.keymap.set("n", "<leader>wa", function() vim.lsp.buf.code_action() end, opts(bufnr, "Code action"))
   -- vim.keymap.set("n", "<leader>rr", function() vim.lsp.buf.references() end, opts("References"))
   -- vim.keymap.set("n", "<leader>rn", function() vim.lsp.buf.rename() end, opts("Rename"))
-  vim.keymap.set("n", "<leader>wf", function() vim.lsp.buf.format() end, opts("Format"))
-  vim.keymap.set("i", "<C-j>", function() vim.lsp.buf.signature_help() end, opts("Signature help"))
+  vim.keymap.set("n", "<leader>wf", function() vim.lsp.buf.format() end, opts(bufnr, "Format"))
+  vim.keymap.set("i", "<C-j>", function() vim.lsp.buf.signature_help() end, opts(bufnr, "Signature help"))
 end)
 
 lsp.skip_server_setup({ 'rust_analyzer', 'tsserver' })
@@ -102,4 +104,32 @@ require('mason-tool-installer').setup({
   ensure_installed = { "codelldb", "prettier", "prettierd" },
   auto_update = true,
   run_on_start = true,
+})
+
+-- Setup null-ls
+local null_ls = require("null-ls")
+
+null_ls.setup({
+  sources = {
+    null_ls.builtins.formatting.prettier,
+    null_ls.builtins.formatting.stylua,
+    null_ls.builtins.diagnostics.eslint,
+  },
+  on_attach = function(client, bufnr)
+    if client.supports_method("textDocument/formatting") then
+      vim.keymap.set("n", "<leader>fm", function()
+        vim.lsp.buf.format({ bufnr = vim.api.nvim_get_current_buf() })
+      end, { buffer = bufnr, desc = "[LSP] Format" })
+    end
+  end,
+})
+
+
+-- Setup typescript
+require('typescript').setup({
+  server = {
+    on_attach = function(client, bufnr)
+      vim.keymap.set('n', '<leader>ci', '<cmd>TypescriptAddMissingImports<CR>', { buffer = bufnr })
+    end
+  }
 })
