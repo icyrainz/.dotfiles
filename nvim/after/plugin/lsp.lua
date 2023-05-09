@@ -63,7 +63,6 @@ cmp.setup({
     { name = 'copilot' },
     { name = 'nvim_lsp' },
     { name = 'path' },
-    { name = 'buffer',  keyword_length = 3 },
     { name = 'luasnip', keuword_length = 2 },
   },
   window = {
@@ -78,7 +77,6 @@ cmp.setup({
         copilot = "",
         nvim_lsp = "λ",
         luasnip = "⋗",
-        buffer = "Ω",
         path = "🖫",
         nvim_lua = "Π",
       }

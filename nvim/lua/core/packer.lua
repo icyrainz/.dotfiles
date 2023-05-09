@@ -1,8 +1,8 @@
 local ensure_packer = function()
   local fn = vim.fn
-  local install_path = fn.stdpath('data')..'/site/pack/packer/start/packer.nvim'
+  local install_path = fn.stdpath('data') .. '/site/pack/packer/start/packer.nvim'
   if fn.empty(fn.glob(install_path)) > 0 then
-    fn.system({'git', 'clone', '--depth', '1', 'https://github.com/wbthomason/packer.nvim', install_path})
+    fn.system({ 'git', 'clone', '--depth', '1', 'https://github.com/wbthomason/packer.nvim', install_path })
     vim.cmd [[packadd packer.nvim]]
     return true
   end
@@ -17,19 +17,17 @@ return require('packer').startup(function(use)
   use 'MunifTanjim/nui.nvim'
 
   use {
-      'nvim-telescope/telescope.nvim',
-      tag = '0.1.1',
+    'nvim-telescope/telescope.nvim',
+    tag = '0.1.1',
   }
-
-  -- use 'nvim-telescope/telescope-file-browser.nvim'
 
   -- Theme
   -- use({
-	 --  'rose-pine/neovim',
-	 --  as = 'rose-pine',
-	 --  config = function()
-		--   vim.cmd('colorscheme rose-pine')
-	 --  end
+  --  'rose-pine/neovim',
+  --  as = 'rose-pine',
+  --  config = function()
+  --   vim.cmd('colorscheme rose-pine')
+  --  end
   -- })
   use "rebelot/kanagawa.nvim"
 
@@ -37,9 +35,9 @@ return require('packer').startup(function(use)
   use 'tpope/vim-fugitive'
 
   -- Treesitter
-  use (
-      'nvim-treesitter/nvim-treesitter',
-      {run = ':TSUpdate'}
+  use(
+    'nvim-treesitter/nvim-treesitter',
+    { run = ':TSUpdate' }
   )
   use 'nvim-treesitter/nvim-treesitter-context'
   -- use 'nvim-treesitter/nvim-treesitter-textobjects'
@@ -49,16 +47,16 @@ return require('packer').startup(function(use)
 
   -- LSP
   use {
-      'williamboman/mason.nvim',
-      run = function()
-          pcall(vim.cmd, 'MasonUpdate')
-      end,
+    'williamboman/mason.nvim',
+    run = function()
+      pcall(vim.cmd, 'MasonUpdate')
+    end,
   }
   use 'neovim/nvim-lspconfig'
   use 'williamboman/mason-lspconfig.nvim'
   use {
-      'VonHeikemen/lsp-zero.nvim',
-      branch = 'v2.x',
+    'VonHeikemen/lsp-zero.nvim',
+    branch = 'v2.x',
   }
   use 'WhoIsSethDaniel/mason-tool-installer.nvim'
 
@@ -66,7 +64,7 @@ return require('packer').startup(function(use)
   use 'hrsh7th/nvim-cmp'
   use 'hrsh7th/cmp-nvim-lsp'
   use 'hrsh7th/cmp-path'
-  use 'hrsh7th/cmp-buffer'
+  -- use 'hrsh7th/cmp-buffer'
   use 'L3MON4D3/LuaSnip'
   use 'saadparwaiz1/cmp_luasnip'
 
@@ -76,8 +74,8 @@ return require('packer').startup(function(use)
   use 'simrat39/rust-tools.nvim'
   use 'rust-lang/rust.vim'
   use {
-      'saecki/crates.nvim',
-      tag = 'v0.3.0'
+    'saecki/crates.nvim',
+    tag = 'v0.3.0'
   }
 
   -- Typescript stuffs
@@ -110,11 +108,11 @@ return require('packer').startup(function(use)
   -- Terminal
   use 'voldikss/vim-floaterm'
   use {
-      'akinsho/toggleterm.nvim',
-      tag = '*',
-      config = function()
-          require("toggleterm").setup()
-      end
+    'akinsho/toggleterm.nvim',
+    tag = '*',
+    config = function()
+      require("toggleterm").setup()
+    end
   }
 
   -- use {
@@ -143,17 +141,17 @@ return require('packer').startup(function(use)
   -- use 'ThePrimeagen/vim-be-good'
 
   use {
-      "ahmedkhalf/project.nvim",
-      config = function()
-          require("project_nvim").setup()
-      end,
+    "ahmedkhalf/project.nvim",
+    config = function()
+      require("project_nvim").setup()
+    end,
   }
 
   use {
-      "AckslD/nvim-neoclip.lua",
-      config = function()
-          require('neoclip').setup()
-      end,
+    "AckslD/nvim-neoclip.lua",
+    config = function()
+      require('neoclip').setup()
+    end,
   }
 
   use 'stevearc/dressing.nvim'
@@ -176,6 +174,6 @@ return require('packer').startup(function(use)
   -- Automatically set up your configuration after cloning packer.nvim
   -- Put this at the end after all plugins
   if packer_bootstrap then
-      require('packer').sync()
+    require('packer').sync()
   end
 end)
