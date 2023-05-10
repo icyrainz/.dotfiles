@@ -1,6 +1,12 @@
 local lsp = require("lsp-zero")
 
-lsp.preset("recommended")
+lsp.preset({
+  name = 'recommended',
+  set_lsp_keymaps = {
+    preserve_mappings = true,
+    omit = { 'go' },
+  },
+})
 
 lsp.ensure_installed({
   'rust_analyzer',
@@ -21,11 +27,6 @@ require('lspconfig').eslint.setup({})
 require('lspconfig').tsserver.setup({})
 
 lsp.on_attach(function(client, bufnr)
-  lsp.default_keymaps({
-    buffer = bufnr,
-    omit = {'go'},
-  })
-
   local function opts(desc)
     return { desc = 'lsp: ' .. desc, buffer = bufnr, remap = false }
   end
@@ -83,7 +84,7 @@ cmp.setup({
     ['<C-b>'] = cmp_action.luasnip_jump_backward(),
     ["<Tab>"] = cmp_action.luasnip_supertab(),
     ["<S-Tab>"] = cmp_action.luasnip_shift_supertab(),
-    ['<C-z>'] = cmp.mapping.complete(),
+    ['<C-BS>'] = cmp.mapping.complete(),
     ['<CR>'] = cmp.mapping.confirm({
       behavior = cmp.ConfirmBehavior.Replace,
       select = false
