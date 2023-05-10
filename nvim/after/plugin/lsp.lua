@@ -3,7 +3,7 @@ local lsp = require("lsp-zero")
 lsp.preset({
   name = 'recommended',
   set_lsp_keymaps = {
-    preserve_mappings = true,
+    preserve_mappings = false,
     omit = { 'go' },
   },
 })
