@@ -23,3 +23,5 @@ fi
 source ${zsh_plugins}.zsh
 
 eval $(thefuck --alias)
+
+bindkey '^ ' autosuggest-accept
