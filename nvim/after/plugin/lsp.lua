@@ -9,18 +9,6 @@ lsp.ensure_installed({
   'lua_ls',
 })
 
--- local cmp = require('cmp')
--- local cmp_select = {behavior = cmp.SelectBehavior.Select}
--- local cmp_mappings = lsp.defaults.cmp_mappings({
---   ['<C-p>'] = cmp.mapping.select_prev_item(cmp_select),
---   ['<C-n>'] = cmp.mapping.select_next_item(cmp_select),
---   ['<CR>'] = cmp.mapping.confirm({ select = true }),
---   ['<C-Space>'] = cmp.mapping.complete(),
--- })
---
--- lsp.setup_nvim_cmp({
---   mapping = cmp_mappings
--- })
 lsp.set_sign_icons({
   error = "✘",
   warn = "▲",
@@ -32,21 +20,26 @@ require('lspconfig').lua_ls.setup(lsp.nvim_lua_ls())
 require('lspconfig').eslint.setup({})
 require('lspconfig').tsserver.setup({})
 
-local function opts(bufnr, desc)
-  return { desc = 'lsp: ' .. desc, buffer = bufnr, remap = false }
-end
-
 lsp.on_attach(function(client, bufnr)
-  vim.keymap.set("n", "K", function() vim.lsp.buf.hover() end, opts(bufnr, "Hover"))
-  vim.keymap.set("n", "<leader>ws", function() vim.lsp.buf.workspace_symbol() end, opts(bufnr, "Workspace symbol"))
+  lsp.default_keymaps({
+    buffer = bufnr,
+    omit = {'go'},
+  })
+
+  local function opts(desc)
+    return { desc = 'lsp: ' .. desc, buffer = bufnr, remap = false }
+  end
+
+  -- vim.keymap.set("n", "K", function() vim.lsp.buf.hover() end, opts(bufnr, "Hover"))
+  vim.keymap.set("n", "<leader>ws", function() vim.lsp.buf.workspace_symbol() end, opts("Workspace symbol"))
   -- vim.keymap.set("n", "<leader>vd", function() vim.diagnostic.open_float() end, opts("Open diagnostics float"))
   -- vim.keymap.set("n", "]d", function() vim.diagnostic.goto_next() end, opts("Go to next diagnostic"))
   -- vim.keymap.set("n", "[d", function() vim.diagnostic.goto_prev() end, opts("Go to previous diagnostic"))
-  vim.keymap.set("n", "<leader>wa", function() vim.lsp.buf.code_action() end, opts(bufnr, "Code action"))
+  vim.keymap.set("n", "<leader>wa", function() vim.lsp.buf.code_action() end, opts("Code action"))
   -- vim.keymap.set("n", "<leader>rr", function() vim.lsp.buf.references() end, opts("References"))
   -- vim.keymap.set("n", "<leader>rn", function() vim.lsp.buf.rename() end, opts("Rename"))
-  vim.keymap.set("n", "<leader>wf", function() vim.lsp.buf.format() end, opts(bufnr, "Format"))
-  vim.keymap.set("i", "<C-j>", function() vim.lsp.buf.signature_help() end, opts(bufnr, "Signature help"))
+  -- vim.keymap.set("n", "<leader>wf", function() vim.lsp.buf.format() end, opts("Format"))
+  vim.keymap.set("i", "<C-j>", function() vim.lsp.buf.signature_help() end, opts("Signature help"))
 end)
 
 lsp.skip_server_setup({ 'rust_analyzer', 'tsserver' })
@@ -90,7 +83,7 @@ cmp.setup({
     ['<C-b>'] = cmp_action.luasnip_jump_backward(),
     ["<Tab>"] = cmp_action.luasnip_supertab(),
     ["<S-Tab>"] = cmp_action.luasnip_shift_supertab(),
-    ['<C-Space>'] = cmp.mapping.complete(),
+    ['<C-z>'] = cmp.mapping.complete(),
     ['<CR>'] = cmp.mapping.confirm({
       behavior = cmp.ConfirmBehavior.Replace,
       select = false

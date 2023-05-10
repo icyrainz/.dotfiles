@@ -23,3 +23,6 @@ window:
 scrolling:
   history: 10000
   multiplier: 3
+
+key_bindings:
+  - { key: Space, mods: Control, chars: "\x00" }

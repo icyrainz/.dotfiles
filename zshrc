@@ -24,4 +24,4 @@ source ${zsh_plugins}.zsh
 
 eval $(thefuck --alias)
 
-bindkey '^ ' autosuggest-accept
+bindkey '^O' autosuggest-accept
