@@ -1,4 +1,7 @@
-require('telescope').load_extension('projects')
+require("project_nvim").setup({
+	manual_mode = true,
+})
 
-local project_nvim = require("project_nvim")
-vim.keymap.set('n', '<leader>fp', ":Telescope projects<CR>", {noremap = true, silent = true, desc = "Find project"})
+require("telescope").load_extension("projects")
+
+vim.keymap.set("n", "<leader>fp", ":Telescope projects<CR>", { noremap = true, silent = true, desc = "Find project" })
