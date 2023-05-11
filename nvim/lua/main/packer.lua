@@ -34,7 +34,7 @@ return require("packer").startup(function(use)
 		"Alexis12119/nightly.nvim",
 		config = function()
 			require("nightly").setup({
-				transparent = false,
+				transparent = true,
 			})
 		end,
 	})
