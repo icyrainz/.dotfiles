@@ -12,7 +12,7 @@ vim.keymap.set("x", "<leader>p", "\"_dP", { desc = "Paste without yanking" })
 
 vim.keymap.set("n", "<leader>a", "ggVG", { desc = "Select all" })
 
-vim.keymap.set("n", "<leader>s", "i<CR><Esc>^", { desc = "Split line" })
+vim.keymap.set("n", "<leader>o", "i<CR><Esc>^", { desc = "Split line" })
 
 vim.keymap.set("n", "c*", "*``cgn", { desc = "Replace word" })
 vim.keymap.set("n", "c#", "#``cgN", { desc = "Replace word reverse" })

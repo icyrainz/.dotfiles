@@ -173,6 +173,8 @@ return require('packer').startup(function(use)
 
   use 'alexghergh/nvim-tmux-navigation'
 
+  use 'simrat39/symbols-outline.nvim'
+
   -- Automatically set up your configuration after cloning packer.nvim
   -- Put this at the end after all plugins
   if packer_bootstrap then
