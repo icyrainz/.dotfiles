@@ -1,3 +1,3 @@
-require("core.set")
-require("core.mappings")
-require("core.packer")
+require("main.set")
+require("main.mappings")
+require("main.packer")

@@ -34,7 +34,7 @@ return require("packer").startup(function(use)
 		"Alexis12119/nightly.nvim",
 		config = function()
 			require("nightly").setup({
-				transparent = true,
+				transparent = false,
 			})
 		end,
 	})
@@ -178,6 +178,13 @@ return require("packer").startup(function(use)
 	use("alexghergh/nvim-tmux-navigation")
 
 	use("simrat39/symbols-outline.nvim")
+
+  use("kevinhwang91/nvim-bqf")
+
+  use("kevinhwang91/nvim-hlslens")
+
+  use("kevinhwang91/promise-async")
+  use("kevinhwang91/nvim-ufo")
 
 	-- Automatically set up your configuration after cloning packer.nvim
 	-- Put this at the end after all plugins
