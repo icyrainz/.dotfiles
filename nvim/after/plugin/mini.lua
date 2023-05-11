@@ -38,7 +38,7 @@ vim.keymap.set('n', '<leader>mr', MiniMap.refresh, { desc = 'Refresh MiniMap' })
 vim.keymap.set('n', '<leader>ms', MiniMap.toggle_side, { desc = 'Toggle MiniMap sidebar' })
 vim.keymap.set('n', '<leader>mt', MiniMap.toggle , { desc = 'Toggle MiniMap' })
 
-require('mini.tabline').setup()
-require('mini.statusline').setup()
+-- require('mini.tabline').setup()
+-- require('mini.statusline').setup()
 
 require('mini.trailspace').setup()    

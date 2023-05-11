@@ -12,4 +12,5 @@ function SetColor(color)
 end
 
 -- SetColor()
-SetColor("kanagawa")
+-- SetColor("kanagawa")
+SetColor("nightly")

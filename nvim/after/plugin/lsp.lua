@@ -40,7 +40,8 @@ lsp.on_attach(function(client, bufnr)
   -- vim.keymap.set("n", "<leader>rr", function() vim.lsp.buf.references() end, opts("References"))
   -- vim.keymap.set("n", "<leader>rn", function() vim.lsp.buf.rename() end, opts("Rename"))
   -- vim.keymap.set("n", "<leader>wf", function() vim.lsp.buf.format() end, opts("Format"))
-  vim.keymap.set("i", "<C-j>", function() vim.lsp.buf.signature_help() end, opts("Signature help"))
+  vim.keymap.set("n", "gp", function() vim.lsp.buf.type_definition() end, opts("Type definition"))
+  vim.keymap.set("i", "<C-s>", function() vim.lsp.buf.signature_help() end, opts("Signature help"))
 end)
 
 lsp.skip_server_setup({ 'rust_analyzer', 'tsserver' })
@@ -60,7 +61,6 @@ cmp.setup({
     { name = 'luasnip', keuword_length = 2 },
   },
   window = {
-    completion = cmp.config.window.bordered(),
     documentation = cmp.config.window.bordered(),
   },
   formatting = {
