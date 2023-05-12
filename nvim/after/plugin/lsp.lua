@@ -40,7 +40,7 @@ lsp.on_attach(function(client, bufnr)
   -- vim.keymap.set("n", "<leader>rr", function() vim.lsp.buf.references() end, opts("References"))
   -- vim.keymap.set("n", "<leader>rn", function() vim.lsp.buf.rename() end, opts("Rename"))
   -- vim.keymap.set("n", "<leader>wf", function() vim.lsp.buf.format() end, opts("Format"))
-  vim.keymap.set("n", "gp", function() vim.lsp.buf.type_definition() end, opts("Type definition"))
+  vim.keymap.set("n", "ge", function() vim.lsp.buf.type_definition() end, opts("Type definition"))
   vim.keymap.set("i", "<C-s>", function() vim.lsp.buf.signature_help() end, opts("Signature help"))
 end)
 
@@ -84,7 +84,7 @@ cmp.setup({
     ['<C-b>'] = cmp_action.luasnip_jump_backward(),
     ["<Tab>"] = cmp_action.luasnip_supertab(),
     ["<S-Tab>"] = cmp_action.luasnip_shift_supertab(),
-    ['<C-BS>'] = cmp.mapping.complete(),
+    ['<C-e>'] = cmp.mapping.complete(),
     ['<CR>'] = cmp.mapping.confirm({
       behavior = cmp.ConfirmBehavior.Replace,
       select = false
@@ -115,7 +115,6 @@ null_ls.setup({
     end
   end,
 })
-
 
 -- Setup typescript
 require('typescript').setup({
