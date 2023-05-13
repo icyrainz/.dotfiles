@@ -26,4 +26,4 @@ vim.keymap.set("i", "<C-k>", "<Esc>O", { desc = "Insert empty line above" })
 
 vim.keymap.set("n", "<leader>bd", ":bd<CR>", { desc = "Delete buffer" })
 
-vim.keymap.set("n", "<leader>q", ":cclose<CR>", { desc = "Close quickfix" })
+vim.keymap.set("n", "<leader>q", ":QFToggle<CR>", { desc = "Close quickfix" })
