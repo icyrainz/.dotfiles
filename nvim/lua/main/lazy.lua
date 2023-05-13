@@ -88,6 +88,7 @@ local plugins = {
 	"kevinhwang91/nvim-hlslens",
 	"kevinhwang91/promise-async",
 	"kevinhwang91/nvim-ufo",
+  "stevearc/qf_helper.nvim",
 	"folke/todo-comments.nvim",
 }
 

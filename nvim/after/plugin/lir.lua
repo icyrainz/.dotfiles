@@ -17,7 +17,9 @@ require'lir'.setup {
     ['<C-t>'] = actions.tabedit,
 
     ['h']     = actions.up,
+    ['<BS>']  = actions.up,
     ['q']     = actions.quit,
+    ['<ESC>'] = actions.quit,
 
     ['K']     = actions.mkdir,
     ['N']     = actions.newfile,
@@ -34,6 +36,7 @@ require'lir'.setup {
     ['C'] = clipboard_actions.copy,
     ['X'] = clipboard_actions.cut,
     ['P'] = clipboard_actions.paste,
+
   },
   float = {
     winblend = 0,
