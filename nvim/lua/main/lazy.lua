@@ -14,7 +14,7 @@ vim.opt.rtp:prepend(lazypath)
 local plugins = {
 	"nvim-lua/plenary.nvim",
 	"MunifTanjim/nui.nvim",
-  "nvim-tree/nvim-web-devicons",
+	"nvim-tree/nvim-web-devicons",
 	{
 		"nvim-telescope/telescope.nvim",
 		tag = "0.1.1",
@@ -88,7 +88,7 @@ local plugins = {
 	"kevinhwang91/nvim-hlslens",
 	"kevinhwang91/promise-async",
 	"kevinhwang91/nvim-ufo",
-  "stevearc/qf_helper.nvim",
+	"stevearc/qf_helper.nvim",
 	"folke/todo-comments.nvim",
 }
 
