@@ -93,7 +93,7 @@ cmp.setup({
 })
 
 require('mason-tool-installer').setup({
-  ensure_installed = { "codelldb", "prettier", "prettierd" },
+  ensure_installed = { "codelldb", "prettier", "prettierd", "stylua" },
   auto_update = true,
   run_on_start = true,
 })
