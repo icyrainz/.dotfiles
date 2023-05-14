@@ -1,9 +1,0 @@
--- local hop = require('hop')
--- local directions = require('hop.hint').HintDirection
---
--- vim.keymap.set('', '<C-s>f', function()
---   hop.hint_char2({ direction = directions.AFTER_CURSOR })
--- end, {remap=true})
--- vim.keymap.set('', '<C-s>F', function()
---   hop.hint_char2({ direction = directions.BEFORE_CURSOR })
--- end, {remap=true})
