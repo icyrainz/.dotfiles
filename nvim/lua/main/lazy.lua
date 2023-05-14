@@ -21,7 +21,14 @@ local plugins = {
 		dependencies = { "nvim-lua/plenary.nvim" },
 	},
 	-- "rebelot/kanagawa.nvim",
-	"Alexis12119/nightly.nvim",
+  {
+    "Alexis12119/nightly.nvim",
+    config = function()
+      require("nightly").setup({
+        transparent = true,
+      })
+    end,
+  },
 	"tpope/vim-fugitive",
 	"nvim-treesitter/nvim-treesitter",
 	"nvim-treesitter/nvim-treesitter-context",
@@ -64,32 +71,70 @@ local plugins = {
 		version = "*",
 	},
 	-- use "lukas-reineke/indent-blankline.nvim"
-	"nvim-lualine/lualine.nvim",
-	"akinsho/bufferline.nvim",
-	"tiagovla/scope.nvim",
+  {
+    "nvim-lualine/lualine.nvim",
+    config = function()
+      require('lualine').setup({
+        options = { theme = 'nightly' }
+      })
+    end,
+  },
+	{
+	  "akinsho/bufferline.nvim",
+    config = true,
+	},
+  {
+    "tiagovla/scope.nvim",
+    config = true,
+  },
 	-- use "github/copilot.vim"
 	"zbirenbaum/copilot.lua",
 	"zbirenbaum/copilot-cmp",
 	-- use 'ThePrimeagen/vim-be-good'
-	"ahmedkhalf/project.nvim",
-	"AckslD/nvim-neoclip.lua",
+  {
+    "ahmedkhalf/project.nvim",
+    config = function()
+      require("project_nvim").setup({
+        manual_mode = true,
+      })
+    end,
+  },
+  {
+    "AckslD/nvim-neoclip.lua",
+    config = true,
+  },
 	"stevearc/dressing.nvim",
 	"folke/which-key.nvim",
 	"tommcdo/vim-exchange",
 	"tpope/vim-abolish",
-	"folke/trouble.nvim",
+  {
+    "folke/trouble.nvim",
+    config = true,
+  },
 	"echasnovski/mini.nvim",
 	"tamago324/lir.nvim",
-	"lewis6991/gitsigns.nvim",
+  {
+    "lewis6991/gitsigns.nvim",
+    config = true,
+  },
 	"weilbith/nvim-code-action-menu",
 	"alexghergh/nvim-tmux-navigation",
-	"simrat39/symbols-outline.nvim",
+  {
+    "simrat39/symbols-outline.nvim",
+    config = true,
+  },
 	"kevinhwang91/nvim-bqf",
 	"kevinhwang91/nvim-hlslens",
 	"kevinhwang91/promise-async",
 	"kevinhwang91/nvim-ufo",
-	"stevearc/qf_helper.nvim",
-	"folke/todo-comments.nvim",
+  {
+    "stevearc/qf_helper.nvim",
+    config = true,
+  },
+  {
+    "folke/todo-comments.nvim",
+    config = true,
+  },
 }
 
 local opts = {}

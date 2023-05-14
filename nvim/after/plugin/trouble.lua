@@ -1,5 +1,3 @@
-require("trouble").setup()
-
 local function opts(desc)
   return { desc = 'trouble: ' .. desc, silent = true, noremap = true }
 end
