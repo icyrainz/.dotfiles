@@ -1,4 +1,3 @@
-require("main.set")
-require("main.mappings")
--- require("main.packer")
-require("main.lazy")
+require("core.set")
+require("core.mappings")
+require("core.lazy")

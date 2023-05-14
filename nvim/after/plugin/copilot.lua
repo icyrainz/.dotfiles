@@ -19,5 +19,5 @@ if os.getenv("NEOVIM_DISABLE_COPILOT") ~= 1 then
 		panel = { enabled = false },
 	})
 
-	require("copilot_cmp").setup()
+	-- require("copilot_cmp").setup()
 end
