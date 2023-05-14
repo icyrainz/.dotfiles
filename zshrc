@@ -1,27 +1,15 @@
-source ~/.config/zsh/aliases.zsh
+ZSH_CONFIG_PATH=~/.config/zsh
+
+source $ZSH_CONFIG_PATH/aliases.zsh
+source $ZSH_CONFIG_PATH/keys.zsh
+
+source $ZSH_CONFIG_PATH/plugin_manager.zsh
+source $ZSH_CONFIG_PATH/tmux.zsh
 
 # Create the extra.zsh file if not exists
-[[ -d ~/.config/zsh/extra ]] || touch ~/.config/zsh/extra.zsh
-source ~/.config/zsh/extra.zsh
+[[ -d $ZSH_CONFIG_PATH/extra ]] || touch $ZSH_CONFIG_PATH/extra.zsh
+source $ZSH_CONFIG_PATH/extra.zsh
 
-fpath+=~/.config/zsh/completions
-
-[[ -d ~/.antidote ]] ||
-    git clone https://github.com/mattmc3/antidote ~/.antidote
-
-[[ -d ~/.tmux/plugins/tpm ]] ||
-    git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
-
-zsh_plugins=~/.config/zsh/zsh_plugins
-if [[ ! ${zsh_plugins}.zsh -nt ${zsh_plugins}.txt ]]; then
-  (
-    source ~/.antidote/antidote.zsh
-    antidote bundle <${zsh_plugins}.txt >${zsh_plugins}.zsh
-  )
-fi
-
-source ${zsh_plugins}.zsh
+fpath+=$ZSH_CONFIG_PATH/completions
 
 eval $(thefuck --alias)
-
-bindkey '^O' autosuggest-accept
