@@ -5,7 +5,7 @@ return {
 
     require('mini.basics').setup()
 
-    -- require('mini.animate').setup()
+    require('mini.animate').setup()
     --
     require('mini.bracketed').setup()
 
@@ -45,5 +45,9 @@ return {
     -- require('mini.statusline').setup()
 
     require('mini.trailspace').setup()
+
+    require('mini.starter').setup()
+
+    require('mini.sessions').setup()
   end,
 }
