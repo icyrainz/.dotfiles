@@ -27,3 +27,8 @@ vim.keymap.set("i", "<C-k>", "<Esc>O", { desc = "Insert empty line above" })
 vim.keymap.set("n", "<leader>bd", ":bd<CR>", { desc = "Delete buffer" })
 
 vim.keymap.set("n", "<leader>q", ":QFToggle<CR>", { desc = "Close quickfix" })
+
+vim.keymap.set("n", "<Left>", ":vertical resize -5<CR>", { desc = "Resize vertical -5" })
+vim.keymap.set("n", "<Right>", ":vertical resize +5<CR>", { desc = "Resize vertical +5" })
+vim.keymap.set("n", "<Up>", ":resize +2<CR>", { desc = "Resize +2" })
+vim.keymap.set("n", "<Down>", ":resize -2<CR>", { desc = "Resize -2" })

@@ -21,6 +21,5 @@
 
 - shell:
     - [git submodule update --init --recursive, Installing submodules]
-    - nvim --headless -c 'autocmd User PackerComplete quitall' -c PackerSync
     - brew install exa fd bat fzf dash htop lazygit ripgrep thefuck tree eslint
     - brew install font-code-new-roman-nerd-font font-hack-nerd-font font-agave-nerd-font font-jetbrains-mono-nerd-font
