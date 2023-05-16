@@ -21,6 +21,8 @@ return {
 
     -- require('mini.jump').setup()
 
+    require('mini.pairs').setup()
+
     require('mini.move').setup({
       mappings = {
         -- Move visual selection in Visual mode. Defaults are Alt (Meta) + hjkl.
@@ -46,7 +48,7 @@ return {
 
     require('mini.trailspace').setup()
 
-    require('mini.starter').setup()
+    -- require('mini.starter').setup()
 
     require('mini.sessions').setup()
   end,

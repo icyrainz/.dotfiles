@@ -47,10 +47,6 @@ return {
   -- Quickfix
   "kevinhwang91/nvim-bqf",
   "kevinhwang91/promise-async",
-  {
-    "stevearc/qf_helper.nvim",
-    config = true,
-  },
 
   -- Others
   "stevearc/dressing.nvim",
