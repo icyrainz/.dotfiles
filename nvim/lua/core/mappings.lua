@@ -26,7 +26,10 @@ vim.keymap.set("i", "<C-k>", "<Esc>O", { desc = "Insert empty line above" })
 
 vim.keymap.set("n", "<leader>bd", ":bd<CR>", { desc = "Delete buffer" })
 
-vim.keymap.set("n", "<Left>", ":vertical resize -5<CR>", { desc = "Resize vertical -5" })
-vim.keymap.set("n", "<Right>", ":vertical resize +5<CR>", { desc = "Resize vertical +5" })
-vim.keymap.set("n", "<Up>", ":resize +2<CR>", { desc = "Resize +2" })
-vim.keymap.set("n", "<Down>", ":resize -2<CR>", { desc = "Resize -2" })
+vim.keymap.set("n", "<Left>", ":vertical resize -5<CR>", { silent = true, desc = "Resize vertical -5" })
+vim.keymap.set("n", "<Right>", ":vertical resize +5<CR>", { silent = true, desc = "Resize vertical +5" })
+vim.keymap.set("n", "<Up>", ":resize +2<CR>", { silent = true, desc = "Resize +2" })
+vim.keymap.set("n", "<Down>", ":resize -2<CR>", { silent = true, desc = "Resize -2" })
+
+vim.keymap.set("n", "<leader>cp", "<cmd>call setreg('+', expand('%:p:~'))<CR>", { desc = "Copy current buffer file path to clipboard"})
+vim.keymap.set("n", "<leader>cP", "<cmd>call setreg('+', expand('%:p:~:h'))<CR>", { desc = "Copy current buffer path to clipboard"})

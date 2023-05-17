@@ -8,8 +8,7 @@ return {
         follow_current_file = true,
       },
     })
-    vim.keymap.set("n", "<leader>e", ":Neotree toggle<cr>", { desc = "Neotree toggle" })
-    vim.keymap.set("n", "<leader>er", ":Neotree toggle<cr>", { desc = "Neotree toggle" })
-    vim.keymap.set("n", "<leader>ef", ":Neotree float toggle<cr>", { desc = "Neotree toggle float" })
+    vim.keymap.set("n", "<leader>e", ":Neotree toggle left<cr>", { desc = "Neotree toggle left" })
+    vim.keymap.set("n", "<leader>E", ":Neotree toggle float<cr>", { desc = "Neotree toggle float" })
   end,
 }

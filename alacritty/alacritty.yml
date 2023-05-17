@@ -23,7 +23,7 @@ font:
     style: Bold Italic
 
 window:
-  opacity: 1
+  opacity: 0.95
   option_as_alt: OnlyLeft
 
 scrolling:
