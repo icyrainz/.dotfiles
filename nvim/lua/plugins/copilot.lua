@@ -1,12 +1,6 @@
 return {
   {
     'zbirenbaum/copilot.lua',
-    opts = function()
-      return {
-        suggestion = { enabled = false },
-        panel = { enabled = false },
-      }
-    end
   },
   {
     'zbirenbaum/copilot-cmp',

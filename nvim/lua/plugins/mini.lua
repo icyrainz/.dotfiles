@@ -60,6 +60,12 @@ return {
 			content_hooks = {
 				starter.gen_hook.adding_bullet(""),
 				starter.gen_hook.aligning("center", "center"),
+        starter.gen_hook.indexing(
+          "section",
+          {
+            "Git", "Telescope", "Plugins", "Builtin actions",
+          }
+        ),
 			},
 			evaluate_single = true,
 			footer = os.date(),
@@ -72,6 +78,7 @@ return {
 			}, "\n"),
 			query_updaters = [[abcdefghilmoqrstuvwxyz0123456789_-,.ABCDEFGHIJKLMOQRSTUVWXYZ]],
 			items = {
+        starter.sections.recent_files(5, true, false),
 				{ action = "tab G", name = "G: Fugitive", section = "Git" },
 				{ action = "Lazy", name = "U: Update Plugins", section = "Plugins" },
 				{ action = "enew", name = "N: New Buffer", section = "Builtin actions" },

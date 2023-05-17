@@ -85,42 +85,11 @@ return {
 						require("mason-nvim-dap").default_setup(config)
 					end,
 					node2 = function(config)
-						config.configurations = {
-							{
-								name = "Launch Integration Test - Current File",
-								type = "node2",
-								request = "launch",
-								program = "${workspaceFolder}/node_modules/.bin/mocha",
-								cwd = vim.fn.getcwd(),
-								sourceMaps = true,
-								protocol = "inspector",
-								console = "integratedTerminal",
-								args = {
-									"--timeout",
-									"0",
-									"--require",
-									"ts-node/register",
-									"--file",
-									"${workspaceFolder}/src/test/integration/lifecycle.ts",
-									"${file}",
-								},
-								env = {
-									ENV = "test",
-									TZ = "UTC",
-									TASKS_IN_CHILD_PROCESS = "false",
-									LOG_DEFAULT_DB = "false",
-									CONSOLE_LOG_LEVEL = "debug",
-								},
-							},
-						}
-
+            config.configurations = require('launchjs').configurations
 						require("mason-nvim-dap").default_setup(config)
 					end,
 				},
 			})
-
-			-- local dap = require("dap")
-			-- dap.adapters["pwa-node"] = dap.adapters.node2
 		end,
 	},
 }
