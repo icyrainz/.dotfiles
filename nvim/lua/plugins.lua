@@ -23,10 +23,6 @@ return {
 		config = true,
 	},
 
-	-- Autocompletion
-	{ "hrsh7th/cmp-nvim-lsp" },
-	{ "L3MON4D3/LuaSnip" },
-
 	-- UI
 	{
 		"nvim-lualine/lualine.nvim",

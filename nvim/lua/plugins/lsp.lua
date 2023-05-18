@@ -3,9 +3,10 @@ return {
   cmd = 'LspInfo',
   event = { 'BufReadPre', 'BufNewFile' },
   dependencies = {
-    { 'hrsh7th/cmp-nvim-lsp' },
-    { 'williamboman/mason-lspconfig.nvim' },
-    { 'williamboman/mason.nvim' },
+    'hrsh7th/cmp-nvim-lsp',
+    'williamboman/mason-lspconfig.nvim',
+    'williamboman/mason.nvim',
+    'VonHeikemen/lsp-zero.nvim',
   },
   config = function()
     -- This is where all the LSP shenanigans will live
