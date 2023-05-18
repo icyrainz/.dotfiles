@@ -12,4 +12,8 @@ source $ZSH_CONFIG_PATH/extra.zsh
 
 fpath+=$ZSH_CONFIG_PATH/completions
 
-eval $(thefuck --alias)
+eval "$(thefuck --alias)"
+eval "$(direnv hook zsh)"
+
+# Bat configs
+export BAT_THEME="Nord"

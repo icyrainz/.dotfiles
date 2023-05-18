@@ -74,7 +74,6 @@ return {
 	{
 		"jay-babu/mason-nvim-dap.nvim",
 		dependencies = {
-			"williamboman/mason.nvim",
 			"mfussenegger/nvim-dap",
 		},
 		config = function()
@@ -85,11 +84,19 @@ return {
 						require("mason-nvim-dap").default_setup(config)
 					end,
 					node2 = function(config)
-            config.configurations = require('launchjs').configurations
+            config.configurations = nil
+
 						require("mason-nvim-dap").default_setup(config)
 					end,
 				},
 			})
+
+			local dap = require("dap")
+			dap.adapters['pwa-node'] = dap.adapters.node2
+			-- dap.defaults["pwa-node"].external_terminal = {
+			-- 	command = "alacritty",
+			-- 	args = { "--hold", "--working-directory", vim.fn.getcwd(), "-e" },
+			-- }
 		end,
 	},
 }

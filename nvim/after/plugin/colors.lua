@@ -13,4 +13,5 @@ end
 
 -- SetColor()
 -- SetColor("kanagawa")
-SetColor("nightly")
+-- SetColor("nightly")
+SetColor("tokyonight-moon")

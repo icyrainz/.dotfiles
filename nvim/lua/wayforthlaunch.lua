@@ -1,0 +1,36 @@
+return {
+	{
+		name = "Generate Avro Types",
+		type = "node2",
+		request = "launch",
+		console = "integratedTerminal",
+		program = "${workspaceFolder}/build/dist/generate_avro_types.js",
+		skipFiles = { "<node_internals>/**", "node_modules/**" },
+	},
+	{
+		name = "Launch Integration Test - Current File",
+		type = "node2",
+		request = "launch",
+		program = "${workspaceFolder}/node_modules/.bin/mocha",
+		cwd = vim.fn.getcwd(),
+		sourceMaps = true,
+		protocol = "inspector",
+		console = "integratedTerminal",
+		args = {
+			"--timeout",
+			"0",
+			"--require",
+			"ts-node/register",
+			"--file",
+			"${workspaceFolder}/src/test/integration/lifecycle.ts",
+			"${file}",
+		},
+		env = {
+			ENV = "test",
+			TZ = "UTC",
+			TASKS_IN_CHILD_PROCESS = "false",
+			LOG_DEFAULT_DB = "false",
+			CONSOLE_LOG_LEVEL = "debug",
+		},
+	},
+}

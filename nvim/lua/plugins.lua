@@ -4,7 +4,9 @@ return {
 	"nvim-tree/nvim-web-devicons",
 
 	-- Themes
-	-- "rebelot/kanagawa.nvim",
+	"rebelot/kanagawa.nvim",
+	"folke/tokyonight.nvim",
+	{ "catppuccin/nvim", name = "catppuccin" },
 	{
 		"Alexis12119/nightly.nvim",
 		opts = function()
@@ -53,5 +55,11 @@ return {
 	{
 		"folke/todo-comments.nvim",
 		config = true,
+	},
+	{
+		"junegunn/fzf",
+		build = function()
+			vim.fn["fzf#install"]()
+		end,
 	},
 }
