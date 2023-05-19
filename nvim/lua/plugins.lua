@@ -3,32 +3,12 @@ return {
 	"MunifTanjim/nui.nvim",
 	"nvim-tree/nvim-web-devicons",
 
-	-- Themes
-	"rebelot/kanagawa.nvim",
-	"folke/tokyonight.nvim",
-	{ "catppuccin/nvim", name = "catppuccin" },
-	{
-		"Alexis12119/nightly.nvim",
-		opts = function()
-			return {
-				transparent = true,
-			}
-		end,
-	},
-
-	-- Git
-	"tpope/vim-fugitive",
-	{
-		"lewis6991/gitsigns.nvim",
-		config = true,
-	},
-
 	-- UI
 	{
 		"nvim-lualine/lualine.nvim",
 		opts = function()
 			return {
-				options = { theme = "nightly" },
+				options = { theme = "gruvbox-material" },
 			}
 		end,
 	},

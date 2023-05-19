@@ -29,7 +29,7 @@ return {
 			vim.keymap.set("n", "<leader>fr", builtin.resume, opts("Resume"))
 
 			local telescope = require("telescope")
-			require("telescope").setup({
+			telescope.setup({
 				defaults = {
 					file_ignore_patterns = {
 						"Session.vim",

@@ -6,9 +6,13 @@ vim.g.mapleader = " "
 -- vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv", { desc = "Move line up" })
 
 vim.keymap.set("x", "<leader>p", "\"_dP", { desc = "Paste without yanking" })
+vim.keymap.set("x", "<leader>y", "\"+d", { desc = "Yank and delete" })
 
--- vim.keymap.set("n", "<leader>d", "\"+d")
--- vim.keymap.set("v", "<leader>d", "\"+d")
+vim.keymap.set("n", "d", "\"_d")
+vim.keymap.set("v", "d", "\"_d")
+
+vim.keymap.set("i", "jj", "<Esc>", { desc = "Escape" })
+vim.keymap.set("n", "q:", ":q")
 
 vim.keymap.set("n", "<leader>a", "ggVG", { desc = "Select all" })
 
@@ -33,3 +37,5 @@ vim.keymap.set("n", "<Down>", ":resize -2<CR>", { silent = true, desc = "Resize 
 
 vim.keymap.set("n", "<leader>cp", "<cmd>call setreg('+', expand('%:p:~'))<CR>", { desc = "Copy current buffer file path to clipboard"})
 vim.keymap.set("n", "<leader>cP", "<cmd>call setreg('+', expand('%:p:~:h'))<CR>", { desc = "Copy current buffer path to clipboard"})
+
+vim.keymap.set("n", "<leader>,", "g_a, <Esc>D", { desc = "Insert comma to end of the line"})

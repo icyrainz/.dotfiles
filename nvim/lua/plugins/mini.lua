@@ -19,7 +19,13 @@ return {
 
 		require("mini.indentscope").setup()
 
-		-- require('mini.jump').setup()
+		require('mini.jump').setup({
+      delay = {
+        highlight = 10000000,
+      }
+    })
+
+    require('mini.jump2d').setup()
 
 		-- require("mini.pairs").setup()
 
@@ -69,6 +75,7 @@ return {
 			},
 			evaluate_single = true,
 			footer = os.date(),
+
 			header = table.concat({
 				[[  /\ \▔\___  ___/\   /(●)_ __ ___  ]],
 				[[ /  \/ / _ \/ _ \ \ / / | '_ ` _ \ ]],

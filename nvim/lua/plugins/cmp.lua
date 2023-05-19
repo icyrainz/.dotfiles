@@ -18,10 +18,10 @@ return {
 		event = "InsertEnter",
 		dependencies = {
 			"L3MON4D3/LuaSnip",
-			"neovim/nvim-lspconfig",
+			"VonHeikemen/lsp-zero.nvim",
 		},
 		config = function()
-			require("lsp-zero.cmp").extend()
+			require("lsp-zero").extend_cmp()
 
 			local cmp = require("cmp")
 			local cmp_action = require("lsp-zero").cmp_action()
@@ -32,7 +32,6 @@ return {
 					{ name = "nvim_lsp" },
 					{ name = "path" },
 					{ name = "buffer" },
-					{ name = "cmdline" },
 					{ name = "luasnip", keuword_length = 2 },
 				},
 				window = {
@@ -42,14 +41,41 @@ return {
 					fields = { "menu", "abbr", "kind" },
 
 					format = function(entry, item)
-						local menu_icon = {
-							copilot = "",
-							nvim_lsp = "λ",
-							luasnip = "⋗",
-							path = "🖫",
-							nvim_lua = "Π",
+						local kind_icons = {
+							Text = "",
+							Method = "󰆧",
+							Function = "󰊕",
+							Constructor = "",
+							Field = "󰇽",
+							Variable = "󰂡",
+							Class = "󰠱",
+							Interface = "",
+							Module = "",
+							Property = "󰜢",
+							Unit = "",
+							Value = "󰎠",
+							Enum = "",
+							Keyword = "󰌋",
+							Snippet = "",
+							Color = "󰏘",
+							File = "󰈙",
+							Reference = "",
+							Folder = "󰉋",
+							EnumMember = "",
+							Constant = "󰏿",
+							Struct = "",
+							Event = "",
+							Operator = "󰆕",
+							TypeParameter = "󰅲",
 						}
-
+						local menu_icon = {
+							copilot = "",
+							nvim_lsp = "λ",
+							path = "🖫",
+              buffer = "",
+              luasnip = "⋗",
+						}
+            item.kind = string.format('%s %s', kind_icons[item.kind], item.kind)
 						item.menu = menu_icon[entry.source.name]
 						return item
 					end,
@@ -57,7 +83,6 @@ return {
 				mapping = {
 					["<Tab>"] = cmp_action.luasnip_supertab(),
 					["<S-Tab>"] = cmp_action.luasnip_shift_supertab(),
-					["<C-e>"] = cmp.mapping.complete(),
 					["<CR>"] = cmp.mapping.confirm({
 						behavior = cmp.ConfirmBehavior.Replace,
 						select = false,

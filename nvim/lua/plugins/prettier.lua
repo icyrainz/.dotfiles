@@ -18,6 +18,13 @@ return {
         "typescript",
         "typescriptreact",
         "yaml",
+      },
+      ["null-ls"] = {
+        condition = function()
+          return prettier.config_exists({
+            check_package_json = true,
+          })
+        end,
       }
     })
 
