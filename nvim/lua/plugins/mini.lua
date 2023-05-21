@@ -19,13 +19,13 @@ return {
 
 		require("mini.indentscope").setup()
 
-		require('mini.jump').setup({
-      delay = {
-        highlight = 10000000,
-      }
-    })
+		require("mini.jump").setup({
+			delay = {
+				highlight = 10000000,
+			},
+		})
 
-    require('mini.jump2d').setup()
+		require("mini.jump2d").setup()
 
 		-- require("mini.pairs").setup()
 
@@ -48,7 +48,7 @@ return {
 
 		require("mini.sessions").setup()
 
-    -- require('mini.base16').setup()
+		-- require('mini.base16').setup()
 
 		-- Mini starter
 		local status, starter = pcall(require, "mini.starter")
@@ -60,12 +60,12 @@ return {
 			content_hooks = {
 				starter.gen_hook.adding_bullet(""),
 				starter.gen_hook.aligning("center", "center"),
-        starter.gen_hook.indexing(
-          "section",
-          {
-            "Git", "Telescope", "Plugins", "Builtin actions",
-          }
-        ),
+				starter.gen_hook.indexing("all", {
+					"Git",
+					"Telescope",
+					"Plugins",
+					"Builtin actions",
+				}),
 			},
 			evaluate_single = true,
 			footer = os.date(),
@@ -79,10 +79,12 @@ return {
 			}, "\n"),
 			query_updaters = [[abcdefghilmoqrstuvwxyz0123456789_-,.ABCDEFGHIJKLMOQRSTUVWXYZ]],
 			items = {
-        starter.sections.recent_files(5, true, false),
+				starter.sections.recent_files(9, true, false),
+				{ action = "Telescope find_files", name = "F: Find Files", section = "Telescope" },
+				{ action = "Telescope projects", name = "P: Projects", section = "Telescope" },
 				{ action = "tab G", name = "G: Fugitive", section = "Git" },
-				{ action = "Lazy", name = "U: Update Plugins", section = "Plugins" },
-				{ action = "enew", name = "N: New Buffer", section = "Builtin actions" },
+				{ action = "Lazy", name = "M: Package Manager", section = "Plugins" },
+				-- { action = "enew", name = "N: New Buffer", section = "Builtin actions" },
 				{ action = "qall!", name = "Q: Quit Neovim", section = "Builtin actions" },
 			},
 		})
