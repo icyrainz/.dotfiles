@@ -5,14 +5,6 @@ return {
 
 	-- UI
 	{
-		"nvim-lualine/lualine.nvim",
-		opts = function()
-			return {
-				options = { theme = "gruvbox-material" },
-			}
-		end,
-	},
-	{
 		"akinsho/bufferline.nvim",
 		config = true,
 	},
@@ -21,13 +13,14 @@ return {
 	-- Editor
 	"tommcdo/vim-exchange",
 	"tpope/vim-abolish",
+	-- "chaoren/vim-wordmotion",
+  "chrisgrieser/nvim-spider",
 
 	-- Quickfix
 	"kevinhwang91/nvim-bqf",
 	"kevinhwang91/promise-async",
 
 	-- Others
-	"stevearc/dressing.nvim",
 	{
 		"folke/todo-comments.nvim",
 		config = true,

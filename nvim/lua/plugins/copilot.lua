@@ -14,6 +14,8 @@ return {
 
         require("copilot_cmp").setup()
       end
+
+      vim.api.nvim_set_hl(0, "CmpItemKindCopilot", {fg ="#6CC644"})
     end,
   },
 }

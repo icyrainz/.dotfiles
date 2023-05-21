@@ -41,20 +41,14 @@ return {
 
 		require("mini.cursorword").setup()
 
-		require("mini.map").setup()
-		vim.keymap.set("n", "<leader>mc", MiniMap.close, { desc = "Close MiniMap" })
-		vim.keymap.set("n", "<leader>mf", MiniMap.toggle_focus, { desc = "Toggle MiniMap focus" })
-		vim.keymap.set("n", "<leader>mo", MiniMap.open, { desc = "Open MiniMap" })
-		vim.keymap.set("n", "<leader>mr", MiniMap.refresh, { desc = "Refresh MiniMap" })
-		vim.keymap.set("n", "<leader>ms", MiniMap.toggle_side, { desc = "Toggle MiniMap sidebar" })
-		vim.keymap.set("n", "<leader>mt", MiniMap.toggle, { desc = "Toggle MiniMap" })
-
 		-- require('mini.tabline').setup()
 		-- require('mini.statusline').setup()
 
 		require("mini.trailspace").setup()
 
 		require("mini.sessions").setup()
+
+    -- require('mini.base16').setup()
 
 		-- Mini starter
 		local status, starter = pcall(require, "mini.starter")
