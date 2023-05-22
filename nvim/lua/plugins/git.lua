@@ -5,9 +5,26 @@ return {
 		config = true,
 	},
 	{
-	  "akinsho/git-conflict.nvim",
-	  version = "*",
-	  config = true
+		"akinsho/git-conflict.nvim",
+		version = "*",
+		config = true,
+	},
+	{
+		"ThePrimeagen/git-worktree.nvim",
+		config = function()
+			require("git-worktree").setup()
+
+			local telescope = require("telescope")
+			telescope.load_extension("git_worktree")
+
+			vim.keymap.set("n", "<leader>gwa", function()
+				telescope.extensions.git_worktree.create_git_worktree()
+			end, { desc = "Git worktree add" })
+
+			vim.keymap.set("n", "<leader>gww", function()
+				telescope.extensions.git_worktree.git_worktrees()
+			end, { desc = "Git worktree telescope" })
+		end,
 	},
 	-- {
 	-- 	"ldelossa/gh.nvim",

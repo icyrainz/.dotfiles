@@ -62,9 +62,11 @@ return {
 			content_hooks = {
 				starter.gen_hook.adding_bullet(""),
 				starter.gen_hook.aligning("center", "center"),
-				starter.gen_hook.indexing("all", {
+        starter.gen_hook.indexing("all", {
+          "Telescope",
+          "Fzf",
+          "Explorer",
 					"Git",
-					"Telescope",
 					"Plugins",
 					"Builtin actions",
 				}),
@@ -82,8 +84,11 @@ return {
 			query_updaters = [[abcdefghilmoqrstuvwxyz0123456789_-,.ABCDEFGHIJKLMOQRSTUVWXYZ]],
 			items = {
 				starter.sections.recent_files(9, true, false),
-				{ action = "Telescope find_files", name = "F: Find Files", section = "Telescope" },
-				{ action = "Telescope projects", name = "P: Projects", section = "Telescope" },
+				-- { action = "Telescope find_files", name = "F: Find Files", section = "Telescope" },
+				-- { action = "Telescope oldfiles", name = "O: Old Files", section = "Telescope" },
+				{ action = "FzfLua files", name = "F: Find Files", section = "Fzf" },
+				-- { action = "Telescope oldfiles", name = "O: Old Files", section = "Telescope" },
+				{ action = "Neotree toggle float", name = "E: Explorer", section = "Explorer" },
 				{ action = "tab G", name = "G: Fugitive", section = "Git" },
 				{ action = "Lazy", name = "M: Package Manager", section = "Plugins" },
 				-- { action = "enew", name = "N: New Buffer", section = "Builtin actions" },
@@ -91,14 +96,14 @@ return {
 			},
 		})
 
-		vim.cmd([[
-  augroup MiniStarterJK
-    au!
-    au User MiniStarterOpened nmap <buffer> j <Cmd>lua MiniStarter.update_current_item('next')<CR>
-    au User MiniStarterOpened nmap <buffer> k <Cmd>lua MiniStarter.update_current_item('prev')<CR>
-    au User MiniStarterOpened nmap <buffer> <C-n> <Cmd>lua MiniStarter.update_current_item('next')<CR>
-    au User MiniStarterOpened nmap <buffer> <C-p> <Cmd>lua MiniStarter.update_current_item('prev')<CR>
-  augroup END
-]])
+-- 		vim.cmd([[
+--   augroup MiniStarterJK
+--     au!
+--     au User MiniStarterOpened nmap <buffer> j <Cmd>lua MiniStarter.update_current_item('next')<CR>
+--     au User MiniStarterOpened nmap <buffer> k <Cmd>lua MiniStarter.update_current_item('prev')<CR>
+--     au User MiniStarterOpened nmap <buffer> <C-n> <Cmd>lua MiniStarter.update_current_item('next')<CR>
+--     au User MiniStarterOpened nmap <buffer> <C-p> <Cmd>lua MiniStarter.update_current_item('prev')<CR>
+--   augroup END
+-- ]])
 	end,
 }

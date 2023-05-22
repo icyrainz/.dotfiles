@@ -5,11 +5,11 @@ vim.g.mapleader = " "
 -- vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv", { desc = "Move line down" })
 -- vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv", { desc = "Move line up" })
 
-vim.keymap.set("x", "<leader>p", "\"_dP", { desc = "Paste without yanking" })
-vim.keymap.set("x", "<leader>y", "\"+d", { desc = "Yank and delete" })
-
-vim.keymap.set("n", "d", "\"_d")
-vim.keymap.set("v", "d", "\"_d")
+-- vim.keymap.set("x", "<leader>p", "\"_dP", { desc = "Paste without yanking" })
+-- vim.keymap.set("x", "<leader>y", "\"+d", { desc = "Yank and delete" })
+--
+-- vim.keymap.set("n", "d", "\"_d")
+-- vim.keymap.set("v", "d", "\"_d")
 
 vim.keymap.set("i", "jj", "<Esc>", { desc = "Escape" })
 -- vim.keymap.set("n", "q:", ":q")
