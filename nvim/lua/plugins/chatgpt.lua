@@ -1,6 +1,7 @@
 return {
 	{
 		"jackMort/ChatGPT.nvim",
+    enabled = os.getenv("USE_AI_TOOLS") == "true",
 		event = "VeryLazy",
 		dependencies = {
 			"MunifTanjim/nui.nvim",
