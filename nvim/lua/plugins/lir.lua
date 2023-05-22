@@ -24,21 +24,21 @@ return {
         ['q']     = actions.quit,
         ['<ESC>'] = actions.quit,
 
-        ['K']     = actions.mkdir,
-        ['N']     = actions.newfile,
-        ['R']     = actions.rename,
+        ['A']     = actions.mkdir,
+        ['a']     = actions.newfile,
+        ['r']     = actions.rename,
         ['@']     = actions.cd,
         ['Y']     = actions.yank_path,
-        ['.']     = actions.toggle_show_hidden,
-        ['D']     = actions.delete,
+        ['H']     = actions.toggle_show_hidden,
+        ['d']     = actions.delete,
 
         ['J']     = function()
           mark_actions.toggle_mark()
           vim.cmd('normal! j')
         end,
-        ['C']     = clipboard_actions.copy,
-        ['X']     = clipboard_actions.cut,
-        ['P']     = clipboard_actions.paste,
+        ['c']     = clipboard_actions.copy,
+        ['x']     = clipboard_actions.cut,
+        ['p']     = clipboard_actions.paste,
 
       },
       float = {
