@@ -1,16 +1,16 @@
 return {
-	-- {
-	-- 	"rebelot/kanagawa.nvim",
-	-- 	config = function()
-	-- 		vim.cmd.colorscheme("kanagawa-wave")
-	-- 	end,
-	-- },
 	{
-		"Mofiqul/dracula.nvim",
+		"rebelot/kanagawa.nvim",
 		config = function()
-			vim.cmd.colorscheme("dracula")
+			vim.cmd.colorscheme("kanagawa-wave")
 		end,
 	},
+	-- {
+	-- 	"Mofiqul/dracula.nvim",
+	-- 	config = function()
+	-- 		vim.cmd.colorscheme("dracula")
+	-- 	end,
+	-- },
 	-- "folke/tokyonight.nvim",
 	-- { "catppuccin/nvim", name = "catppuccin" },
 	-- {

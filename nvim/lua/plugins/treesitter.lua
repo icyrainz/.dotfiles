@@ -26,10 +26,10 @@ return {
 				incremental_selection = {
 					enable = true,
 					keymaps = {
-						init_selection = "gnn", -- set to `false` to disable one of the mappings
-						node_incremental = "gni",
-						scope_incremental = "gns",
-						node_decremental = "gno",
+						init_selection = "gn", -- set to `false` to disable one of the mappings
+						node_incremental = "gi",
+						scope_incremental = "gs",
+						node_decremental = "go",
 					},
 				},
 			})

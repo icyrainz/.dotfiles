@@ -1,0 +1,3 @@
+return {
+  "sudormrfbin/cheatsheet.nvim",
+}

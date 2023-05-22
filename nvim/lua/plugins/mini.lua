@@ -5,6 +5,8 @@ return {
 
 		require("mini.basics").setup()
 
+    require('mini.fuzzy').setup()
+
 		-- require("mini.animate").setup()
 
 		require("mini.bracketed").setup()
@@ -25,7 +27,7 @@ return {
 			},
 		})
 
-		require("mini.jump2d").setup()
+		-- require("mini.jump2d").setup()
 
 		-- require("mini.pairs").setup()
 
@@ -48,7 +50,7 @@ return {
 
 		require("mini.sessions").setup()
 
-		-- require('mini.base16').setup()
+    require('mini.fuzzy').setup()
 
 		-- Mini starter
 		local status, starter = pcall(require, "mini.starter")

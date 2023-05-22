@@ -14,7 +14,7 @@ return {
 	"tommcdo/vim-exchange",
 	"tpope/vim-abolish",
 	-- "chaoren/vim-wordmotion",
-  "chrisgrieser/nvim-spider",
+  -- "chrisgrieser/nvim-spider",
 
 	-- Quickfix
 	"kevinhwang91/nvim-bqf",
@@ -25,10 +25,10 @@ return {
 		"folke/todo-comments.nvim",
 		config = true,
 	},
-	{
-		"junegunn/fzf",
-		build = function()
-			vim.fn["fzf#install"]()
-		end,
-	},
+	-- {
+	-- 	"junegunn/fzf",
+	-- 	build = function()
+	-- 		vim.fn["fzf#install"]()
+	-- 	end,
+	-- },
 }

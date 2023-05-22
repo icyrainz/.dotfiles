@@ -38,4 +38,4 @@ vim.keymap.set("n", "<Down>", ":resize -2<CR>", { silent = true, desc = "Resize 
 vim.keymap.set("n", "<leader>cp", "<cmd>call setreg('+', expand('%:p:~'))<CR>", { desc = "Copy current buffer file path to clipboard"})
 vim.keymap.set("n", "<leader>cP", "<cmd>call setreg('+', expand('%:p:~:h'))<CR>", { desc = "Copy current buffer path to clipboard"})
 
-vim.keymap.set("n", "<leader>,", "g_a, <Esc>D", { desc = "Insert comma to end of the line"})
+-- vim.keymap.set("n", "<leader>,", "g_a, <Esc>D", { desc = "Insert comma to end of the line"})
