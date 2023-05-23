@@ -3,7 +3,11 @@ return {
 	config = function()
 		require("mini.ai").setup()
 
-		require("mini.basics").setup()
+		require("mini.basics").setup({
+      autocommands = {
+        relnum_in_visual_mode = true,
+      },
+    })
 
     require('mini.fuzzy').setup()
 
@@ -81,7 +85,7 @@ return {
 				[[\_\ \/ \___|\___/ \_/ |_|_| |_| |_|]],
 				[[───────────────────────────────────]],
 			}, "\n"),
-			query_updaters = [[abcdefghilmoqrstuvwxyz0123456789_-,.ABCDEFGHIJKLMOQRSTUVWXYZ]],
+			query_updaters = [[abcdefghilmnopqrstuvwxyz0123456789_-,.ABCDEFGHIJKLMNOPQRSTUVWXYZ]],
 			items = {
 				starter.sections.recent_files(9, true, false),
 				-- { action = "Telescope find_files", name = "F: Find Files", section = "Telescope" },
@@ -91,7 +95,7 @@ return {
 				{ action = "Neotree toggle float", name = "E: Explorer", section = "Explorer" },
 				{ action = "tab G", name = "G: Fugitive", section = "Git" },
 				{ action = "Lazy", name = "M: Package Manager", section = "Plugins" },
-				-- { action = "enew", name = "N: New Buffer", section = "Builtin actions" },
+				{ action = "enew", name = "N: New Buffer", section = "Builtin actions" },
 				{ action = "qall!", name = "Q: Quit Neovim", section = "Builtin actions" },
 			},
 		})
