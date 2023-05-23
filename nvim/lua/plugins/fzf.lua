@@ -1,7 +1,6 @@
 return {
 	{
 		"ibhagwan/fzf-lua",
-		requires = { "nvim-tree/nvim-web-devicons" },
 		config = function()
 			local actions = require("fzf-lua").actions
 
@@ -12,6 +11,9 @@ return {
 						default = "bat",
 					},
 				},
+        file_ignore_patterns = {
+          "zsh/completions"
+        },
 				keymap = {
 					builtin = {
 						["<F1>"] = "toggle-help",

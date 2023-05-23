@@ -34,6 +34,7 @@ return {
 				defaults = {
 					file_ignore_patterns = {
 						"Session.vim",
+            "zsh/completions",
 					},
 				},
 			})

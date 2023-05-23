@@ -78,7 +78,7 @@ return {
 		},
 		config = function()
 			require("mason-nvim-dap").setup({
-				ensure_installed = { "js", "node2" },
+				ensure_installed = { "rust", "js", "node2" },
 				handlers = {
 					function(config)
 						require("mason-nvim-dap").default_setup(config)

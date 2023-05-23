@@ -19,13 +19,6 @@ return {
         "typescriptreact",
         "yaml",
       },
-      ["null-ls"] = {
-        condition = function()
-          return prettier.config_exists({
-            check_package_json = true,
-          })
-        end,
-      }
     })
 
     vim.keymap.set("n", "<leader>pf", ":Prettier<CR>", { desc = "Prettier format" })
