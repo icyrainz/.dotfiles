@@ -1,7 +1,7 @@
 return {
 	{
 		"andrewferrier/debugprint.nvim",
-		opts = {},
+    config = true,
 		dependencies = {
 			"nvim-treesitter/nvim-treesitter",
 		},

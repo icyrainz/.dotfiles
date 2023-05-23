@@ -5,7 +5,7 @@
 #     - -c
 #     - "tmux attach || tmux"
 font:
-  size: 23.0
+  size: 20.0
   normal:
     family: Agave Nerd Font Mono
     style: Regular

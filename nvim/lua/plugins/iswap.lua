@@ -1,13 +1,12 @@
 return {
-	"mizlan/iswap.nvim",
-  config = function ()
-    require('iswap').setup({
-      move_cursor = true,
-      flash_style = false,
-      autoswap = true,
-    })
-
-    vim.keymap.set("n", "<leader>[", ":ISwapWithLeft<CR>", { silent = true, desc = "Swap left" })
+  "mizlan/iswap.nvim",
+  init = function()
+    vim.keymap.set("n", "<leader>[", ":ISwapWithLeft<CR>", { desc = "Swap left", silent = true })
     vim.keymap.set("n", "<leader>]", ":ISwapWithRight<CR>", { silent = true, desc = "Swap right" })
-  end
+  end,
+  opts = {
+    move_cursor = true,
+    flash_style = false,
+    autoswap = true,
+  },
 }
