@@ -2,7 +2,7 @@ return {
   "nvim-neo-tree/neo-tree.nvim",
   branch = "v2.x",
   opts = {
-    close_if_last_window = true,
+    -- close_if_last_window = true,
     filesystem = {
       follow_current_file = true,
     },

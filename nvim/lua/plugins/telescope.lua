@@ -40,14 +40,14 @@ return {
 			})
 		end,
 	},
-	{
-		"nvim-telescope/telescope-project.nvim",
-		config = function()
-			require("telescope").load_extension("project")
-
-			-- vim.keymap.set("n", "<leader>fp", function()
-			-- 	require("telescope").extensions.project.project()
-			-- end, { desc = "Projects" })
-		end,
-	},
+	-- {
+	-- 	"nvim-telescope/telescope-project.nvim",
+	-- 	config = function()
+	-- 		require("telescope").load_extension("project")
+	--
+	-- 		-- vim.keymap.set("n", "<leader>fp", function()
+	-- 		-- 	require("telescope").extensions.project.project()
+	-- 		-- end, { desc = "Projects" })
+	-- 	end,
+	-- },
 }

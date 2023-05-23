@@ -29,58 +29,72 @@ return {
       cmp.setup({
         sources = {
           { name = "copilot" },
+          { name = "codeium" },
           { name = "nvim_lsp" },
+          { name = "luasnip", keuword_length = 2 },
           { name = "path" },
           { name = "buffer" },
-          { name = "luasnip", keuword_length = 2 },
         },
         window = {
           documentation = cmp.config.window.bordered(),
         },
         formatting = {
-        	fields = { "menu", "abbr", "kind" },
-
-        	format = function(entry, item)
-        		local kind_icons = {
-        			Text = "",
-        			Method = "󰆧",
-        			Function = "󰊕",
-        			Constructor = "",
-        			Field = "󰇽",
-        			Variable = "󰂡",
-        			Class = "󰠱",
-        			Interface = "",
-        			Module = "",
-        			Property = "󰜢",
-        			Unit = "",
-        			Value = "󰎠",
-        			Enum = "",
-        			Keyword = "󰌋",
-        			Snippet = "",
-        			Color = "󰏘",
-        			File = "󰈙",
-        			Reference = "",
-        			Folder = "󰉋",
-        			EnumMember = "",
-        			Constant = "󰏿",
-        			Struct = "",
-        			Event = "",
-        			Operator = "󰆕",
-        			TypeParameter = "󰅲",
-        			Copilot = "",
-        		}
-        		local menu_icon = {
-        			copilot = "",
-        			nvim_lsp = "λ",
-        			path = "",
-        			buffer = "",
-        			luasnip = "⋗",
-        		}
-        		item.kind = string.format("%s %s", kind_icons[item.kind], item.kind)
-        		item.menu = menu_icon[entry.source.name]
-        		return item
-        	end,
+          format = require('lspkind').cmp_format({
+            mode = "symbol_text",
+            maxwidth = 50,
+            ellipsis_char = '',
+            symbol_map = {
+              Codeium = "",
+              Copilot = "",
+            },
+          })
         },
+        -- formatting = {
+        -- 	fields = { "menu", "abbr", "kind" },
+        --
+        -- 	format = function(entry, item)
+        -- 		local kind_icons = {
+        -- 			Text = "",
+        -- 			Method = "󰆧",
+        -- 			Function = "󰊕",
+        -- 			Constructor = "",
+        -- 			Field = "󰇽",
+        -- 			Variable = "󰂡",
+        -- 			Class = "󰠱",
+        -- 			Interface = "",
+        -- 			Module = "",
+        -- 			Property = "󰜢",
+        -- 			Unit = "",
+        -- 			Value = "󰎠",
+        -- 			Enum = "",
+        -- 			Keyword = "󰌋",
+        -- 			Snippet = "",
+        -- 			Color = "󰏘",
+        -- 			File = "󰈙",
+        -- 			Reference = "",
+        -- 			Folder = "󰉋",
+        -- 			EnumMember = "",
+        -- 			Constant = "󰏿",
+        -- 			Struct = "",
+        -- 			Event = "",
+        -- 			Operator = "󰆕",
+        -- 			TypeParameter = "󰅲",
+        -- 			Copilot = "",
+        --       Codeium = "",
+        -- 		}
+        -- 		local menu_icon = {
+        -- 			copilot = "",
+        --       codeium = "",
+        -- 			nvim_lsp = "λ",
+        -- 			path = "",
+        -- 			buffer = "",
+        -- 			luasnip = "⋗",
+        -- 		}
+        -- 		item.kind = string.format("%s %s", kind_icons[item.kind], item.kind)
+        -- 		item.menu = menu_icon[entry.source.name]
+        -- 		return item
+        -- 	end,
+        -- },
         mapping = {
           ["<Tab>"] = cmp_action.luasnip_supertab(),
           ["<S-Tab>"] = cmp_action.luasnip_shift_supertab(),
