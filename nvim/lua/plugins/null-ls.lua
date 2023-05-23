@@ -1,36 +1,35 @@
 return {
--- 	{
--- 		"jose-elias-alvarez/null-ls.nvim",
--- 		dependencies = {
--- 			"neovim/nvim-lspconfig",
--- 			"nvim-lua/plenary.nvim",
--- 		},
--- 		config = function()
--- 			local null_ls = require("null-ls")
---
--- 			null_ls.setup({
--- 				sources = {
--- 					-- Replace these with the tools you have installed
--- 					null_ls.builtins.formatting.prettier,
--- 					null_ls.builtins.diagnostics.eslint,
--- 					null_ls.builtins.formatting.stylua,
---           null_ls.builtins.completion.spell,
---           require("typescript.extensions.null-ls.code-actions"),
--- 				},
--- 			})
--- 		end,
--- 	},
--- 	{
--- 		"jay-babu/mason-null-ls.nvim",
--- 		event = { "BufReadPre", "BufNewFile" },
--- 		dependencies = {
--- 			"williamboman/mason.nvim",
--- 			"jose-elias-alvarez/null-ls.nvim",
--- 		},
---     opts = {
---       ensure_installed = { "stylua", "prettier", "prettierd" },
---       automatic_setup = true,
---       automatic_installation = true,
---     },
--- 	},
+	{
+		"jose-elias-alvarez/null-ls.nvim",
+		dependencies = {
+			"neovim/nvim-lspconfig",
+			"nvim-lua/plenary.nvim",
+		},
+		config = function()
+			local null_ls = require("null-ls")
+
+			null_ls.setup({
+				sources = {
+					null_ls.builtins.formatting.prettierd,
+					null_ls.builtins.formatting.jq,
+					-- null_ls.builtins.diagnostics.eslint,
+					null_ls.builtins.formatting.stylua,
+					--      null_ls.builtins.completion.spell,
+					--      require("typescript.extensions.null-ls.code-actions"),
+				},
+			})
+		end,
+	},
+	{
+		"jay-babu/mason-null-ls.nvim",
+		event = { "BufReadPre", "BufNewFile" },
+		dependencies = {
+			"williamboman/mason.nvim",
+		},
+		opts = {
+			ensure_installed = { "stylua", "jq", "prettierd" },
+			automatic_setup = true,
+			automatic_installation = true,
+		},
+	},
 }

@@ -91,6 +91,16 @@ return {
 				},
 			})
 
+			lsp.format_mapping("gq", {
+				format_opts = {
+					async = false,
+					timeout_ms = 10000,
+				},
+				servers = {
+					["null-ls"] = { "javascript", "typescript", "lua" },
+				},
+			})
+
 			lsp.setup()
 		end,
 	},
