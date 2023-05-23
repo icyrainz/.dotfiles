@@ -21,5 +21,4 @@
 
 - shell:
     - [git submodule update --init --recursive, Installing submodules]
-    - brew install exa fd bat fzf dash htop lazygit ripgrep thefuck tree eslint nvim direnv
-    - brew install font-code-new-roman-nerd-font font-hack-nerd-font font-agave-nerd-font font-jetbrains-mono-nerd-font
+    - [./install_tools.sh, Installing tools]
