@@ -20,3 +20,5 @@ export BAT_THEME="1337"
 # Create the extra.zsh file if not exists
 [[ -d $ZSH_CONFIG_PATH/extra ]] || touch $ZSH_CONFIG_PATH/extra.zsh
 source $ZSH_CONFIG_PATH/extra.zsh
+
+source ~/.config/broot/launcher/bash/br
