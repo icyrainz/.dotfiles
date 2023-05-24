@@ -9,6 +9,8 @@ return {
         grep = {
           file_ignore_patterns = {
             "kitty.conf",
+            ".lock",
+            ".md",
             "zsh/completions",
           },
         },

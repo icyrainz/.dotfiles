@@ -34,6 +34,9 @@ return {
 				defaults = {
 					file_ignore_patterns = {
 						"Session.vim",
+            "kitty.conf",
+            ".lock",
+            ".md",
             "zsh/completions",
 					},
 				},
