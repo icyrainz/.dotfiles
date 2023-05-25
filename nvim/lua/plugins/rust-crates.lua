@@ -11,7 +11,7 @@ return {
 		})
 
 		local function opts(desc)
-			return { desc = "crates: " .. desc, silent = true }
+			return { desc = "Crates: " .. desc, silent = true }
 		end
 
 		vim.keymap.set("n", "<leader>ct", crates.toggle, opts("Toggle"))

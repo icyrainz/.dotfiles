@@ -9,8 +9,6 @@ return {
 			},
 		})
 
-		-- require("mini.fuzzy").setup()
-
 		-- require("mini.animate").setup()
 
 		require("mini.bracketed").setup()
@@ -45,7 +43,7 @@ return {
 			},
 		})
 
-		require("mini.cursorword").setup()
+		-- require("mini.cursorword").setup()
 
 		-- require('mini.tabline').setup()
 		-- require('mini.statusline').setup()
@@ -54,7 +52,7 @@ return {
 
 		require("mini.sessions").setup()
 
-		require("mini.fuzzy").setup()
+		-- require("mini.fuzzy").setup()
 
 		-- Mini starter
 		local status, starter = pcall(require, "mini.starter")

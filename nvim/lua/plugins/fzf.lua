@@ -72,6 +72,7 @@ return {
       })
 
       vim.keymap.set("n", "<leader>fF", "<cmd>FzfLua files<CR>", { desc = "Fzf files" })
+      vim.keymap.set("n", "<leader>fS", "<cmd>FzfLua grep_cword<CR>", { desc = "Fzf grep string" })
       vim.keymap.set("n", "<leader>fO", function()
         require("fzf-lua").oldfiles({
           cwd_only = function()
@@ -80,6 +81,7 @@ return {
         })
       end, { desc = "Fzf oldfiles" })
       vim.keymap.set("n", "<leader>fG", "<cmd>FzfLua grep_project<CR>", { desc = "Fzf grep project" })
+      vim.keymap.set("n", "<leader>fR", "<cmd>FzfLua resume<CR>", { desc = "Fzf resume" })
     end,
   },
 }

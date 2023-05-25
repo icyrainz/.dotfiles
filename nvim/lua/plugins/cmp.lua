@@ -45,7 +45,7 @@ return {
             ellipsis_char = '',
             symbol_map = {
               Codeium = "",
-              Copilot = "",
+              Copilot = "",
             },
           })
         },

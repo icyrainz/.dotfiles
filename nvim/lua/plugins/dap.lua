@@ -3,7 +3,7 @@ return {
 		"mfussenegger/nvim-dap",
 		config = function()
 			local function opts(desc)
-				return { desc = "dap: " .. desc }
+				return { desc = "DAP " .. desc }
 			end
 
 			vim.keymap.set("n", "<F8>", function()

@@ -2,7 +2,7 @@ return {
 	"voldikss/vim-floaterm",
 	config = function()
 		local function opts(desc)
-			return { silent = true, desc = "toggleterm: " .. desc }
+			return { silent = true, desc = "" .. desc }
 		end
 
 		vim.keymap.set("n", "<leader>t", ":FloatermToggle<CR>", opts("Toggle terminal") )
