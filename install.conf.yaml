@@ -18,6 +18,8 @@
       path: alacritty
     ~/.tmux.conf:
       path: tmux/tmux.conf
+    ~/.wezterm.lua:
+      path: wezterm.lua
 
 - shell:
     - [git submodule update --init --recursive, Installing submodules]

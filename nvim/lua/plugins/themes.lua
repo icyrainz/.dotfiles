@@ -1,9 +1,6 @@
 return {
 	{
 		"rebelot/kanagawa.nvim",
-		config = function()
-			vim.cmd.colorscheme("kanagawa-wave")
-		end,
 	},
 	-- {
 	-- 	"Mofiqul/dracula.nvim",
@@ -11,7 +8,16 @@ return {
 	-- 		vim.cmd.colorscheme("dracula")
 	-- 	end,
 	-- },
-	-- "folke/tokyonight.nvim",
+	{
+	  "folke/tokyonight.nvim",
+    opts = {
+      transparent = true,
+      styles = {
+        sidebars = "transparent",
+        floats = "transparent",
+      }
+    }
+	},
 	-- { "catppuccin/nvim", name = "catppuccin" },
 	-- {
 	-- 	"Alexis12119/nightly.nvim",

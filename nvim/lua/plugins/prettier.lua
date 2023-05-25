@@ -18,7 +18,4 @@ return {
       "lua",
     },
   },
-  init = function()
-    vim.keymap.set("n", "<leader>pf", ":Prettier<CR>", { desc = "Prettier format" })
-  end,
 }

@@ -6,8 +6,8 @@ return {
     vim.o.foldlevelstart = 99
     vim.o.foldenable = true
 
-    vim.keymap.set('n', 'zr', require('ufo').openAllFolds)
-    vim.keymap.set('n', 'zm', require('ufo').closeAllFolds)
+    -- vim.keymap.set('n', 'zr', require('ufo').openAllFolds)
+    -- vim.keymap.set('n', 'zm', require('ufo').closeAllFolds)
   end,
   config = true,
 }

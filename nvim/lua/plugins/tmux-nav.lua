@@ -3,6 +3,9 @@ return {
   config = function()
     local nvim_tmux_nav = require("nvim-tmux-navigation")
 
+    -- Disable warping 
+    vim.g.tmux_navigator_no_wrap = 1
+
     nvim_tmux_nav.setup({})
 
     vim.keymap.set("n", "<C-h>", nvim_tmux_nav.NvimTmuxNavigateLeft)
