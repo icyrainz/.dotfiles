@@ -57,15 +57,23 @@ return {
 			vim.keymap.set("n", "<Leader>dt", function()
 				require("dapui").toggle()
 			end, opts("toggle UI"))
+
 			local dap, dapui = require("dap"), require("dapui")
+
 			dap.listeners.after.event_initialized["dapui_config"] = function()
-				dapui.open()
+				dapui.open({
+					reset = true,
+				})
 			end
+
 			dap.listeners.before.event_terminated["dapui_config"] = function()
-				dapui.close()
+				dapui.close({})
+				dapui.setup()
 			end
+
 			dap.listeners.before.event_exited["dapui_config"] = function()
-				dapui.close()
+				dapui.close({})
+				dapui.setup()
 			end
 		end,
 	},
@@ -84,7 +92,7 @@ return {
 						require("mason-nvim-dap").default_setup(config)
 					end,
 					node2 = function(config)
-            config.configurations = nil
+						config.configurations = nil
 
 						require("mason-nvim-dap").default_setup(config)
 					end,
@@ -92,7 +100,7 @@ return {
 			})
 
 			local dap = require("dap")
-			dap.adapters['pwa-node'] = dap.adapters.node2
+			dap.adapters["pwa-node"] = dap.adapters.node2
 			-- dap.defaults["pwa-node"].external_terminal = {
 			-- 	command = "alacritty",
 			-- 	args = { "--hold", "--working-directory", vim.fn.getcwd(), "-e" },

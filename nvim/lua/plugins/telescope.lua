@@ -22,7 +22,7 @@ return {
 				builtin.live_grep({ cwd = utils.buffer_dir() })
 			end, opts("Find files in same dir"))
 			vim.keymap.set("n", "<leader>fg", ":Telescope live_grep_args<CR>", opts("live grep"))
-			vim.keymap.set("n", "<leader>fs", builtin.grep_string, opts("grep string"))
+			vim.keymap.set("n", "<leader>fw", builtin.grep_string, opts("grep word"))
 			-- vim.keymap.set("n", "<leader>fS", function()
 			--      require ('telescope.builtin').grep_string({search = vim.fn.input("Search term: ")})
 			-- end, opts("Grep string"))
