@@ -24,4 +24,4 @@
 - shell:
     - [git submodule update --init --recursive, Installing submodules]
     - [./install_tools.sh, Installing tools]
-    - [~/.antidote/antidote update, Updating antidote packages]
+    - [chmod +x ~/.antidote/antidote && ~/.antidote/antidote update, Updating antidote packages]
