@@ -6,6 +6,7 @@ return {
   },
   {
     "jcdickinson/codeium.nvim",
+    event = "VeryLazy",
     enabled = os.getenv("USE_AI_TOOLS") == "true",
     dependencies = {
       "jcdickinson/http.nvim",

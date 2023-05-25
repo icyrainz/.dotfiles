@@ -1,5 +1,8 @@
 return {
 	"folke/neodev.nvim",
+  ft = {
+    "lua"
+  },
 	dependencies = {
 		"neovim/nvim-lspconfig",
 	},

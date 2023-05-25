@@ -31,9 +31,9 @@ return {
           { name = "copilot" },
           { name = "codeium" },
           { name = "nvim_lsp" },
-          { name = "luasnip", keuword_length = 2 },
+          { name = "luasnip", keyword_length = 2 },
           { name = "path" },
-          { name = "buffer" },
+          { name = "buffer", keyword_length = 3 },
         },
         window = {
           documentation = cmp.config.window.bordered(),
