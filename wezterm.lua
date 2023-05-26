@@ -3,10 +3,10 @@ local wezterm = require("wezterm")
 local config = {}
 
 if wezterm.config_builder then
-	config = wezterm.config_builder()
+  config = wezterm.config_builder()
 end
 
-config.color_scheme = "Nord"
+-- config.color_scheme = "Tokyo Night Storm (Gogh)"
 config.hide_tab_bar_if_only_one_tab = true
 
 config.scrollback_lines = 10000
@@ -17,42 +17,56 @@ config.font_size = 17.0
 
 -- config.window_decorations = "INTEGRATED_BUTTONS|RESIZE"
 
+config.mouse_bindings = {
+  -- Ctrl-click will open the link under the mouse cursor
+  {
+    event = { Up = { streak = 1, button = 'Left' } },
+    mods = 'CTRL',
+    action = wezterm.action.OpenLinkAtMouseCursor,
+  },
+}
+
 config.keys = {
-	{
-		key = "w",
-		mods = "CMD|CTRL",
-		action = wezterm.action.CloseCurrentPane({ confirm = true }),
-	},
-	{
-		key = "-",
-		mods = "CMD|CTRL",
-		action = wezterm.action.SplitVertical({ domain = "CurrentPaneDomain" }),
-	},
-	{
-		key = "\\",
-		mods = "CMD|CTRL",
-		action = wezterm.action.SplitHorizontal({ domain = "CurrentPaneDomain" }),
-	},
-	{
-		key = "LeftArrow",
-		mods = "CMD|CTRL",
-		action = wezterm.action.AdjustPaneSize({ "Left", 5 }),
-	},
-	{
-		key = "RightArrow",
-		mods = "CMD|CTRL",
-		action = wezterm.action.AdjustPaneSize({ "Right", 5 }),
-	},
-	{
-		key = "UpArrow",
-		mods = "CMD|CTRL",
-		action = wezterm.action.AdjustPaneSize({ "Up", 5 }),
-	},
-	{
-		key = "DownArrow",
-		mods = "CMD|CTRL",
-		action = wezterm.action.AdjustPaneSize({ "Down", 5 }),
-	},
+  {
+    key = 'm',
+    mods = 'CMD|CTRL',
+    action = wezterm.action.TogglePaneZoomState,
+  },
+  {
+    key = "w",
+    mods = "CMD|CTRL",
+    action = wezterm.action.CloseCurrentPane({ confirm = true }),
+  },
+  {
+    key = "-",
+    mods = "CMD|CTRL",
+    action = wezterm.action.SplitVertical({ domain = "CurrentPaneDomain" }),
+  },
+  {
+    key = "\\",
+    mods = "CMD|CTRL",
+    action = wezterm.action.SplitHorizontal({ domain = "CurrentPaneDomain" }),
+  },
+  {
+    key = "LeftArrow",
+    mods = "CMD|CTRL",
+    action = wezterm.action.AdjustPaneSize({ "Left", 5 }),
+  },
+  {
+    key = "RightArrow",
+    mods = "CMD|CTRL",
+    action = wezterm.action.AdjustPaneSize({ "Right", 5 }),
+  },
+  {
+    key = "UpArrow",
+    mods = "CMD|CTRL",
+    action = wezterm.action.AdjustPaneSize({ "Up", 5 }),
+  },
+  {
+    key = "DownArrow",
+    mods = "CMD|CTRL",
+    action = wezterm.action.AdjustPaneSize({ "Down", 5 }),
+  },
 }
 
 return config
