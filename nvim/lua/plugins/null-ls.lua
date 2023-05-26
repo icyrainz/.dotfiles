@@ -11,10 +11,7 @@ return {
       null_ls.setup({
         sources = {
           null_ls.builtins.formatting.prettierd,
-          -- null_ls.builtins.formatting.jq,
-          -- null_ls.builtins.diagnostics.eslint,
-          -- null_ls.builtins.formatting.stylua,
-          --      null_ls.builtins.completion.spell,
+          null_ls.builtins.formatting.jq,
           require("typescript.extensions.null-ls.code-actions"),
         },
       })
@@ -26,7 +23,7 @@ return {
       "williamboman/mason.nvim",
     },
     opts = {
-      ensure_installed = { "stylua", "jq", "prettierd" },
+      ensure_installed = { "jq", "prettierd" },
       automatic_setup = true,
       automatic_installation = true,
     },

@@ -2,9 +2,20 @@ return {
   "nvim-neo-tree/neo-tree.nvim",
   branch = "v2.x",
   opts = {
-    -- close_if_last_window = true,
+    close_if_last_window = true,
     filesystem = {
       follow_current_file = true,
+      use_libuv_file_watcher = true,
+      window = {
+        fuzzy_finder_mappings = {
+          ["<C-n>"] = function(state)
+            require("neo-tree.ui.renderer").focus_node(state, nil, true, 1)
+          end,
+          [">"] = function(state)
+            require("neo-tree.ui.renderer").focus_node(state, nil, true, -1)
+          end,
+        },
+      }
     },
     window = {
       mappings = {
@@ -12,7 +23,7 @@ return {
           local node = state.tree:get_node()
           require("neo-tree.ui.renderer").focus_node(state, node:get_parent_id())
         end
-      }
+      },
     }
   },
   init = function()

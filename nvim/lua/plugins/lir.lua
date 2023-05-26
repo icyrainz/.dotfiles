@@ -9,7 +9,7 @@ return {
       show_hidden_files = false,
       ignore = {}, -- { ".DS_Store", "node_modules" } etc.
       devicons = {
-        enable = false,
+        enable = true,
         highlight_dirname = true
       },
       mappings = {

@@ -65,16 +65,16 @@ return {
 					reset = true,
 				})
 			end
-
-			dap.listeners.before.event_terminated["dapui_config"] = function()
-				dapui.close({})
-				dapui.setup()
-			end
-
-			dap.listeners.before.event_exited["dapui_config"] = function()
-				dapui.close({})
-				dapui.setup()
-			end
+			--
+			-- dap.listeners.before.event_terminated["dapui_config"] = function()
+			-- 	dapui.close({})
+			-- 	dapui.setup()
+			-- end
+			--
+			-- dap.listeners.before.event_exited["dapui_config"] = function()
+			-- 	dapui.close({})
+			-- 	dapui.setup()
+			-- end
 		end,
 	},
 	"theHamsta/nvim-dap-virtual-text",
