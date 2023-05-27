@@ -1,4 +1,5 @@
 local wezterm = require("wezterm")
+local act = wezterm.action
 
 local config = {}
 
@@ -22,7 +23,7 @@ config.mouse_bindings = {
   {
     event = { Up = { streak = 1, button = 'Left' } },
     mods = 'CTRL',
-    action = wezterm.action.OpenLinkAtMouseCursor,
+    action = act.OpenLinkAtMouseCursor,
   },
 }
 
@@ -30,47 +31,47 @@ config.keys = {
   {
     key = 'm',
     mods = 'CMD|CTRL',
-    action = wezterm.action.TogglePaneZoomState,
+    action = act.TogglePaneZoomState,
   },
   {
     key = "w",
     mods = "CMD|CTRL",
-    action = wezterm.action.CloseCurrentPane({ confirm = true }),
+    action = act.CloseCurrentPane({ confirm = true }),
   },
   {
     key = "-",
     mods = "CMD|CTRL",
-    action = wezterm.action.SplitVertical({ domain = "CurrentPaneDomain" }),
+    action = act.SplitVertical({ domain = "CurrentPaneDomain" }),
   },
   {
     key = "\\",
     mods = "CMD|CTRL",
-    action = wezterm.action.SplitHorizontal({ domain = "CurrentPaneDomain" }),
+    action = act.SplitHorizontal({ domain = "CurrentPaneDomain" }),
   },
   {
     key = "LeftArrow",
     mods = "CMD|CTRL",
-    action = wezterm.action.AdjustPaneSize({ "Left", 5 }),
+    action = act.AdjustPaneSize({ "Left", 5 }),
   },
   {
     key = "RightArrow",
     mods = "CMD|CTRL",
-    action = wezterm.action.AdjustPaneSize({ "Right", 5 }),
+    action = act.AdjustPaneSize({ "Right", 5 }),
   },
   {
     key = "UpArrow",
     mods = "CMD|CTRL",
-    action = wezterm.action.AdjustPaneSize({ "Up", 5 }),
+    action = act.AdjustPaneSize({ "Up", 5 }),
   },
   {
     key = "DownArrow",
     mods = "CMD|CTRL",
-    action = wezterm.action.AdjustPaneSize({ "Down", 5 }),
+    action = act.AdjustPaneSize({ "Down", 5 }),
   },
   {
     key = ',',
     mods = 'CMD|CTRL',
-    action = wezterm.action.PromptInputLine {
+    action = act.PromptInputLine {
       description = 'Enter new name for tab',
       action = wezterm.action_callback(function(window, _, line)
         if line then
