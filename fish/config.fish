@@ -1,5 +1,5 @@
-set PATH /opt/homebrew/bin $PATH
-set PATH /opt/homebrew/sbin $PATH
+fish_add_path /opt/homebrew/bin
+fish_add_path /opt/homebrew/sbin
 set fish_greeting
 
 abbr v nvim
