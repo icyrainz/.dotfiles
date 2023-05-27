@@ -9,3 +9,5 @@ abbr lg lazygit
 
 set PATH /opt/homebrew/bin $PATH
 set PATH /opt/homebrew/sbin $PATH
+
+set fish_greeting

@@ -25,5 +25,6 @@
 
 - shell:
     - [git submodule update --init --recursive, Installing submodules]
+    - [./install_fish.sh, Installing fish]
     - [./install_tools.sh, Installing tools]
     - [chmod +x ~/.antidote/antidote && ~/.antidote/antidote update, Updating antidote packages]
