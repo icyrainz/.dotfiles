@@ -20,6 +20,8 @@
       path: tmux/tmux.conf
     ~/.wezterm.lua:
       path: wezterm.lua
+    ~/.config/fish/config.fish:
+      path: fish/config.fish
 
 - shell:
     - [git submodule update --init --recursive, Installing submodules]
