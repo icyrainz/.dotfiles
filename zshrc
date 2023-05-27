@@ -1,6 +1,6 @@
 ZSH_CONFIG_PATH=~/.config/zsh
 
-export USE_AI_TOOLS=true
+export USE_AI_TOOLS=false
 
 fpath+=$ZSH_CONFIG_PATH/completions
 
@@ -16,8 +16,7 @@ source $ZSH_CONFIG_PATH/extra.zsh
 
 source ~/.config/broot/launcher/bash/br
 
-source $ZSH_CONFIG_PATH/plugin_manager.zsh
-source $ZSH_CONFIG_PATH/tmux.zsh
+source $ZSH_CONFIG_PATH/init_antidote.zsh
 
 source $ZSH_CONFIG_PATH/aliases.zsh
 source $ZSH_CONFIG_PATH/keys.zsh

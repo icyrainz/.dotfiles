@@ -22,9 +22,11 @@
       path: wezterm.lua
     ~/.config/fish/config.fish:
       path: fish/config.fish
+    ~/.config/fish/extra.fish:
+      path: fish/extra.fish
 
 - shell:
     - [git submodule update --init --recursive, Installing submodules]
-    - [./install_fish.sh, Installing fish]
     - [./install_tools.sh, Installing tools]
-    - [chmod +x ~/.antidote/antidote && ~/.antidote/antidote update, Updating antidote packages]
+    - [./install_antidote.sh, Installing antidote]
+    - [./tmux/install_plugin_manager.zsh, Installing tmux plugin manager]

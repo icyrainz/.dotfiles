@@ -71,7 +71,7 @@ return {
 				}),
 			},
 			evaluate_single = true,
-			footer = os.date(),
+			footer = os.date("%A, %m/%d/%Y %I:%M %p"),
 
 			header = table.concat({
 				[[  /\ \▔\___  ___/\   /(●)_ __ ___  ]],
