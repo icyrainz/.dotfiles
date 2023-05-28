@@ -22,6 +22,9 @@ direnv hook fish | source
 # fish_add_path "/Users/tuephan/Library/Application Support/fnm"
 # fnm env | source
 
+set -Ux fish_tmux_autostart false
+set -Ux fish_tmux_autostart_once false
+
 # Auto switch node using nvm
 function __nvm_auto --on-variable PWD
     if test -e .nvmrc

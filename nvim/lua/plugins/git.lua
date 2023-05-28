@@ -26,16 +26,6 @@ return {
 			end, { desc = "Git worktree telescope" })
 		end,
 	},
-	-- {
-	-- 	"ldelossa/gh.nvim",
-	-- 	dependencies = {
-	-- 		"ldelossa/litee.nvim",
-	-- 	},
-	-- 	config = function()
-	-- 		require("litee.lib").setup()
-	-- 		require("litee.gh").setup()
-	-- 	end,
-	-- },
 	{
 		"f-person/git-blame.nvim",
 		config = function()
