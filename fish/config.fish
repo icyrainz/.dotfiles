@@ -22,6 +22,7 @@ direnv hook fish | source
 # fish_add_path "/Users/tuephan/Library/Application Support/fnm"
 # fnm env | source
 
+# tmux settings
 set -Ux fish_tmux_autostart false
 set -Ux fish_tmux_autostart_once false
 
@@ -42,6 +43,8 @@ __nvm_auto
 for file in $FISH_PATH/stuffs/*.fish
     source $file
 end
+
+set -gx RUSTC_WRAPPER /opt/homebrew/bin/sccache
 
 if status is-interactive
     # Commands to run in interactive sessions can go here

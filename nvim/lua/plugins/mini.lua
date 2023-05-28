@@ -3,6 +3,8 @@ return {
 	config = function()
 		require("mini.ai").setup()
 
+		require("mini.align").setup()
+
 		require("mini.basics").setup()
 
 		-- require("mini.animate").setup()
@@ -41,8 +43,43 @@ return {
 
 		-- require("mini.cursorword").setup()
 
-		require('mini.tabline').setup()
-		-- require('mini.statusline').setup()
+		-- require("mini.tabline").setup()
+		require("mini.statusline").setup({
+			content = {
+				active = function()
+          local blocked_filetypes = {
+            ['neo-tree'] = true,
+            ['Outline'] = true,
+            ['lspsagaoutline'] = true,
+          }
+          if blocked_filetypes[vim.bo.filetype] then
+            return MiniStatusline.combine_groups({
+              { hl = "MiniStatuslineInactive", strings = { "" } },
+            })
+          end
+
+					local mode, mode_hl = MiniStatusline.section_mode({ trunc_width = 120 })
+					local git = MiniStatusline.section_git({ trunc_width = 75 })
+					local diagnostics = MiniStatusline.section_diagnostics({ trunc_width = 75 })
+					local filename = MiniStatusline.section_filename({ trunc_width = 140 })
+					local fileinfo = MiniStatusline.section_fileinfo({ trunc_width = 120 })
+					local location = MiniStatusline.section_location({ trunc_width = 75 })
+
+					local git_blame = require("gitblame").get_current_blame_text()
+
+					return MiniStatusline.combine_groups({
+						{ hl = mode_hl, strings = { mode } },
+						{ hl = "MiniStatuslineDevinfo", strings = { git, diagnostics } },
+						"%<", -- Mark general truncate point
+						-- { hl = "MiniStatuslineFilename", strings = { filename } },
+						{ hl = "MiniStatuslineFilename", strings = { git_blame } },
+						"%=", -- End left alignment
+						{ hl = "MiniStatuslineFileinfo", strings = { fileinfo } },
+						{ hl = mode_hl, strings = { location } },
+					})
+				end,
+			},
+		})
 
 		require("mini.trailspace").setup()
 
@@ -61,7 +98,8 @@ return {
 				starter.gen_hook.adding_bullet(""),
 				starter.gen_hook.aligning("center", "center"),
 				starter.gen_hook.indexing("all", {
-					"Actions",
+					"Telescope",
+          "Explorer",
 					"Plugins",
 					"Builtin actions",
 				}),
@@ -79,9 +117,9 @@ return {
 			query_updaters = [[abcdefghilmnopqrstuvwxyz0123456789_-,.ABCDEFGHIJKLMNOPQRSTUVWXYZ]],
 			items = {
 				starter.sections.recent_files(9, true, false),
-				{ action = "Telescope find_files", name = "F: Find Files", section = "Actions" },
-				{ action = "Telescope oldfiles", name = "O: Old Files", section = "Actions" },
-				-- { action = "FzfLua files", name = "F: Find Files", section = "Actions" },
+				{ action = "Telescope find_files", name = "F: Find Files", section = "Telescope" },
+				{ action = "Telescope oldfiles", name = "O: Old Files", section = "Telescope" },
+				-- { action = "FzfLua files", name = "F: Find Files", section = "Telescope" },
 				-- {
 				-- 	action = function()
 				-- 		require("fzf-lua").oldfiles({
@@ -93,10 +131,9 @@ return {
 				-- 	name = "O: Old Files",
 				-- 	section = "Actions",
 				-- },
-				{ action = "Telescope conduct projects", name = "P: Projects", section = "Actions" },
-				{ action = "Neotree toggle float", name = "E: Explorer", section = "Actions" },
-				{ action = "tab G", name = "G: Fugitive", section = "Actions" },
-				{ action = "Lazy", name = "M: Package Manager", section = "Plugins" },
+        { action = "Neotree toggle float", name = "E: Neo-tree", section = "Explorer" },
+        { action = "lua require'lir.float'.toggle()", name = "-: Lir", section = "Explorer" },
+				{ action = "Lazy", name = "L: Lazy", section = "Plugins" },
 				{ action = "enew", name = "N: New Buffer", section = "Builtin actions" },
 				{ action = "qall!", name = "Q: Quit Neovim", section = "Builtin actions" },
 			},

@@ -2,9 +2,15 @@ return {
 	"xiyaowong/transparent.nvim",
 	config = function()
 		require("transparent").setup({
-			groups = {},
+			groups = nil,
 			extra_groups = {
 				"TreesitterContext",
+        "MiniTablineFill",
+        "MiniTablineHidden",
+        "MiniStatuslineFilename",
+        "MiniStatuslineFileinfo",
+        "MiniStatuslineDevinfo",
+        "MiniStatuslineInactive",
 			},
 		})
 	end,
