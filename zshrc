@@ -19,4 +19,3 @@ source ~/.config/broot/launcher/bash/br
 source $ZSH_CONFIG_PATH/init_antidote.zsh
 
 source $ZSH_CONFIG_PATH/aliases.zsh
-source $ZSH_CONFIG_PATH/keys.zsh
