@@ -1,5 +1,6 @@
 nvim/plugin/*_compiled.lua
+nvim/lazy-lock.json
 zsh/extra.zsh
 zsh/zsh_plugins.zsh
-nvim/lazy-lock.json
 **/.luarc.json
+fish/extra.fish
