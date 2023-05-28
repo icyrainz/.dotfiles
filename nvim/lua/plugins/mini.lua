@@ -3,11 +3,7 @@ return {
 	config = function()
 		require("mini.ai").setup()
 
-		require("mini.basics").setup({
-			autocommands = {
-				relnum_in_visual_mode = true,
-			},
-		})
+		require("mini.basics").setup()
 
 		-- require("mini.animate").setup()
 
@@ -45,7 +41,7 @@ return {
 
 		-- require("mini.cursorword").setup()
 
-		-- require('mini.tabline').setup()
+		require('mini.tabline').setup()
 		-- require('mini.statusline').setup()
 
 		require("mini.trailspace").setup()

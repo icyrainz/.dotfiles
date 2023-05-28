@@ -16,7 +16,7 @@ config.window_background_opacity = 0.8
 config.macos_window_background_blur = 20
 config.font_size = 17.0
 
--- config.window_decorations = "INTEGRATED_BUTTONS|RESIZE"
+config.window_decorations = "RESIZE"
 
 config.mouse_bindings = {
   -- Ctrl-click will open the link under the mouse cursor
