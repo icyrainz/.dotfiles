@@ -122,6 +122,11 @@ config.keys = {
     mods = "CMD|CTRL",
     action = act.ScrollByPage(-0.5),
   },
+  {
+    key = "B",
+    mods = "CMD|CTRL",
+    action = act.ScrollToBottom,
+  },
 }
 
 return config
