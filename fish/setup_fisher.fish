@@ -1,5 +1,3 @@
-#!/opt/homebrew/bin/fish
-
 # Check if Fisher is installed
 if not type -q fisher
     # Install Fisher
