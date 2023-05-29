@@ -53,6 +53,8 @@ local function bind_if(cond, key, mods, action)
   return { key = key, mods = mods, action = wezterm.action_callback(callback) }
 end
 
+config.leader = { key = ' ', mods = 'CTRL', timeout_milliseconds = 1000 }
+
 config.keys = {
   {
     key = 'm',
@@ -110,6 +112,16 @@ config.keys = {
   bind_if(is_outside_vim, 'l', 'CTRL', act.ActivatePaneDirection('Right')),
   bind_if(is_outside_vim, 'j', 'CTRL', act.ActivatePaneDirection('Down')),
   bind_if(is_outside_vim, 'k', 'CTRL', act.ActivatePaneDirection('Up')),
+  {
+    key = "]",
+    mods = "CMD|CTRL",
+    action = act.ScrollByPage(0.5),
+  },
+  {
+    key = "[",
+    mods = "CMD|CTRL",
+    action = act.ScrollByPage(-0.5),
+  },
 }
 
 return config

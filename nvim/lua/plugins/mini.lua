@@ -43,7 +43,7 @@ return {
 
 		-- require("mini.cursorword").setup()
 
-		-- require("mini.tabline").setup()
+		require("mini.tabline").setup()
 		require("mini.statusline").setup({
 			content = {
 				active = function()
@@ -131,7 +131,7 @@ return {
 				-- 	name = "O: Old Files",
 				-- 	section = "Actions",
 				-- },
-        { action = "Neotree toggle float", name = "E: Neo-tree", section = "Explorer" },
+        { action = "Neotree toggle", name = "E: Neo-tree", section = "Explorer" },
         { action = "lua require'lir.float'.toggle()", name = "-: Lir", section = "Explorer" },
 				{ action = "Lazy", name = "L: Lazy", section = "Plugins" },
 				{ action = "enew", name = "N: New Buffer", section = "Builtin actions" },

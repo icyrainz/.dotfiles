@@ -49,7 +49,7 @@ return {
 
       lsp.on_attach(function(_, bufnr)
         local function opts(desc)
-          return { desc = "lsp: " .. desc, buffer = bufnr, remap = false }
+          return { desc = "[LSP] " .. desc, buffer = bufnr, remap = false }
         end
 
         -- vim.keymap.set("n", "K", function() vim.lsp.buf.hover() end, opts(bufnr, "Hover"))
