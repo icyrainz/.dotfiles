@@ -22,8 +22,6 @@
       path: wezterm.lua
     ~/.config/fish/config.fish:
       path: fish/config.fish
-    ~/.config/fish/extra.fish:
-      path: fish/extra.fish
     ~/.config/fish/stuffs:
       path: fish/stuffs
 
