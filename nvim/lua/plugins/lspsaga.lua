@@ -30,7 +30,10 @@ return {
         virtual_text = false,
       },
       ui = {
-        code_action = '',
+        code_action = '',
+      },
+      outline = {
+        auto_preview = false,
       },
     })
     vim.cmd [[
