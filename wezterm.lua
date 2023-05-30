@@ -1,5 +1,6 @@
 local wezterm = require("wezterm")
 local act = wezterm.action
+local mux = wezterm.mux
 
 local config = {}
 
@@ -17,6 +18,16 @@ config.macos_window_background_blur = 20
 config.font_size = 17.0
 
 config.window_decorations = "RESIZE"
+
+config.inactive_pane_hsb = {
+  saturation = 0.8,
+  brightness = 0.7,
+}
+
+wezterm.on('gui-startup', function()
+  local tab, pane, window = mux.spawn_window({})
+  window:gui_window():maximize()
+end)
 
 config.mouse_bindings = {
   -- Ctrl-click will open the link under the mouse cursor
@@ -43,6 +54,10 @@ local function is_outside_vim(pane) return not is_inside_vim(pane) end
 
 local function bind_if(cond, key, mods, action)
   local function callback(win, pane)
+    if not _G.tmux_navigation_enabled then
+      win:perform_action(act.SendKey({ key = key, mods = mods }), pane)
+      return
+    end
     if cond(pane) then
       win:perform_action(action, pane)
     else
@@ -53,7 +68,23 @@ local function bind_if(cond, key, mods, action)
   return { key = key, mods = mods, action = wezterm.action_callback(callback) }
 end
 
-config.leader = { key = ' ', mods = 'CTRL', timeout_milliseconds = 1000 }
+-- Initialize a global flag
+_G.tmux_navigation_enabled = false
+
+local function toggle_tmux_navigation(window)
+  _G.tmux_navigation_enabled = not _G.tmux_navigation_enabled
+
+  local message;
+  if _G.tmux_navigation_enabled then
+    message = 'Tmux navigation enabled'
+  else
+    message = 'Tmux navigation disabled'
+  end
+
+  window:toast_notification('Wezterm', message, nil, 4000)
+end
+
+-- config.leader = { key = ' ', mods = 'CTRL', timeout_milliseconds = 1000 }
 
 config.keys = {
   {
@@ -126,6 +157,13 @@ config.keys = {
     key = "B",
     mods = "CMD|CTRL",
     action = act.ScrollToBottom,
+  },
+  {
+    key = "=",
+    mods = "CMD|CTRL",
+    action = wezterm.action_callback(function(window, pane)
+      toggle_tmux_navigation(window)
+    end),
   },
 }
 

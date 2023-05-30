@@ -15,7 +15,7 @@ if test -e $FISH_PATH/extra.fish
     source $FISH_PATH/extra.fish
 end
 
-thefuck --alias | source
+# thefuck --alias | source
 direnv hook fish | source
 
 # # fnm
