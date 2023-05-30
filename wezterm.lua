@@ -49,7 +49,7 @@ local function is_outside_vim(pane) return not is_inside_vim(pane) end
 
 local function bind_if(cond, key, mods, action)
   local function callback(win, pane)
-    if not _G.tmux_navigation_enabled then
+    if _G.tmux_navigation_enabled then
       win:perform_action(act.SendKey({ key = key, mods = mods }), pane)
       return
     end
