@@ -18,6 +18,8 @@ end
 # thefuck --alias | source
 direnv hook fish | source
 
+fish_add_path ~/.cargo/bin
+
 # # fnm
 # fish_add_path "/Users/tuephan/Library/Application Support/fnm"
 # fnm env | source
@@ -33,7 +35,7 @@ function __nvm_auto --on-variable PWD
         set current_version (nvm current)
 
         if test $nvmrc_version != $current_version
-            nvm use 2>/dev/null
+            nvm use
         end
     end
 end

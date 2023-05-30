@@ -36,6 +36,9 @@ return {
 			vim.keymap.set("n", "<Leader>dl", function()
 				require("dap").run_last()
 			end, opts("run last"))
+			vim.keymap.set("n", "<Leader>dc", function()
+				require("dap").run_to_cursor()
+			end, opts("run last"))
 			vim.keymap.set({ "n", "v" }, "<Leader>dh", function()
 				require("dap.ui.widgets").hover()
 			end, opts("hover"))
@@ -56,6 +59,12 @@ return {
 
 			vim.keymap.set("n", "<Leader>dt", function()
 				require("dapui").toggle()
+			end, opts("toggle UI"))
+			vim.keymap.set("n", "<Leader>dt[", function()
+				require("dapui").toggle(1)
+			end, opts("toggle UI"))
+			vim.keymap.set("n", "<Leader>dt]", function()
+				require("dapui").toggle(2)
 			end, opts("toggle UI"))
 
 			local dap, dapui = require("dap"), require("dapui")
