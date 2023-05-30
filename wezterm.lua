@@ -24,11 +24,6 @@ config.inactive_pane_hsb = {
   brightness = 0.7,
 }
 
-wezterm.on('gui-startup', function()
-  local tab, pane, window = mux.spawn_window({})
-  window:gui_window():maximize()
-end)
-
 config.mouse_bindings = {
   -- Ctrl-click will open the link under the mouse cursor
   {
@@ -68,7 +63,6 @@ local function bind_if(cond, key, mods, action)
   return { key = key, mods = mods, action = wezterm.action_callback(callback) }
 end
 
--- Initialize a global flag
 _G.tmux_navigation_enabled = false
 
 local function toggle_tmux_navigation(window)
@@ -85,7 +79,6 @@ local function toggle_tmux_navigation(window)
 end
 
 -- config.leader = { key = ' ', mods = 'CTRL', timeout_milliseconds = 1000 }
-
 config.keys = {
   {
     key = 'm',
@@ -139,10 +132,30 @@ config.keys = {
       end),
     },
   },
-  bind_if(is_outside_vim, 'h', 'CTRL', act.ActivatePaneDirection('Left')),
-  bind_if(is_outside_vim, 'l', 'CTRL', act.ActivatePaneDirection('Right')),
-  bind_if(is_outside_vim, 'j', 'CTRL', act.ActivatePaneDirection('Down')),
-  bind_if(is_outside_vim, 'k', 'CTRL', act.ActivatePaneDirection('Up')),
+  bind_if(
+    is_outside_vim,
+    'h',
+    'CTRL',
+    act.ActivatePaneDirection('Left')
+  ),
+  bind_if(
+    is_outside_vim,
+    'l',
+    'CTRL',
+    act.ActivatePaneDirection('Right')
+  ),
+  bind_if(
+    is_outside_vim,
+    'j',
+    'CTRL',
+    act.ActivatePaneDirection('Down')
+  ),
+  bind_if(
+    is_outside_vim,
+    'k',
+    'CTRL',
+    act.ActivatePaneDirection('Up')
+  ),
   {
     key = "]",
     mods = "CMD|CTRL",
@@ -165,6 +178,18 @@ config.keys = {
       toggle_tmux_navigation(window)
     end),
   },
+}
+
+-- Configure default multiplexer ssh domain
+config.ssh_domains = {
+  {
+    name = 'localhost',
+    remote_address = 'localhost',
+  },
+}
+config.default_gui_startup_args = {
+  'connect',
+  'localhost'
 }
 
 return config
