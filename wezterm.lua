@@ -80,7 +80,12 @@ end
 
 -- config.leader = { key = ' ', mods = 'CTRL', timeout_milliseconds = 1000 }
 config.keys = {
-  { key = 'Enter', mods = 'CTRL|SHIFT', action = wezterm.action.ActivateCopyMode },
+  {
+    key = 'Escape',
+    mods = 'CMD',
+    action = act.ActivateWindowRelative(1),
+  },
+  { key = 'Enter', mods = 'CTRL|SHIFT', action = act.ActivateCopyMode },
   {
     key = 'm',
     mods = 'CMD|CTRL',
