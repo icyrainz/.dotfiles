@@ -100,6 +100,7 @@ return {
     },
     config = function()
       require("telescope").load_extension("file_browser")
+  		vim.keymap.set("n", "<leader>fp", "<cmd>Telescope file_browser<CR>", { desc = "Telescope file browser" })
     end
   },
 }

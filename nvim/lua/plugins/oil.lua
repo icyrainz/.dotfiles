@@ -1,7 +1,7 @@
 return {
   "stevearc/oil.nvim",
   init = function()
-    vim.keymap.set("n", "-", require('oil').open, { noremap = true, silent = true })
+    vim.keymap.set("n", "<leader>-", require('oil').open, { noremap = true, silent = true })
   end,
   opts = {
     default_file_explorer = false,
@@ -19,7 +19,7 @@ return {
       ["<C-c>"] = "actions.close",
       ["q"] = "actions.close",
       ["<leader>r"] = "actions.refresh",
-      -- ["="] = "actions.parent",
+      ["="] = "actions.parent",
       ["_"] = "actions.open_cwd",
       ["`"] = "actions.cd",
       ["~"] = "actions.tcd",
