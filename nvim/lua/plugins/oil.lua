@@ -1,7 +1,7 @@
 return {
   "stevearc/oil.nvim",
   init = function()
-    vim.keymap.set("n", "-", "<Cmd>lua require('oil').toggle_float()<CR>", { noremap = true, silent = true })
+    vim.keymap.set("n", "-", require('oil').open, { noremap = true, silent = true })
   end,
   opts = {
     default_file_explorer = false,
@@ -12,14 +12,14 @@ return {
     keymaps = {
       ["g?"] = "actions.show_help",
       ["<CR>"] = "actions.select",
-      ["<leader><c-v>"] = "actions.select_vsplit",
-      ["<leader><c-s>"] = "actions.select_split",
-      ["<leader><c-t>"] = "actions.select_tab",
-      ["<leader><c-p>"] = "actions.preview",
+      ["<leader>V"] = "actions.select_vsplit",
+      ["<leader>H"] = "actions.select_split",
+      ["<leader>T"] = "actions.select_tab",
+      ["<leader>p"] = "actions.preview",
       ["<C-c>"] = "actions.close",
       ["q"] = "actions.close",
-      ["<leader><c-r>"] = "actions.refresh",
-      ["="] = "actions.parent",
+      ["<leader>r"] = "actions.refresh",
+      -- ["="] = "actions.parent",
       ["_"] = "actions.open_cwd",
       ["`"] = "actions.cd",
       ["~"] = "actions.tcd",

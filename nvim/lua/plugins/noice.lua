@@ -19,6 +19,9 @@ return {
           long_message_to_split = false,
 					lsp_doc_border = true,
 				},
+        cmdline = {
+          view = "cmdline",
+        },
 			})
 			require("telescope").load_extension("noice")
 

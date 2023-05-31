@@ -15,7 +15,7 @@ config.scrollback_lines = 1000000
 
 config.window_background_opacity = 0.8
 config.macos_window_background_blur = 20
-config.font_size = 18.0
+config.font_size = 17.0
 
 config.window_decorations = "RESIZE"
 
@@ -80,6 +80,7 @@ end
 
 -- config.leader = { key = ' ', mods = 'CTRL', timeout_milliseconds = 1000 }
 config.keys = {
+  { key = 'Enter', mods = 'CTRL|SHIFT', action = wezterm.action.ActivateCopyMode },
   {
     key = 'm',
     mods = 'CMD|CTRL',
@@ -180,16 +181,16 @@ config.keys = {
   },
 }
 
--- Configure default multiplexer ssh domain
-config.ssh_domains = {
-  {
-    name = 'localhost',
-    remote_address = 'localhost',
-  },
-}
-config.default_gui_startup_args = {
-  'connect',
-  'localhost'
-}
+-- -- Configure default multiplexer ssh domain
+-- config.ssh_domains = {
+--   {
+--     name = 'localhost',
+--     remote_address = 'localhost',
+--   },
+-- }
+-- config.default_gui_startup_args = {
+--   'connect',
+--   'localhost'
+-- }
 
 return config

@@ -12,7 +12,6 @@ vim.g.mapleader = " "
 -- vim.keymap.set("v", "d", "\"_d")
 
 vim.keymap.set("i", "jj", "<Esc>", { desc = "Escape" })
-vim.keymap.set("n", "q:", ":q")
 
 vim.keymap.set("n", "<leader>a", "ggVG", { desc = "Select all" })
 

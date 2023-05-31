@@ -66,6 +66,7 @@ return {
 					local location = MiniStatusline.section_location({ trunc_width = 75 })
 
 					local git_blame = require("gitblame").get_current_blame_text()
+          local recording = require("noice").api.statusline.mode.get()
 
 					return MiniStatusline.combine_groups({
 						{ hl = mode_hl, strings = { mode } },
@@ -73,7 +74,8 @@ return {
 						"%<", -- Mark general truncate point
 						-- { hl = "MiniStatuslineFilename", strings = { filename } },
 						{ hl = "MiniStatuslineFilename", strings = { git_blame } },
-						"%=", -- End left alignment
+            "%=", -- End left alignment
+						{ hl = "MiniStatuslineFilename", strings = { recording } },
 						{ hl = "MiniStatuslineFileinfo", strings = { fileinfo } },
 						{ hl = mode_hl, strings = { location } },
 					})

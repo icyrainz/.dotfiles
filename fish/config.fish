@@ -15,6 +15,8 @@ if test -e $FISH_PATH/extra.fish
     source $FISH_PATH/extra.fish
 end
 
+set -gx EDITOR nvim
+
 # thefuck --alias | source
 direnv hook fish | source
 
@@ -23,10 +25,6 @@ fish_add_path ~/.cargo/bin
 # # fnm
 # fish_add_path "/Users/tuephan/Library/Application Support/fnm"
 # fnm env | source
-
-# tmux settings
-set -Ux fish_tmux_autostart false
-set -Ux fish_tmux_autostart_once false
 
 # Auto switch node using nvm
 function __nvm_auto --on-variable PWD

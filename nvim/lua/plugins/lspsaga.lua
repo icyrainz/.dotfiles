@@ -8,7 +8,7 @@ return {
   },
   init = function()
     vim.keymap.set("n", "<leader>so", "<cmd>Lspsaga outline<CR>", { desc = "Lspsaga outline" })
-    vim.keymap.set("n", "<leader>sh", "<cmd>Lspsaga lsp_finder<CR>", { desc = "Lspsaga finder" })
+    vim.keymap.set("n", "<leader>sf", "<cmd>Lspsaga lsp_finder<CR>", { desc = "Lspsaga finder" })
     vim.keymap.set("n", "<leader>sa", "<cmd>Lspsaga code_action<CR>", { desc = "Lspsaga code action" })
     vim.keymap.set("n", "<leader>sr", "<cmd>Lspsaga rename ++project<CR>", { desc = "Lspsaga rename (project)" })
     vim.keymap.set("n", "<leader>sp", "<cmd>Lspsaga peek_definition<CR>", { desc = "Lspsaga peek definition" })

@@ -1,5 +1,6 @@
 return {
   "folke/trouble.nvim",
+  enabled = false,
   config = function()
     local function opts(desc)
       return { desc = 'trouble: ' .. desc, silent = true, noremap = true }
