@@ -6,9 +6,10 @@ return {
     config = function()
       local builtin = require("telescope.builtin")
       local utils = require("telescope.utils")
+      local actions = require("telescope.actions")
 
       local function opts(desc)
-        return { desc = "Telescope " .. desc }
+        return { desc = "[Telescope] " .. desc }
       end
 
       vim.keymap.set("n", "<leader>ff", builtin.find_files, opts("files"))
@@ -20,12 +21,12 @@ return {
       )
       vim.keymap.set("n", "<leader>fe", function()
         builtin.live_grep({ cwd = utils.buffer_dir() })
-      end, opts("Find files in same dir"))
-      vim.keymap.set("n", "<leader>fg", ":Telescope live_grep_args<CR>", opts("live grep"))
+      end, opts("files in same dir"))
+      vim.keymap.set("n", "<leader>fg", "<cmd>Telescope live_grep<CR>", opts("live grep"))
       vim.keymap.set("n", "<leader>fw", builtin.grep_string, opts("grep word"))
-      -- vim.keymap.set("n", "<leader>fS", function()
-      --      require ('telescope.builtin').grep_string({search = vim.fn.input("Search term: ")})
-      -- end, opts("Grep string"))
+      vim.keymap.set("n", "<leader>fs", function()
+           require ('telescope.builtin').grep_string({search = vim.fn.input("Search term: ")})
+      end, opts("Grep string"))
       vim.keymap.set("n", "<leader>fb", builtin.buffers, opts("buffers"))
       vim.keymap.set("n", "<leader>fh", builtin.help_tags, opts("help tags"))
       vim.keymap.set("n", "<leader>fo", builtin.oldfiles, opts("oldfiles"))
@@ -36,28 +37,20 @@ return {
 
       telescope.setup({
         defaults = {
-          file_ignore_patterns = {
-            "Session.vim",
-            "kitty.conf",
-            ".lock",
-            ".md",
-            "zsh/completions",
+          file_ignore_patterns = require('utils').file_ignore_patterns,
+        },
+        pickers = {
+          live_grep = {
+            mappings = {
+              i = {
+                ["<c-o>"] = actions.to_fuzzy_refine,
+              },
+            },
           },
         },
       })
     end,
   },
-  -- {
-  -- 	"nvim-telescope/telescope-project.nvim",
-  -- 	config = function()
-  -- 		require("telescope").load_extension("project")
-  --
-  -- 		-- vim.keymap.set("n", "<leader>fp", function()
-  -- 		-- 	require("telescope").extensions.project.project()
-  -- 		-- end, { desc = "Projects" })
-  -- 	end,
-  -- },
-  --
   {
     "nvim-telescope/telescope-fzf-native.nvim",
     dependencies = {
@@ -65,7 +58,20 @@ return {
     },
     build = "make",
     config = function()
-      require("telescope").load_extension("fzf")
+      require('telescope').setup {
+        extensions = {
+          fzf = {
+            fuzzy = true,             -- false will only do exact matching
+            override_generic_sorter = true, -- override the generic sorter
+            override_file_sorter = true, -- override the file sorter
+            case_mode = "smart_case", -- or "ignore_case" or "respect_case"
+            -- the default case_mode is "smart_case"
+          }
+        }
+      }
+      -- To get fzf loaded and working with telescope, you need to call
+      -- load_extension, somewhere after setup function:
+      require('telescope').load_extension('fzf')
     end,
   },
   {
@@ -91,6 +97,8 @@ return {
         },
       })
       telescope.load_extension("live_grep_args")
+
+      vim.keymap.set("n", "<leader>fj", "<cmd>Telescope live_grep_args<CR>", { desc = "live grep with args" })
     end,
   },
   {
@@ -100,7 +108,7 @@ return {
     },
     config = function()
       require("telescope").load_extension("file_browser")
-  		vim.keymap.set("n", "<leader>fp", "<cmd>Telescope file_browser<CR>", { desc = "Telescope file browser" })
+      vim.keymap.set("n", "<leader>fp", "<cmd>Telescope file_browser<CR>", { desc = "[Telescope] file browser" })
     end
   },
 }

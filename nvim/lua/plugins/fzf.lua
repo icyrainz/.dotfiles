@@ -7,12 +7,7 @@ return {
 			require("fzf-lua").setup({
 				"fzf-native",
 				grep = {
-					file_ignore_patterns = {
-						"kitty.conf",
-						".lock",
-						".md",
-						"zsh/completions",
-					},
+					file_ignore_patterns = require('utils').file_ignore_patterns,
 				},
 				winopts = {
 					preview = {

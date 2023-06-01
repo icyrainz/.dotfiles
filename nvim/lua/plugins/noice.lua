@@ -25,7 +25,7 @@ return {
 			})
 			require("telescope").load_extension("noice")
 
-			vim.keymap.set("n", "<leader>fn", "<cmd>Telescope noice<CR>", { desc = "Telescope: noice" })
+			vim.keymap.set("n", "<leader>fn", "<cmd>Telescope noice<CR>", { desc = "[Telescope] noice" })
 		end,
 	},
 }
