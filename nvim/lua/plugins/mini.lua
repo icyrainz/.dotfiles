@@ -44,44 +44,44 @@ return {
 		-- require("mini.cursorword").setup()
 
 		require("mini.tabline").setup()
-		require("mini.statusline").setup({
-			content = {
-				active = function()
-          local blocked_filetypes = {
-            ['neo-tree'] = true,
-            ['Outline'] = true,
-            ['lspsagaoutline'] = true,
-          }
-          if blocked_filetypes[vim.bo.filetype] then
-            return MiniStatusline.combine_groups({
-              { hl = "MiniStatuslineInactive", strings = { "" } },
-            })
-          end
-
-					local mode, mode_hl = MiniStatusline.section_mode({ trunc_width = 120 })
-					local git = MiniStatusline.section_git({ trunc_width = 75 })
-					local diagnostics = MiniStatusline.section_diagnostics({ trunc_width = 75 })
-					local filename = MiniStatusline.section_filename({ trunc_width = 140 })
-					local fileinfo = MiniStatusline.section_fileinfo({ trunc_width = 120 })
-					local location = MiniStatusline.section_location({ trunc_width = 75 })
-
-					local git_blame = require("gitblame").get_current_blame_text()
-          local recording = require("noice").api.statusline.mode.get()
-
-					return MiniStatusline.combine_groups({
-						{ hl = mode_hl, strings = { mode } },
-						{ hl = "MiniStatuslineDevinfo", strings = { git, diagnostics } },
-						"%<", -- Mark general truncate point
-						-- { hl = "MiniStatuslineFilename", strings = { filename } },
-						{ hl = "MiniStatuslineFilename", strings = { git_blame } },
-            "%=", -- End left alignment
-						{ hl = "MiniStatuslineFilename", strings = { recording } },
-						{ hl = "MiniStatuslineFileinfo", strings = { fileinfo } },
-						{ hl = mode_hl, strings = { location } },
-					})
-				end,
-			},
-		})
+		-- require("mini.statusline").setup({
+		-- 	content = {
+		-- 		active = function()
+		--         local blocked_filetypes = {
+		--           ['neo-tree'] = true,
+		--           ['Outline'] = true,
+		--           ['lspsagaoutline'] = true,
+		--         }
+		--         if blocked_filetypes[vim.bo.filetype] then
+		--           return MiniStatusline.combine_groups({
+		--             { hl = "MiniStatuslineInactive", strings = { "" } },
+		--           })
+		--         end
+		--
+		-- 			local mode, mode_hl = MiniStatusline.section_mode({ trunc_width = 120 })
+		-- 			local git = MiniStatusline.section_git({ trunc_width = 75 })
+		-- 			local diagnostics = MiniStatusline.section_diagnostics({ trunc_width = 75 })
+		-- 			local filename = MiniStatusline.section_filename({ trunc_width = 140 })
+		-- 			local fileinfo = MiniStatusline.section_fileinfo({ trunc_width = 120 })
+		-- 			local location = MiniStatusline.section_location({ trunc_width = 75 })
+		--
+		-- 			local git_blame = require("gitblame").get_current_blame_text()
+		--         local recording = require("noice").api.statusline.mode.get()
+		--
+		-- 			return MiniStatusline.combine_groups({
+		-- 				{ hl = mode_hl, strings = { mode } },
+		-- 				{ hl = "MiniStatuslineDevinfo", strings = { git, diagnostics } },
+		-- 				"%<", -- Mark general truncate point
+		-- 				-- { hl = "MiniStatuslineFilename", strings = { filename } },
+		-- 				{ hl = "MiniStatuslineFilename", strings = { git_blame } },
+		--           "%=", -- End left alignment
+		-- 				{ hl = "MiniStatuslineFilename", strings = { recording } },
+		-- 				{ hl = "MiniStatuslineFileinfo", strings = { fileinfo } },
+		-- 				{ hl = mode_hl, strings = { location } },
+		-- 			})
+		-- 		end,
+		-- 	},
+		-- })
 
 		require("mini.trailspace").setup()
 
