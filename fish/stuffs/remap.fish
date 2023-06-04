@@ -18,5 +18,24 @@ else
     abbr la 'ls -A'
 end
 
-abbr ta tmux attach
-abbr ts tmux new-session
+abbr t 'tmux attach || tmux new-session'
+abbr tc 'tmux choose-session'
+abbr tl 'tmux list-sessions'
+
+abbr v nvim
+abbr lg lazygit
+abbr lgit lazygit
+
+abbr fi 'fisher install'
+abbr fl 'fisher list'
+abbr fu 'fisher update'
+abbr fr 'fisher remove'
+
+abbr .. 'cd ..'
+abbr .. 'cd ../..'
+abbr bk 'cd -'
+abbr home 'cd ~'
+abbr c clear
+abbr src 'source ~/.config/fish/config.fish'
+
+abbr zd 'z dotfiles'
