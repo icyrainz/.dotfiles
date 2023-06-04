@@ -5,7 +5,7 @@ return {
     local ui = require("harpoon.ui")
 
 			local function opts(desc)
-				return { desc = "harpoon: " .. desc }
+				return { desc = "[harpoon] " .. desc }
 			end
 
     vim.keymap.set("n", "<leader>ha", function() mark.add_file() end, opts("add file"))

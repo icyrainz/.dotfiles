@@ -11,5 +11,8 @@ return {
 			}
 			return buffer
 		end,
+    hide = {
+      cursorline = true,
+    }
 	},
 }

@@ -27,9 +27,9 @@ return {
           enable = true,
           keymaps = {
             init_selection = "gn", -- set to `false` to disable one of the mappings
-            node_incremental = "gi",
+            node_incremental = ">",
             scope_incremental = "gs",
-            node_decremental = "go",
+            node_decremental = "<",
           },
         },
       })

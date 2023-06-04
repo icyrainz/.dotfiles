@@ -98,7 +98,7 @@ return {
       })
       telescope.load_extension("live_grep_args")
 
-      vim.keymap.set("n", "<leader>fj", "<cmd>Telescope live_grep_args<CR>", { desc = "live grep with args" })
+      vim.keymap.set("n", "<leader>fj", "<cmd>Telescope live_grep_args<CR>", { desc = "[Telescope] live grep with args" })
     end,
   },
   {
