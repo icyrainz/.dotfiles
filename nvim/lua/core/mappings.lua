@@ -11,6 +11,14 @@ vim.g.mapleader = " "
 -- vim.keymap.set("n", "d", "\"_d")
 -- vim.keymap.set("v", "d", "\"_d")
 
+vim.keymap.set("n", "J", "mzJ`z", { desc = "Join lines keeping cursor position" })
+vim.keymap.set("n", "<C-d>", "<C-d>zz", { desc = "Go down half page" })
+vim.keymap.set("n", "<C-u>", "<C-u>zz", { desc = "Go up half page" })
+vim.keymap.set("n", "n", "nzzzv")
+vim.keymap.set("n", "N", "Nzzzv")
+
+vim.keymap.set("n", "x", "\"_x", { desc = "Delete character without yanking" })
+
 vim.keymap.set("i", "jj", "<Esc>", { desc = "Escape" })
 
 vim.keymap.set("n", "<leader>a", "ggVG", { desc = "Select all" })

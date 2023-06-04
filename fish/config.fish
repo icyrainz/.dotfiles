@@ -26,3 +26,5 @@ if status is-interactive
     thefuck --alias | source
     direnv hook fish | source
 end
+
+source /opt/homebrew/opt/asdf/libexec/asdf.fish
