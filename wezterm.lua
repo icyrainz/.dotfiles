@@ -138,30 +138,30 @@ config.keys = {
       end),
     },
   },
-  bind_if(
-    is_outside_vim,
-    'h',
-    'CTRL',
-    act.ActivatePaneDirection('Left')
-  ),
-  bind_if(
-    is_outside_vim,
-    'l',
-    'CTRL',
-    act.ActivatePaneDirection('Right')
-  ),
-  bind_if(
-    is_outside_vim,
-    'j',
-    'CTRL',
-    act.ActivatePaneDirection('Down')
-  ),
-  bind_if(
-    is_outside_vim,
-    'k',
-    'CTRL',
-    act.ActivatePaneDirection('Up')
-  ),
+  -- bind_if(
+  --   is_outside_vim,
+  --   'h',
+  --   'CTRL',
+  --   act.ActivatePaneDirection('Left')
+  -- ),
+  -- bind_if(
+  --   is_outside_vim,
+  --   'l',
+  --   'CTRL',
+  --   act.ActivatePaneDirection('Right')
+  -- ),
+  -- bind_if(
+  --   is_outside_vim,
+  --   'j',
+  --   'CTRL',
+  --   act.ActivatePaneDirection('Down')
+  -- ),
+  -- bind_if(
+  --   is_outside_vim,
+  --   'k',
+  --   'CTRL',
+  --   act.ActivatePaneDirection('Up')
+  -- ),
   {
     key = "]",
     mods = "CMD|CTRL",
