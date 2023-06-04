@@ -8,7 +8,7 @@ then
 fi
 
 # List of plugins to install
-plugins=("jorgebucaran/fisher" "jethrokuan/z" "budimanjojo/tmux.fish" "jethrokuan/fzf" "ilancosman/tide@v5" "jorgebucaran/nvm.fish")
+plugins=("jorgebucaran/fisher" "jethrokuan/fzf" "ilancosman/tide@v5" "jorgebucaran/nvm.fish")
 
 # Install plugins
 for plugin in "${plugins[@]}"

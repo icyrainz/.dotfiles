@@ -31,11 +31,15 @@ abbr fl 'fisher list'
 abbr fu 'fisher update'
 abbr fr 'fisher remove'
 
-abbr .. 'cd ..'
-abbr .. 'cd ../..'
 abbr bk 'cd -'
 abbr home 'cd ~'
 abbr c clear
 abbr src 'source ~/.config/fish/config.fish'
 
 abbr zd 'z dotfiles'
+
+# Navigation
+function ..    ; cd .. ; end
+function ...   ; cd ../.. ; end
+function ....  ; cd ../../.. ; end
+function ..... ; cd ../../../.. ; end
