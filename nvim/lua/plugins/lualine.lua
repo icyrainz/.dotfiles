@@ -1,7 +1,6 @@
 return {
 	{
 		"nvim-lualine/lualine.nvim",
-    -- enabled = false,
 		opts = {
 			options = {
 				theme = function()
@@ -9,7 +8,7 @@ return {
 						darkgray = "#16161d",
 						gray = "#727169",
 						innerbg = nil,
-						outerbg = "#16161D",
+						outerbg = "#16161d",
 						normal = "#7e9cd8",
 						insert = "#98bb6c",
 						visual = "#9745be",

@@ -17,12 +17,10 @@
       path: kitty
     ~/.config/alacritty:
       path: alacritty
-    # ~/.tmux.conf:
-    #   path: tmux/tmux.conf
     ~/.config/tmux:
       path: tmux
-    ~/.wezterm.lua:
-      path: wezterm.lua
+    ~/.config/wezterm:
+      path: wezterm
     ~/.config/fish/config.fish:
       path: fish/config.fish
     ~/.config/fish/stuffs:
