@@ -1,7 +1,3 @@
---
--- COLORS --
---
-
 function SetColor(color)
     color = color or "rose-pine"
     vim.cmd.colorscheme(color)
@@ -12,6 +8,7 @@ function SetColor(color)
 end
 
 -- SetColor()
--- SetColor("kanagawa-wave")
+SetColor("kanagawa-wave")
 -- SetColor("nightly")
-SetColor("tokyonight-moon")
+-- SetColor("tokyonight-moon")
+-- SetColor('catppuccin')

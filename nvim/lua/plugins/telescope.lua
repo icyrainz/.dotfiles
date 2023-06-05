@@ -4,9 +4,11 @@ return {
     tag = "0.1.1",
     dependencies = { "nvim-lua/plenary.nvim" },
     config = function()
+      local telescope = require("telescope")
       local builtin = require("telescope.builtin")
       local utils = require("telescope.utils")
       local actions = require("telescope.actions")
+      local layout = require("telescope.actions.layout")
 
       local function opts(desc)
         return { desc = "[Telescope] " .. desc }
@@ -25,19 +27,28 @@ return {
       vim.keymap.set("n", "<leader>fg", "<cmd>Telescope live_grep<CR>", opts("live grep"))
       vim.keymap.set("n", "<leader>fw", builtin.grep_string, opts("grep word"))
       vim.keymap.set("n", "<leader>fs", function()
-           require ('telescope.builtin').grep_string({search = vim.fn.input("Search term: ")})
+        require('telescope.builtin').grep_string({ search = vim.fn.input("Search term: ") })
       end, opts("Grep string"))
       vim.keymap.set("n", "<leader>fb", builtin.buffers, opts("buffers"))
       vim.keymap.set("n", "<leader>fh", builtin.help_tags, opts("help tags"))
       vim.keymap.set("n", "<leader>fo", builtin.oldfiles, opts("oldfiles"))
+      vim.keymap.set("n", "<leader>fr", builtin.registers, opts("registers"))
+      vim.keymap.set("n", "<leader>fls", builtin.lsp_workspace_symbols, opts("lsp workspace symbols"))
+      vim.keymap.set("n", "<leader>fld", builtin.lsp_dynamic_workspace_symbols, opts("lsp dynamic workspace symbols"))
 
-      vim.keymap.set("n", "<leader>fr", builtin.resume, opts("resume"))
+      vim.keymap.set("n", "<leader>fm", builtin.resume, opts("resume"))
 
-      local telescope = require("telescope")
+      local action_layout = require("telescope.actions.layout")
 
       telescope.setup({
         defaults = {
           file_ignore_patterns = require('utils').file_ignore_patterns,
+          mappings = {
+            i = {
+              ["<F3>"] = layout.cycle_layout_next,
+              ["<F4>"] = layout.toggle_preview,
+            }
+          }
         },
         pickers = {
           live_grep = {
@@ -61,10 +72,10 @@ return {
       require('telescope').setup {
         extensions = {
           fzf = {
-            fuzzy = true,             -- false will only do exact matching
+            fuzzy = true,                   -- false will only do exact matching
             override_generic_sorter = true, -- override the generic sorter
-            override_file_sorter = true, -- override the file sorter
-            case_mode = "smart_case", -- or "ignore_case" or "respect_case"
+            override_file_sorter = true,    -- override the file sorter
+            case_mode = "smart_case",       -- or "ignore_case" or "respect_case"
             -- the default case_mode is "smart_case"
           }
         }
