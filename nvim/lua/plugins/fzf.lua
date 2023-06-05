@@ -13,10 +13,10 @@ return {
 					preview = {
 						-- default = "bat",
 					},
-          hl = {
-            normal = "TelescopeResultsNormal",
-            border = "TelescopeResultsBorder",
-          },
+          -- hl = {
+          --   normal = "TelescopeResultsNormal",
+          --   border = "TelescopeResultsBorder",
+          -- },
 				},
 				-- file_ignore_patterns = {
 				-- },
