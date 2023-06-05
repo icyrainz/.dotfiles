@@ -1,11 +1,11 @@
-local wezterm = require("wezterm")
-local act = wezterm.action
-local mux = wezterm.mux
+local wez = require("wezterm")
+local act = wez.action
+local mux = wez.mux
 
 local config = {}
 
-if wezterm.config_builder then
-  config = wezterm.config_builder()
+if wez.config_builder then
+  config = wez.config_builder()
 end
 
 -- config.color_scheme = "tokyonight_storm"
@@ -56,9 +56,9 @@ local function is_inside_vim(pane)
   local tty = pane:get_tty_name()
   if tty == nil then return false end
 
-  local success, stdout, stderr = wezterm.run_child_process
+  local success, stdout, stderr = wez.run_child_process
       { 'sh', '-c',
-        'ps -o state= -o comm= -t' .. wezterm.shell_quote_arg(tty) .. ' | ' ..
+        'ps -o state= -o comm= -t' .. wez.shell_quote_arg(tty) .. ' | ' ..
         'grep -iqE \'^[^TXZ ]+ +(\\S+\\/)?g?(view|l?n?vim?x?)(diff)?$\'' }
 
   return success
@@ -79,7 +79,7 @@ local function bind_if(cond, key, mods, action)
     end
   end
 
-  return { key = key, mods = mods, action = wezterm.action_callback(callback) }
+  return { key = key, mods = mods, action = wez.action_callback(callback) }
 end
 
 _G.tmux_navigation_enabled = false
@@ -150,7 +150,7 @@ config.keys = {
     mods = 'CMD|CTRL',
     action = act.PromptInputLine {
       description = 'Enter new name for tab',
-      action = wezterm.action_callback(function(window, _, line)
+      action = wez.action_callback(function(window, _, line)
         if line then
           window:active_tab():set_title(line)
         end
@@ -199,10 +199,15 @@ config.keys = {
   {
     key = "=",
     mods = "CMD|CTRL",
-    action = wezterm.action_callback(function(window, pane)
+    action = wez.action_callback(function(window, pane)
       toggle_tmux_navigation(window)
     end),
   },
+  {
+    key = "e",
+    mods = "CMD",
+    action = act.ShowLauncher,
+  }
 }
 
 -- -- Configure default multiplexer ssh domain

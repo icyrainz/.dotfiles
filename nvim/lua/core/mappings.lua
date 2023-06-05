@@ -21,9 +21,11 @@ vim.keymap.set("n", "x", "\"_x", { desc = "Delete character without yanking" })
 
 vim.keymap.set("i", "jj", "<Esc>", { desc = "Escape" })
 
-vim.keymap.set("n", "<leader>a", "ggVG", { desc = "Select all" })
+vim.keymap.set("n", "<leader>A", "ggVG", { desc = "Select all" })
+vim.keymap.set("n", "<leader>a", "ggVG\"+y", { desc = "Yank whole buffer" })
 
-vim.keymap.set("n", "<leader>o", "i<CR><Esc>^", { desc = "Split line" })
+vim.keymap.set("n", "<leader>op", "i<CR><Esc>^", { desc = "Split line" })
+vim.keymap.set("n", "<leader>oo", "o<Esc>", { desc = "Goto new line below" })
 
 vim.keymap.set("n", "c*", "*``cgn", { desc = "Replace word" })
 vim.keymap.set("n", "c#", "#``cgN", { desc = "Replace word reverse" })

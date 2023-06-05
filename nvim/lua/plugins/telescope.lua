@@ -38,8 +38,6 @@ return {
 
       vim.keymap.set("n", "<leader>fm", builtin.resume, opts("resume"))
 
-      local action_layout = require("telescope.actions.layout")
-
       telescope.setup({
         defaults = {
           file_ignore_patterns = require('utils').file_ignore_patterns,
