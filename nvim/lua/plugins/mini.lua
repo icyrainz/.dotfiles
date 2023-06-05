@@ -49,7 +49,7 @@ return {
 
     -- require("mini.cursorword").setup()
 
-    require("mini.tabline").setup()
+    -- require("mini.tabline").setup()
     -- require("mini.statusline").setup({
     -- 	content = {
     -- 		active = function()

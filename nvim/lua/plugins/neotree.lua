@@ -8,7 +8,6 @@ return {
       follow_current_file = true,
       use_libuv_file_watcher = true,
       mappings = {
-        ["/"] = "",
       },
     },
     window = {
@@ -29,17 +28,19 @@ return {
           local node = state.tree:get_node()
           require("neo-tree.ui.renderer").focus_node(state, node:get_parent_id())
         end,
+        ["<C-s>"] = "open_split",
+        ["<C-v>"] = "open_vsplit",
       },
     },
-    event_handlers = {
-      {
-        event = "file_opened",
-        handler = function(file_path)
-          --auto close
-          require("neo-tree").close_all()
-        end
-      },
-    }
+    -- event_handlers = {
+    --   {
+    --     event = "file_opened",
+    --     handler = function(file_path)
+    --       --auto close
+    --       require("neo-tree").close_all()
+    --     end
+    --   },
+    -- }
   },
   init = function()
     vim.keymap.set("n", "<leader>e", ":Neotree toggle left<cr>", { desc = "Neotree toggle left" })

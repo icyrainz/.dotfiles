@@ -30,7 +30,8 @@ return {
         require('telescope.builtin').grep_string({ search = vim.fn.input("Search term: ") })
       end, opts("Grep string"))
       vim.keymap.set("n", "<leader>fb", builtin.buffers, opts("buffers"))
-      vim.keymap.set("n", "<leader>fh", builtin.help_tags, opts("help tags"))
+      vim.keymap.set("n", "<leader>fht", builtin.help_tags, opts("help tags"))
+      vim.keymap.set("n", "<leader>fhl", builtin.highlights, opts("highlights"))
       vim.keymap.set("n", "<leader>fo", builtin.oldfiles, opts("oldfiles"))
       vim.keymap.set("n", "<leader>fr", builtin.registers, opts("registers"))
       vim.keymap.set("n", "<leader>fls", builtin.lsp_workspace_symbols, opts("lsp workspace symbols"))
@@ -45,6 +46,7 @@ return {
             i = {
               ["<F3>"] = layout.cycle_layout_next,
               ["<F4>"] = layout.toggle_preview,
+              ["<C-s>"] = actions.file_split,
             }
           }
         },

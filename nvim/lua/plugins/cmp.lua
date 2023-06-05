@@ -41,7 +41,7 @@ return {
         formatting = {
           format = require('lspkind').cmp_format({
             mode = "symbol_text",
-            maxwidth = 50,
+            maxwidth = 40,
             ellipsis_char = '',
             symbol_map = {
               Codeium = "",
