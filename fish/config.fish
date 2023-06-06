@@ -25,6 +25,12 @@ if status is-interactive
     zoxide init fish | source
     thefuck --alias | source
     direnv hook fish | source
+
+    # auto-switch node version via nvm.fish
+    function __nvm_auto --on-variable PWD
+        nvm use --silent 2>/dev/null
+    end
+    __nvm_auto
 end
 
 source /opt/homebrew/opt/asdf/libexec/asdf.fish
