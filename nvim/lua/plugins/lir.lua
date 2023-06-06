@@ -48,7 +48,7 @@ return {
             highlight_dirname = false
           },
         },
-        hide_cursor = true
+        hide_cursor = true,
       }
 
       vim.keymap.set("n", "-", "<Cmd>lua require'lir.float'.toggle()<CR>", { noremap = true, silent = true })

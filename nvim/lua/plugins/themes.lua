@@ -29,6 +29,12 @@ return {
 
           InclineNormal = { bg = theme.ui.bg_p1 },
           InclineNormalNC = { bg = theme.ui.bg_p1 },
+
+          LirFloatNormal = { fg = theme.ui.fg_dim, bg = theme.ui.bg_m1 },
+          LirFloatBorder = { fg = theme.ui.bg_m1, bg = theme.ui.bg_m1 },
+
+          NeoTreeFloatNormal = { bg = theme.ui.bg_dim, fg = theme.ui.bg_dim },
+          NeoTreeFloatBorder = { bg = theme.ui.bg_dim, fg = theme.ui.bg_dim },
         }
       end,
     }
