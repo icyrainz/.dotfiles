@@ -36,7 +36,7 @@ return {
           { name = "buffer", keyword_length = 5 },
         },
         window = {
-          documentation = cmp.config.window.bordered(),
+          -- documentation = cmp.config.window.bordered(),
         },
         formatting = {
           format = require('lspkind').cmp_format({
