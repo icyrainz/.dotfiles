@@ -3,7 +3,6 @@ return {
   ft = {
     "toml",
   },
-	tag = "v0.3.0",
 	config = function()
 		local crates = require("crates")
 

@@ -1,10 +1,9 @@
 return {
-	{
-		"mvllow/modes.nvim",
-		tag = "v0.2.0",
+  {
+    "mvllow/modes.nvim",
     opts = {
       line_opacity = 0.3,
     },
-		config = true,
-	},
+    config = true,
+  },
 }
