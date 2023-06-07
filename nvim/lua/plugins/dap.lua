@@ -55,33 +55,38 @@ return {
       end, opts("scopes"))
 
       vim.keymap.set("n", "<Leader>dt", function()
-        require("dapui").toggle(2)
+        require("dapui").toggle()
       end, opts("toggle UI"))
       vim.keymap.set("n", "<Leader>dt[", function()
         require("dapui").toggle(1)
       end, opts("toggle UI"))
       vim.keymap.set("n", "<Leader>dt]", function()
-        require("dapui").toggle(3)
+        require("dapui").toggle(2)
       end, opts("toggle UI"))
 
       local dap, dapui = require("dap"), require("dapui")
 
+      -- # Sign
+      vim.fn.sign_define("DapBreakpoint", { text = "🟥", texthl = "", linehl = "", numhl = "" })
+      vim.fn.sign_define("DapBreakpointCondition", { text = "🟧", texthl = "", linehl = "", numhl = "" })
+      vim.fn.sign_define("DapLogPoint", { text = "🟩", texthl = "", linehl = "", numhl = "" })
+      vim.fn.sign_define("DapStopped", { text = "🈁", texthl = "", linehl = "", numhl = "" })
+      vim.fn.sign_define("DapBreakpointRejected", { text = "⬜", texthl = "", linehl = "", numhl = "" })
+
       dap.listeners.after.event_initialized["dapui_config"] = function()
-        dapui.open({
-          layout = 2,
-          reset = true,
-        })
+        vim.cmd("tabfirst|tabnext")
+        dapui.open()
       end
-      --
+
       -- dap.listeners.before.event_terminated["dapui_config"] = function()
       -- 	dapui.close({})
       -- 	dapui.setup()
       -- end
-      --
-      -- dap.listeners.before.event_exited["dapui_config"] = function()
-      -- 	dapui.close({})
-      -- 	dapui.setup()
-      -- end
+
+      dap.listeners.before.event_exited["dapui_config"] = function()
+        dapui.close({})
+        dapui.setup()
+      end
     end,
   },
   {
@@ -116,20 +121,13 @@ return {
       }, {
         elements = { {
           id = "console",
-          size = 1
-        } },
-        position = "bottom",
-        size = 10
-      }, {
-        elements = { {
-          id = "console",
           size = 0.5
         }, {
           id = "repl",
           size = 0.5
         } },
         position = "bottom",
-        size = 10
+        size = 15
       } },
     },
   },
@@ -154,11 +152,21 @@ return {
       })
 
       local dap = require("dap")
+      local dap_utils = require("dap.utils")
       dap.adapters["pwa-node"] = dap.adapters.node2
       -- dap.defaults["pwa-node"].external_terminal = {
       -- 	command = "alacritty",
       -- 	args = { "--hold", "--working-directory", vim.fn.getcwd(), "-e" },
       -- }
+
+      require('dap.ext.vscode').load_launchjs(nil, { ['pwa-node'] = { 'typescript' } })
+
+      for i, config in ipairs(dap.configurations.typescript or {}) do
+        dap.configurations.typescript[i] = vim.tbl_deep_extend("force", config, {
+          cwd = vim.fn.getcwd(),
+          sourceMaps = true,
+        })
+      end
     end,
   },
 }

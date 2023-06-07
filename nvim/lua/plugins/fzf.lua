@@ -11,12 +11,13 @@ return {
 				},
 				winopts = {
 					preview = {
-						-- default = "bat",
+						default = "bat",
 					},
-          -- hl = {
-          --   normal = "TelescopeResultsNormal",
-          --   border = "TelescopeResultsBorder",
-          -- },
+          hl = {
+            normal = "TelescopeResultsNormal",
+            border = "TelescopeResultsBorder",
+            cursornr = "TelescopeResultsLineNr",
+          },
 				},
 				-- file_ignore_patterns = {
 				-- },

@@ -6,6 +6,8 @@ set -gx FISH_PATH ~/.config/fish
 
 set -gx RUSTC_WRAPPER /opt/homebrew/bin/sccache
 
+set -gx BAT_THEME "1337"
+
 fish_add_path /opt/homebrew/bin
 fish_add_path /opt/homebrew/sbin
 fish_add_path "$HOME/.cargo/bin"
