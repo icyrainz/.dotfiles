@@ -32,7 +32,12 @@ return {
       vim.keymap.set("n", "<leader>fb", builtin.buffers, opts("buffers"))
       vim.keymap.set("n", "<leader>fht", builtin.help_tags, opts("help tags"))
       vim.keymap.set("n", "<leader>fhl", builtin.highlights, opts("highlights"))
-      vim.keymap.set("n", "<leader>fo", builtin.oldfiles, opts("oldfiles"))
+      vim.keymap.set("n", "<leader>fo", function()
+          return builtin.oldfiles({
+            only_cwd = true,
+          })
+        end,
+        opts("oldfiles"))
       vim.keymap.set("n", "<leader>fr", builtin.registers, opts("registers"))
       vim.keymap.set("n", "<leader>fls", builtin.lsp_workspace_symbols, opts("lsp workspace symbols"))
       vim.keymap.set("n", "<leader>fld", builtin.lsp_dynamic_workspace_symbols, opts("lsp dynamic workspace symbols"))
