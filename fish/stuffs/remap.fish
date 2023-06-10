@@ -42,3 +42,7 @@ function ..    ; cd .. ; end
 function ...   ; cd ../.. ; end
 function ....  ; cd ../../.. ; end
 function ..... ; cd ../../../.. ; end
+
+abbr dcu docker-compose up
+abbr dcd docker-compose down
+abbr dcp docker-compose pull

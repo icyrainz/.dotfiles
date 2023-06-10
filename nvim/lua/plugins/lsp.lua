@@ -84,7 +84,7 @@ return {
         end, opts("Format buffer"))
       end)
 
-      lsp.skip_server_setup({ "rust_analyzer", "tsserver", "eslint" })
+      lsp.skip_server_setup({ "rust_analyzer", "tsserver" })
 
       -- Setup for ufo
       lsp.set_server_config({

@@ -57,12 +57,12 @@ return {
       vim.keymap.set("n", "<Leader>dt", function()
         require("dapui").toggle()
       end, opts("toggle UI"))
-      vim.keymap.set("n", "<Leader>dt[", function()
+      vim.keymap.set("n", "<Leader>d1", function()
         require("dapui").toggle(1)
-      end, opts("toggle UI"))
-      vim.keymap.set("n", "<Leader>dt]", function()
+      end, opts("toggle UI layout 1"))
+      vim.keymap.set("n", "<Leader>d2]", function()
         require("dapui").toggle(2)
-      end, opts("toggle UI"))
+      end, opts("toggle UI layout 2"))
 
       local dap, dapui = require("dap"), require("dapui")
 
