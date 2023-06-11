@@ -4,6 +4,7 @@ return {
     dependencies = {
       "MunifTanjim/nui.nvim",
     },
+    event = "VeryLazy",
     keys = {
       { "<leader>nl", "<CMD>NoiceLast<CR>", desc = "[noice] last" },
       { "<leader>ne", "<CMD>NoiceErrors<CR>", desc = "[noice] errors" },

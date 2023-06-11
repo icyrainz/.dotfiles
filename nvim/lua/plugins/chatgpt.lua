@@ -16,20 +16,25 @@ return {
     },
     keys = {
       {
-        "<leader>no",
+        "<leader>co",
         "<CMD>ChatGPT<CR>",
         desc = "ChatGPT",
       },
       {
-        "<leader>ne",
+        "<leader>ce",
         "<CMD>ChatGPTEditWithInstructions<CR>",
         mode = "v",
         desc = "ChatGPT Edit (selected)",
       },
       {
-        "<leader>ne",
+        "<leader>ce",
         "<CMD>ChatGPTEditWithInstructions<CR>",
         desc = "ChatGPT Edit (all)",
+      },
+      {
+        "<leader>cr",
+        "<CMD>ChatGPTRun<CR>",
+        desc = "ChatGPT Run",
       },
     }
   },

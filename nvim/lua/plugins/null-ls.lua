@@ -1,7 +1,7 @@
 return {
   {
     "jose-elias-alvarez/null-ls.nvim",
-    event = "VeryLazy",
+    event = { "BufReadPre", "BufNewFile" },
     dependencies = {
       "neovim/nvim-lspconfig",
       "nvim-lua/plenary.nvim",
