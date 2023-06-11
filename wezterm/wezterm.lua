@@ -68,10 +68,10 @@ local function is_outside_vim(pane) return not is_inside_vim(pane) end
 
 local function bind_if(cond, key, mods, action)
   local function callback(win, pane)
-    if _G.tmux_navigation_enabled then
-      win:perform_action(act.SendKey({ key = key, mods = mods }), pane)
-      return
-    end
+    -- if _G.tmux_navigation_enabled then
+    --   win:perform_action(act.SendKey({ key = key, mods = mods }), pane)
+    --   return
+    -- end
     if cond(pane) then
       win:perform_action(action, pane)
     else
@@ -157,30 +157,30 @@ config.keys = {
       end),
     },
   },
-  -- bind_if(
-  --   is_outside_vim,
-  --   'h',
-  --   'CTRL',
-  --   act.ActivatePaneDirection('Left')
-  -- ),
-  -- bind_if(
-  --   is_outside_vim,
-  --   'l',
-  --   'CTRL',
-  --   act.ActivatePaneDirection('Right')
-  -- ),
-  -- bind_if(
-  --   is_outside_vim,
-  --   'j',
-  --   'CTRL',
-  --   act.ActivatePaneDirection('Down')
-  -- ),
-  -- bind_if(
-  --   is_outside_vim,
-  --   'k',
-  --   'CTRL',
-  --   act.ActivatePaneDirection('Up')
-  -- ),
+  bind_if(
+    is_outside_vim,
+    'h',
+    'CTRL',
+    act.ActivatePaneDirection('Left')
+  ),
+  bind_if(
+    is_outside_vim,
+    'l',
+    'CTRL',
+    act.ActivatePaneDirection('Right')
+  ),
+  bind_if(
+    is_outside_vim,
+    'j',
+    'CTRL',
+    act.ActivatePaneDirection('Down')
+  ),
+  bind_if(
+    is_outside_vim,
+    'k',
+    'CTRL',
+    act.ActivatePaneDirection('Up')
+  ),
   {
     key = "]",
     mods = "CMD|CTRL",

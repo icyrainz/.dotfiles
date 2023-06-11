@@ -17,7 +17,7 @@ return {
       fold_reset = "R",
     },
   },
-  init = function()
-    vim.keymap.set('n', '<leader>so', '<cmd>:SymbolsOutline<CR>')
-  end,
+  keys = {
+    { "<leader>so", "<cmd>SymbolsOutline<CR>", desc = "Symbols outline" }
+  },
 }

@@ -23,20 +23,8 @@ return {
           TelescopePreviewNormal = { bg = theme.ui.bg_dim },
           TelescopePreviewBorder = { bg = theme.ui.bg_dim, fg = theme.ui.bg_dim },
 
-          TreesitterContext = { bg = theme.ui.bg_p1 },
-          TreesitterContextLineNumber = { bg = theme.ui.bg_p1 },
-          TreesitterContextBottom = { bg = theme.ui.bg_p1 },
-
-          InclineNormal = { bg = theme.ui.bg_p1 },
-          InclineNormalNC = { bg = theme.ui.bg_p1 },
-
-          LirFloatNormal = { fg = theme.ui.fg_dim, bg = theme.ui.bg_m1 },
-          LirFloatBorder = { fg = theme.ui.bg_m1, bg = theme.ui.bg_m1 },
-
-          NeoTreeFloatBorder = { bg = theme.ui.bg_m1, fg = theme.ui.bg_m1 },
-
           FloatBorder = { bg = theme.ui.bg_m1, fg = theme.ui.bg_m1 },
-          NormalFloat = { bg = theme.ui.bg_m1 },
+          NormalFloat = { fg = theme.ui.fg_dim, bg = theme.ui.bg_m1 },
         }
       end,
     }
@@ -49,6 +37,7 @@ return {
   -- },
   {
     "folke/tokyonight.nvim",
+    enabled = false,
     opts = {
       transparent = true,
       styles = {

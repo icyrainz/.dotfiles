@@ -1,6 +1,9 @@
 return {
   {
     "tamago324/lir.nvim",
+    keys = {
+      { "-", "<Cmd>lua require'lir.float'.toggle()<CR>", noremap = true, silent = true },
+    },
     config = function()
       local actions = require 'lir.actions'
       local mark_actions = require 'lir.mark.actions'
@@ -51,8 +54,6 @@ return {
         hide_cursor = true,
       }
 
-      vim.keymap.set("n", "-", "<Cmd>lua require'lir.float'.toggle()<CR>", { noremap = true, silent = true })
-
       vim.api.nvim_create_autocmd({ 'FileType' }, {
         pattern = { "lir" },
         callback = function()
@@ -68,6 +69,10 @@ return {
           -- echo cwd
           vim.api.nvim_echo({ { vim.fn.expand("%:~"), "Normal" } }, false, {})
         end
+      })
+
+      vim.api.nvim_set_hl(0, "LirFloatNormal", {
+        link = "TelescopeResultsNormal",
       })
     end,
   },

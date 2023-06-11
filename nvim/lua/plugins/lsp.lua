@@ -1,6 +1,7 @@
 return {
   {
     "VonHeikemen/lsp-zero.nvim",
+    event = "VeryLazy",
     branch = "v2.x",
     config = function()
       -- This is where you modify the settings for lsp-zero
@@ -12,7 +13,7 @@ return {
   {
     "neovim/nvim-lspconfig",
     cmd = "LspInfo",
-    event = { "BufReadPre", "BufNewFile" },
+    event = "VeryLazy",
     dependencies = {
       "hrsh7th/cmp-nvim-lsp",
       "williamboman/mason-lspconfig.nvim",

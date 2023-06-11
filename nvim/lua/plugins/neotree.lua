@@ -42,8 +42,9 @@ return {
     --   },
     -- }
   },
-  init = function()
-    vim.keymap.set("n", "<leader>e", ":Neotree toggle left<cr>", { desc = "Neotree toggle left" })
-    vim.keymap.set("n", "<leader>E", ":Neotree toggle float<cr>", { desc = "Neotree toggle float" })
-  end,
+  keys = {
+    { "<leader>e", "<CMD>Neotree toggle left<CR>", desc = "Neotree toggle left" },
+    { "<leader>E", "<CMD>Neotree toggle float<CR>", desc = "Neotree toggle float" },
+  },
+  cmd = { "Neotree" },
 }

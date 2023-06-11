@@ -1,6 +1,7 @@
 return {
   {
     "mfussenegger/nvim-dap",
+    event = "VeryLazy",
     config = function()
       local function opts(desc)
         return { desc = "[DAP] " .. desc }
@@ -91,6 +92,7 @@ return {
   },
   {
     "theHamsta/nvim-dap-virtual-text",
+    event = "VeryLazy",
     opts = {},
     dependencies = {
       "mfussenegger/nvim-dap",
@@ -98,6 +100,7 @@ return {
   },
   {
     "rcarriga/nvim-dap-ui",
+    event = "VeryLazy",
     dependencies = {
       "mfussenegger/nvim-dap",
     },
@@ -136,6 +139,7 @@ return {
     dependencies = {
       "mfussenegger/nvim-dap",
     },
+    event = "VeryLazy",
     config = function()
       require("mason-nvim-dap").setup({
         ensure_installed = { "rust", "js", "node2" },

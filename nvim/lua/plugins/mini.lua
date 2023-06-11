@@ -3,7 +3,13 @@ return {
   config = function()
     require("mini.ai").setup()
 
-    require("mini.align").setup()
+    -- require("mini.align").setup()
+    local align = require('mini.align')
+    require("mini.align").setup({
+      modifiers = {
+        i = function(steps, _) table.insert(steps.pre_split, align.gen_step.ignore_split({ '".-"', "'.-'" })) end,
+      },
+    })
 
     require("mini.basics").setup()
 
@@ -49,7 +55,7 @@ return {
 
     -- require("mini.cursorword").setup()
 
-    -- require("mini.tabline").setup()
+    require("mini.tabline").setup()
     -- require("mini.statusline").setup({
     -- 	content = {
     -- 		active = function()

@@ -1,4 +1,5 @@
 return {
+  enabled = false,
 	"b0o/incline.nvim",
 	opts = {
 		render = function(props)

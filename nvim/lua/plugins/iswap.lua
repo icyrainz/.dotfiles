@@ -1,9 +1,9 @@
 return {
   "mizlan/iswap.nvim",
-  init = function()
-    vim.keymap.set("n", "<leader>[", ":ISwapNodeWithLeft<CR>", { desc = "Swap left", silent = true })
-    vim.keymap.set("n", "<leader>]", ":ISwapNodeWithRight<CR>", { silent = true, desc = "Swap right" })
-  end,
+  keys = {
+    { "<leader>[", ":ISwapNodeWithLeft<CR>", desc = "Swap left" },
+    { "<leader>]", ":ISwapNodeWithRight<CR>", desc = "Swap right" },
+  },
   opts = {
     move_cursor = true,
     flash_style = false,

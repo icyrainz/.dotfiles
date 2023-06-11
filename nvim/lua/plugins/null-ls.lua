@@ -1,6 +1,7 @@
 return {
   {
     "jose-elias-alvarez/null-ls.nvim",
+    event = "VeryLazy",
     dependencies = {
       "neovim/nvim-lspconfig",
       "nvim-lua/plenary.nvim",
@@ -19,6 +20,7 @@ return {
   },
   {
     "jay-babu/mason-null-ls.nvim",
+    event = "VeryLazy",
     dependencies = {
       "williamboman/mason.nvim",
     },

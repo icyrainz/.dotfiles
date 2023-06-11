@@ -1,6 +1,7 @@
 return {
   {
     "L3MON4D3/LuaSnip",
+    event = "VeryLazy",
     dependencies = {
       "rafamadriz/friendly-snippets",
     },
@@ -8,14 +9,26 @@ return {
       require("luasnip.loaders.from_vscode").lazy_load()
     end,
   },
-  "hrsh7th/cmp-nvim-lsp",
-  "hrsh7th/cmp-path",
-  "hrsh7th/cmp-buffer",
+  {
+    "hrsh7th/cmp-nvim-lsp",
+    event = "VeryLazy",
+  },
+  {
+    "hrsh7th/cmp-path",
+    event = "VeryLazy",
+  },
+  {
+    "hrsh7th/cmp-buffer",
+    event = "VeryLazy",
+  },
   -- "hrsh7th/cmp-cmdline",
-  "saadparwaiz1/cmp_luasnip",
+  {
+    "saadparwaiz1/cmp_luasnip",
+    event = "VeryLazy",
+  },
   {
     "hrsh7th/nvim-cmp",
-    event = "InsertEnter",
+    event = "VeryLazy",
     dependencies = {
       "L3MON4D3/LuaSnip",
       "VonHeikemen/lsp-zero.nvim",

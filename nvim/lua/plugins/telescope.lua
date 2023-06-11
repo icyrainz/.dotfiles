@@ -1,47 +1,96 @@
 return {
   {
     "nvim-telescope/telescope.nvim",
-    dependencies = { "nvim-lua/plenary.nvim" },
-    config = function()
-      local telescope = require("telescope")
-      local builtin = require("telescope.builtin")
-      local utils = require("telescope.utils")
-      local actions = require("telescope.actions")
-      local layout = require("telescope.actions.layout")
-
-      local function opts(desc)
-        return { desc = "[Telescope] " .. desc }
-      end
-
-      vim.keymap.set("n", "<leader>ff", builtin.find_files, opts("files"))
-      vim.keymap.set(
-        "n",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "nvim-telescope/telescope-fzf-native.nvim",
+    },
+    cmd = { "Telescope" },
+    keys = {
+      {
+        "<leader>ff",
+        function() require("telescope.builtin").find_files() end,
+        desc = "[Telescope] files",
+      },
+      {
         "<leader>fa",
-        "<cmd> Telescope find_files follow=true no_ignore=true hidden=true <CR>",
-        opts("files (all)")
-      )
-      vim.keymap.set("n", "<leader>fe", function()
-        builtin.live_grep({ cwd = utils.buffer_dir() })
-      end, opts("files in same dir"))
-      vim.keymap.set("n", "<leader>fg", "<cmd>Telescope live_grep<CR>", opts("live grep"))
-      vim.keymap.set("n", "<leader>fw", builtin.grep_string, opts("grep word"))
-      vim.keymap.set("n", "<leader>fs", function()
-        require('telescope.builtin').grep_string({ search = vim.fn.input("Search term: ") })
-      end, opts("Grep string"))
-      vim.keymap.set("n", "<leader>fb", builtin.buffers, opts("buffers"))
-      vim.keymap.set("n", "<leader>fht", builtin.help_tags, opts("help tags"))
-      vim.keymap.set("n", "<leader>fhl", builtin.highlights, opts("highlights"))
-      vim.keymap.set("n", "<leader>fo", function()
-          return builtin.oldfiles({
+        "<cmd>Telescope find_files follow=true no_ignore=true hidden=true<CR>",
+        desc = "[Telescope] files (all)",
+      },
+      {
+        "<leader>fe",
+        function() require("telescope.builtin").live_grep({ cwd = require("telescope.utils").buffer_dir() }) end,
+        desc = "[Telescope] live grep current dir",
+      },
+      {
+        "<leader>fg",
+        "<cmd>Telescope live_grep<CR>",
+        desc = "[Telescope] live grep",
+      },
+      {
+        "<leader>fw",
+        function() require("telescope.builtin").grep_string() end,
+        desc = "[Telescope] grep word",
+      },
+      {
+        "<leader>fs",
+        function() require('telescope.builtin').grep_string({ search = vim.fn.input("Search term: ") }) end,
+        desc = "[Telescope] grep string",
+      },
+      {
+        "<leader>fb",
+        function() require('telescope.builtin').buffers() end,
+        desc = "[Telescope] buffers",
+      },
+      {
+        "<leader>fn",
+        "<cmd>Telescope noice<CR>",
+        desc = "[Telescope] noice",
+      },
+      {
+        "<leader>fhl",
+        "<cmd>Telescope highlights<CR>",
+        desc = "[Telescope] highlights",
+      },
+      {
+        "<leader>fo",
+        function()
+          return require("telescope.builtin").oldfiles({
             only_cwd = true,
           })
         end,
-        opts("oldfiles"))
-      vim.keymap.set("n", "<leader>fr", builtin.registers, opts("registers"))
-      vim.keymap.set("n", "<leader>fls", builtin.lsp_workspace_symbols, opts("lsp workspace symbols"))
-      vim.keymap.set("n", "<leader>fld", builtin.lsp_dynamic_workspace_symbols, opts("lsp dynamic workspace symbols"))
-
-      vim.keymap.set("n", "<leader>fm", builtin.resume, opts("resume"))
+        desc = "[Telescope] oldfiles",
+      },
+      {
+        "<leader>fr",
+        function() require("telescope.builtin").registers() end,
+        desc = "[Telescope] registers",
+      },
+      {
+        "<leader>flw",
+        function() require("telescope.builtin").lsp_workspace_symbols() end,
+        desc = "[Telescope] lsp workspace symbols",
+      },
+      {
+        "<leader>fld",
+        function() require("telescope.builtin").lsp_dynamic_workspace_symbols() end,
+        desc = "[Telescope] lsp dynamic workspace symbols",
+      },
+      {
+        "<leader>fm",
+        function() require("telescope.builtin").marks() end,
+        desc = "[Telescope] marks",
+      },
+      {
+        "<leader>ft",
+        function() require("telescope.builtin").resume() end,
+        desc = "[Telescope] resume",
+      },
+    },
+    config = function()
+      local telescope = require("telescope")
+      local actions = require("telescope.actions")
+      local layout = require("telescope.actions.layout")
 
       telescope.setup({
         defaults = {
@@ -63,17 +112,6 @@ return {
             },
           },
         },
-      })
-    end,
-  },
-  {
-    "nvim-telescope/telescope-fzf-native.nvim",
-    dependencies = {
-      "nvim-telescope/telescope.nvim",
-    },
-    build = "make",
-    config = function()
-      require('telescope').setup {
         extensions = {
           fzf = {
             fuzzy = true,                   -- false will only do exact matching
@@ -83,16 +121,30 @@ return {
             -- the default case_mode is "smart_case"
           }
         }
-      }
-      -- To get fzf loaded and working with telescope, you need to call
-      -- load_extension, somewhere after setup function:
+      })
+      require("telescope").load_extension("noice")
       require('telescope').load_extension('fzf')
     end,
+  },
+  {
+    "nvim-telescope/telescope-fzf-native.nvim",
+    dependencies = {
+      "nvim-telescope/telescope.nvim",
+    },
+    lazy = true,
+    build = "make",
   },
   {
     "nvim-telescope/telescope-live-grep-args.nvim",
     dependencies = {
       "nvim-telescope/telescope.nvim",
+    },
+    keys = {
+      {
+        "<leader>fj",
+        "<cmd>Telescope live_grep_args<CR>",
+        desc = "[Telescope] live grep with args",
+      }
     },
     config = function()
       local telescope = require("telescope")
@@ -112,8 +164,6 @@ return {
         },
       })
       telescope.load_extension("live_grep_args")
-
-      vim.keymap.set("n", "<leader>fj", "<cmd>Telescope live_grep_args<CR>", { desc = "[Telescope] live grep with args" })
     end,
   },
   {
@@ -121,9 +171,15 @@ return {
     dependencies = {
       "nvim-telescope/telescope.nvim",
     },
+    keys = {
+      {
+        "<leader>fp",
+        "<cmd>Telescope file_browser<CR>",
+        desc = "[Telescope] file browser",
+      }
+    },
     config = function()
       require("telescope").load_extension("file_browser")
-      vim.keymap.set("n", "<leader>fp", "<cmd>Telescope file_browser<CR>", { desc = "[Telescope] file browser" })
     end
   },
 }

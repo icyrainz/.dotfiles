@@ -4,16 +4,22 @@ return {
   "nvim-tree/nvim-web-devicons",
 
   -- Editor
-  "tommcdo/vim-exchange",
-  "tpope/vim-abolish",
+  {
+    "tommcdo/vim-exchange",
+    event = "VeryLazy",
+  },
+  {
+    "tpope/vim-abolish",
+    event = "VeryLazy",
+  },
 
-  -- Quickfix
   "kevinhwang91/promise-async",
 
   {
     "junegunn/fzf",
     build = function()
       vim.fn['fzf#install']()
-    end
+    end,
+    event = "VeryLazy",
   },
 }
