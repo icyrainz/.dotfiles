@@ -3,8 +3,8 @@ return {
     "stevearc/qf_helper.nvim",
     event = "VeryLazy",
     keys = {
-      { "<leader>q", "<cmd>QFToggle<CR>",  desc = "Close quickfix" },
-      { "<leader>Q", "<cmd>QFToggle!<CR>", desc = "Close quickfix!" },
+      { "<leader>q", "<CMD>QFToggle<CR>",  desc = "Close quickfix" },
+      { "<leader>Q", "<CMD>QFToggle!<CR>", desc = "Close quickfix!" },
     },
     opts = {
       quickfix = {

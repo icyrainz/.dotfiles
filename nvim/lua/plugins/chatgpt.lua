@@ -17,18 +17,18 @@ return {
     keys = {
       {
         "<leader>no",
-        "<cmd>ChatGPT<CR>",
+        "<CMD>ChatGPT<CR>",
         desc = "ChatGPT",
       },
       {
         "<leader>ne",
-        "<cmd>ChatGPTEditWithInstructions<CR>",
+        "<CMD>ChatGPTEditWithInstructions<CR>",
         mode = "v",
         desc = "ChatGPT Edit (selected)",
       },
       {
         "<leader>ne",
-        "<cmd>ChatGPTEditWithInstructions<CR>",
+        "<CMD>ChatGPTEditWithInstructions<CR>",
         desc = "ChatGPT Edit (all)",
       },
     }

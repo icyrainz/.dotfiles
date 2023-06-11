@@ -72,8 +72,8 @@ return {
 			})
 		end,
     keys = {
-      { "<leader>fF", "<cmd>FzfLua files<CR>", desc = "[Fzf] files" },
-      { "<leader>fW", "<cmd>FzfLua grep_cword<CR>", desc = "[Fzf] grep word" },
+      { "<leader>fF", "<CMD>FzfLua files<CR>", desc = "[Fzf] files" },
+      { "<leader>fW", "<CMD>FzfLua grep_cword<CR>", desc = "[Fzf] grep word" },
       { "<leader>fO", function()
         require("fzf-lua").oldfiles({
           cwd_only = function()
@@ -81,8 +81,8 @@ return {
           end,
         })
       end, desc = "[Fzf] oldfiles" },
-      { "<leader>fG", "<cmd>FzfLua grep_project<CR>", desc = "[Fzf] grep project" },
-      { "<leader>fT", "<cmd>FzfLua resume<CR>", desc = "[Fzf] resume" },
+      { "<leader>fG", "<CMD>FzfLua grep_project<CR>", desc = "[Fzf] grep project" },
+      { "<leader>fT", "<CMD>FzfLua resume<CR>", desc = "[Fzf] resume" },
     }
 	},
 }

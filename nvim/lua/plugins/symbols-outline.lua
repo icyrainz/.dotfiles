@@ -18,6 +18,6 @@ return {
     },
   },
   keys = {
-    { "<leader>so", "<cmd>SymbolsOutline<CR>", desc = "Symbols outline" }
+    { "<leader>so", "<CMD>SymbolsOutline<CR>", desc = "Symbols outline" }
   },
 }

@@ -5,7 +5,7 @@ return {
 	},
 	{
 		"lewis6991/gitsigns.nvim",
-    event = "VeryLazy",
+    event = { "BufReadPre", "BufNewFile" },
 		config = true,
 	},
 	{
@@ -28,8 +28,8 @@ return {
 	{
 		"f-person/git-blame.nvim",
     keys = {
-      { "<leader>gbf", "<cmd>GitBlameCopyFileURL<CR>", desc = "Git blame copy file URL" },
-      { "<leader>gbc", "<cmd>GitBlameCopyCommitURL<CR>", desc = "Git blame copy commit URL" },
+      { "<leader>gbf", "<CMD>GitBlameCopyFileURL<CR>", desc = "Git blame copy file URL" },
+      { "<leader>gbc", "<CMD>GitBlameCopyCommitURL<CR>", desc = "Git blame copy commit URL" },
     },
 		init = function()
 			vim.g.gitblame_display_virtual_text = 0 -- Disable virtual text

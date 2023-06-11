@@ -14,7 +14,7 @@ return {
       },
       {
         "<leader>fa",
-        "<cmd>Telescope find_files follow=true no_ignore=true hidden=true<CR>",
+        "<CMD>Telescope find_files follow=true no_ignore=true hidden=true<CR>",
         desc = "[Telescope] files (all)",
       },
       {
@@ -24,7 +24,7 @@ return {
       },
       {
         "<leader>fg",
-        "<cmd>Telescope live_grep<CR>",
+        "<CMD>Telescope live_grep<CR>",
         desc = "[Telescope] live grep",
       },
       {
@@ -44,12 +44,12 @@ return {
       },
       {
         "<leader>fn",
-        "<cmd>Telescope noice<CR>",
+        "<CMD>Telescope noice<CR>",
         desc = "[Telescope] noice",
       },
       {
         "<leader>fhl",
-        "<cmd>Telescope highlights<CR>",
+        "<CMD>Telescope highlights<CR>",
         desc = "[Telescope] highlights",
       },
       {
@@ -142,7 +142,7 @@ return {
     keys = {
       {
         "<leader>fj",
-        "<cmd>Telescope live_grep_args<CR>",
+        "<CMD>Telescope live_grep_args<CR>",
         desc = "[Telescope] live grep with args",
       }
     },
@@ -174,7 +174,7 @@ return {
     keys = {
       {
         "<leader>fp",
-        "<cmd>Telescope file_browser<CR>",
+        "<CMD>Telescope file_browser<CR>",
         desc = "[Telescope] file browser",
       }
     },

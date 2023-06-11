@@ -45,8 +45,8 @@ vim.keymap.set("n", "<A-Right>", ":vertical resize +5<CR>", { silent = true, des
 vim.keymap.set("n", "<A-Up>", ":resize +2<CR>", { silent = true, desc = "Resize +2" })
 vim.keymap.set("n", "<A-Down>", ":resize -2<CR>", { silent = true, desc = "Resize -2" })
 
-vim.keymap.set("n", "<leader>cp", "<cmd>call setreg('+', expand('%:p:~'))<CR>", { desc = "Copy current buffer file path to clipboard"})
-vim.keymap.set("n", "<leader>cP", "<cmd>call setreg('+', expand('%:p:~:h'))<CR>", { desc = "Copy current buffer path to clipboard"})
+vim.keymap.set("n", "<leader>cp", "<CMD>call setreg('+', expand('%:p:~'))<CR>", { desc = "Copy current buffer file path to clipboard"})
+vim.keymap.set("n", "<leader>cP", "<CMD>call setreg('+', expand('%:p:~:h'))<CR>", { desc = "Copy current buffer path to clipboard"})
 
 vim.keymap.set("i", "<C-a>", "<Esc>I", { silent = true, desc = "Goto start of line" })
 vim.keymap.set("i", "<C-e>", "<Esc>A", { silent = true, desc = "Goto end of line" })
