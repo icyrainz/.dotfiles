@@ -68,10 +68,10 @@ local function is_outside_vim(pane) return not is_inside_vim(pane) end
 
 local function bind_if(cond, key, mods, action)
   local function callback(win, pane)
-    -- if _G.tmux_navigation_enabled then
-    --   win:perform_action(act.SendKey({ key = key, mods = mods }), pane)
-    --   return
-    -- end
+    if _G.tmux_navigation_enabled then
+      win:perform_action(act.SendKey({ key = key, mods = mods }), pane)
+      return
+    end
     if cond(pane) then
       win:perform_action(action, pane)
     else
@@ -82,7 +82,7 @@ local function bind_if(cond, key, mods, action)
   return { key = key, mods = mods, action = wez.action_callback(callback) }
 end
 
-_G.tmux_navigation_enabled = false
+_G.tmux_navigation_enabled = true
 
 local function toggle_tmux_navigation(window)
   _G.tmux_navigation_enabled = not _G.tmux_navigation_enabled
@@ -206,17 +206,18 @@ config.keys = {
   {
     key = "e",
     mods = "CMD",
-    action = act.ShowLauncher,
+    action = wez.action_callback(function(window, pane)
+      local overrides = window:get_config_overrides() or {}
+      if not overrides.window_background_opacity then
+        overrides.window_background_opacity = 1
+      else
+        overrides.window_background_opacity = nil
+      end
+      window:set_config_overrides(overrides)
+    end)
   }
 }
 
--- -- Configure default multiplexer ssh domain
--- config.ssh_domains = {
---   {
---     name = 'localhost',
---     remote_address = 'localhost',
---   },
--- }
 -- config.default_gui_startup_args = {
 --   'connect',
 --   'localhost'
