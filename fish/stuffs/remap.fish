@@ -5,13 +5,7 @@ if type -P lsd >/dev/null 2>&1
     abbr lt 'lsd --tree --depth=2 --group-directories-first'
     abbr llt 'lsd -l --tree --depth=2 --group-directories-first'
     abbr lT 'lsd --tree --depth=4 --group-directories-first'
-else if type -P exa >/dev/null 2>&1
-    abbr ls 'exa'
-    abbr l 'exa -l --group-directories-first'
-    abbr ll 'exa -l --group-directories-first'
-    abbr lt 'exa --tree --level=2 --group-directories-first'
-    abbr llt 'exa -l --tree --level=2 --group-directories-first'
-    abbr lT 'exa --tree --level=4 --group-directories-first'
+    abbr la 'lsd --all'
 else
     abbr l 'ls -lah'
     abbr ll 'ls -alF'
@@ -20,6 +14,7 @@ end
 
 abbr t 'tmux attach || tmux new-session'
 abbr ta 'tmux attach -t'
+abbr td 'tmux detach'
 abbr ts 'tmux new-session -s'
 abbr tc 'tmux choose-session'
 abbr tl 'tmux list-sessions'
