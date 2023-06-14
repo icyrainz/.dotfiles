@@ -1,16 +1,16 @@
 return {
-	{
-		"williamboman/mason.nvim",
-		build = function()
-			pcall(vim.cmd, "MasonUpdate")
-		end,
+  {
+    "williamboman/mason.nvim",
+    build = function()
+      pcall(vim.cmd, "MasonUpdate")
+    end,
     event = "VeryLazy",
-		config = true,
-	},
-	{
-		"williamboman/mason-lspconfig.nvim",
-		dependencies = { "williamboman/mason.nvim" },
+    config = true,
+  },
+  {
+    "williamboman/mason-lspconfig.nvim",
+    dependencies = { "williamboman/mason.nvim" },
     event = "VeryLazy",
-		opts = {},
-	},
+    opts = {},
+  },
 }

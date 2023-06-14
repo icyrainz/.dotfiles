@@ -25,9 +25,13 @@
       path: fish/config.fish
     ~/.config/fish/stuffs:
       path: fish/stuffs
+    ~/.config/karabiner/karabiner.json:
+      path: karabiner/karabiner.json
+    ~/.hammerspoon:
+      path: hammerspoon
 
 - shell:
     - [git submodule update --init --recursive, Installing submodules]
     - [./install_tools.sh, Installing tools]
-    - [./install_antidote.sh, Installing antidote]
+    # - [./install_antidote.sh, Installing antidote]
     - [./install_tmux_tpm.sh, Installing tmux tpm]

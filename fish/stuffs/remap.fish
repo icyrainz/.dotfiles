@@ -18,8 +18,13 @@ else
     abbr la 'ls -A'
 end
 
-# abbr t 'tmux attach || tmux new-session'
+abbr t 'tmux attach || tmux new-session'
+abbr ta 'tmux attach -t'
+abbr ts 'tmux new-session -s'
 abbr tc 'tmux choose-session'
+abbr tl 'tmux list-sessions'
+abbr tka 'tmux kill-server'
+abbr tks 'tmux kill-session -t'
 
 abbr v nvim
 abbr lg lazygit
