@@ -10,8 +10,7 @@ end
 
 local font_array = {
   -- wezterm.font("Iosevka Nerd Font Mono", {weight="Regular", stretch="Normal", style="Normal"}),
-  -- wezterm.font("PragmataProMonoLiga Nerd Font", {weight="Regular", stretch="Normal", style="Normal"}),
-  wezterm.font("PragmataProMonoLiga Nerd Font", {weight="Regular", stretch="Normal", style="Normal"})
+  wezterm.font("PragmataProMonoLiga Nerd Font", { weight = "Regular", stretch = "Normal", style = "Normal" })
 }
 
 local font_index = 1;
@@ -42,11 +41,20 @@ config.hide_tab_bar_if_only_one_tab = true
 
 config.scrollback_lines = 1000000
 
-config.window_background_opacity = 0.9
+local custom_bg, bg = pcall(require, "bg")
+if custom_bg then
+  config.window_background_opacity = bg.window_background_opacity
+  config.window_background_image = bg.bg_file
+else
+  config.window_background_opacity = 0.9
+end
+
 config.macos_window_background_blur = 20
 config.font_size = 17.0
 
 config.window_decorations = "RESIZE"
+
+config.native_macos_fullscreen_mode = true
 
 config.inactive_pane_hsb = {
   saturation = 0.8,
@@ -220,8 +228,9 @@ config.keys = {
       local overrides = window:get_config_overrides() or {}
       if not overrides.window_background_opacity then
         overrides.window_background_opacity = 1
+        overrides.window_background_image = ""
       else
-        overrides.window_background_opacity = nil
+        overrides = nil
       end
       window:set_config_overrides(overrides)
     end)
