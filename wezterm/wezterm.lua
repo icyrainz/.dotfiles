@@ -1,14 +1,24 @@
-local wez = require("wezterm")
-local act = wez.action
-local mux = wez.mux
+local wezterm = require("wezterm")
+local act = wezterm.action
+local mux = wezterm.mux
 
 local config = {}
 
-if wez.config_builder then
-  config = wez.config_builder()
+if wezterm.config_builder then
+  config = wezterm.config_builder()
 end
 
+local font_array = {
+  -- wezterm.font("Iosevka Nerd Font Mono", {weight="Regular", stretch="Normal", style="Normal"}),
+  -- wezterm.font("PragmataProMonoLiga Nerd Font", {weight="Regular", stretch="Normal", style="Normal"}),
+  wezterm.font("PragmataProMonoLiga Nerd Font", {weight="Regular", stretch="Normal", style="Normal"})
+}
+
+local font_index = 1;
+config.font = font_array[font_index]
+
 -- config.color_scheme = "tokyonight_storm"
+
 config.force_reverse_video_cursor = true
 config.colors = {
   foreground = "#dcd7ba",
@@ -56,9 +66,9 @@ local function is_inside_vim(pane)
   local tty = pane:get_tty_name()
   if tty == nil then return false end
 
-  local success, stdout, stderr = wez.run_child_process
+  local success, stdout, stderr = wezterm.run_child_process
       { 'sh', '-c',
-        'ps -o state= -o comm= -t' .. wez.shell_quote_arg(tty) .. ' | ' ..
+        'ps -o state= -o comm= -t' .. wezterm.shell_quote_arg(tty) .. ' | ' ..
         'grep -iqE \'^[^TXZ ]+ +(\\S+\\/)?g?(view|l?n?vim?x?)(diff)?$\'' }
 
   return success
@@ -79,7 +89,7 @@ local function bind_if(cond, key, mods, action)
     end
   end
 
-  return { key = key, mods = mods, action = wez.action_callback(callback) }
+  return { key = key, mods = mods, action = wezterm.action_callback(callback) }
 end
 
 _G.tmux_navigation_enabled = true
@@ -104,7 +114,7 @@ config.keys = {
     mods = 'CMD',
     action = act.ActivateWindowRelative(1),
   },
-  { key = 'Enter', mods = 'CTRL|SHIFT', action = act.ActivateCopyMode },
+  -- { key = 'Enter', mods = 'CTRL|SHIFT', action = act.ActivateCopyMode },
   {
     key = 'm',
     mods = 'CMD|CTRL',
@@ -147,10 +157,10 @@ config.keys = {
   },
   {
     key = ',',
-    mods = 'CMD|CTRL',
+    mods = 'CMD',
     action = act.PromptInputLine {
       description = 'Enter new name for tab',
-      action = wez.action_callback(function(window, _, line)
+      action = wezterm.action_callback(function(window, _, line)
         if line then
           window:active_tab():set_title(line)
         end
@@ -182,37 +192,52 @@ config.keys = {
     act.ActivatePaneDirection('Up')
   ),
   {
-    key = "]",
-    mods = "CMD|CTRL",
+    key = "d",
+    mods = "CMD",
     action = act.ScrollByPage(0.5),
   },
   {
-    key = "[",
-    mods = "CMD|CTRL",
+    key = "u",
+    mods = "CMD",
     action = act.ScrollByPage(-0.5),
   },
   {
-    key = "B",
-    mods = "CMD|CTRL",
+    key = "b",
+    mods = "CMD",
     action = act.ScrollToBottom,
   },
   {
     key = "=",
     mods = "CMD|CTRL",
-    action = wez.action_callback(function(window, pane)
+    action = wezterm.action_callback(function(window, pane)
       toggle_tmux_navigation(window)
     end),
   },
   {
     key = "e",
     mods = "CMD",
-    action = wez.action_callback(function(window, pane)
+    action = wezterm.action_callback(function(window, pane)
       local overrides = window:get_config_overrides() or {}
       if not overrides.window_background_opacity then
         overrides.window_background_opacity = 1
       else
         overrides.window_background_opacity = nil
       end
+      window:set_config_overrides(overrides)
+    end)
+  },
+  {
+    key = "p",
+    mods = "CMD",
+    action = wezterm.action_callback(function(window, pane)
+      if font_index > #font_array then
+        font_index = 1
+      else
+        font_index = font_index + 1
+      end
+
+      local overrides = window:get_config_overrides() or {}
+      overrides.font = font_array[font_index]
       window:set_config_overrides(overrides)
     end)
   }
