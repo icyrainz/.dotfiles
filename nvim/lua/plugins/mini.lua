@@ -101,6 +101,9 @@ return {
 
     -- require("mini.fuzzy").setup()
 
+    require('mini.files').setup()
+    vim.keymap.set("n", "-", ":lua MiniFiles.open()<CR>", { desc = "Mini files" })
+
     -- Mini starter
     local status, starter = pcall(require, "mini.starter")
     if not status then
@@ -146,7 +149,6 @@ return {
         -- 	section = "Actions",
         -- },
         { action = "Neotree toggle",                  name = "E: Neo-tree",    section = "Explorer" },
-        { action = "lua require'lir.float'.toggle()", name = "-: Lir",         section = "Explorer" },
         { action = "Lazy",                            name = "L: Lazy",        section = "Plugins" },
         { action = "enew",                            name = "N: New Buffer",  section = "Builtin actions" },
         { action = "qall!",                           name = "Q: Quit Neovim", section = "Builtin actions" },

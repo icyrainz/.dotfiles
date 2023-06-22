@@ -1,5 +1,6 @@
 return {
   "stevearc/oil.nvim",
+  enabled = false,
   keys = {
     { "<leader>-", function() require('oil').open() end, desc = "Open oil" }
   },

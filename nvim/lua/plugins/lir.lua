@@ -1,6 +1,7 @@
 return {
   {
     "tamago324/lir.nvim",
+    enabled = false,
     keys = {
       { "-", "<Cmd>lua require'lir.float'.toggle()<CR>", noremap = true, silent = true },
     },
