@@ -9,7 +9,8 @@ statusmessage.new = function(messageText)
     local frame = screen.primaryScreen():frame()
 
     local styledTextAttributes = {
-      font = { name = 'Monaco', size = 24 },
+      font = { name = 'PragmataProMonoLiga Nerd Font', size = 24 },
+      color = { red = 255, green = 255, blue = 255, alpha = 1 },
     }
 
     local styledText = styledtext.new('🔨 ' .. messageText, styledTextAttributes)
@@ -32,7 +33,7 @@ statusmessage.new = function(messageText)
       }
     )
     background:setRoundedRectRadii(10, 10)
-    background:setFillColor({ red = 0, green = 0, blue = 0, alpha=0.6 })
+    background:setFillColor({ red = 0, green = 0, blue = 0, alpha = 0.6 })
 
     return background, text
   end
