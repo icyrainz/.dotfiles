@@ -25,4 +25,5 @@ vim.opt.listchars = {
   extends = '>',
   precedes = '<',
   nbsp = '␣',
+  trail = '·',
 }
