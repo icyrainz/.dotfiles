@@ -27,11 +27,11 @@ return {
 
     require("mini.indentscope").setup()
 
-    require("mini.jump").setup({
-      delay = {
-        highlight = 10000000,
-      },
-    })
+    -- require("mini.jump").setup({
+    --   delay = {
+    --     highlight = 10000000,
+    --   },
+    -- })
 
     -- require("mini.jump2d").setup()
 
