@@ -13,7 +13,7 @@ return {
         sources = {
           null_ls.builtins.formatting.prettierd,
           null_ls.builtins.formatting.jq,
-          require("typescript.extensions.null-ls.code-actions"),
+          -- require("typescript.extensions.null-ls.code-actions"),
         },
       })
     end,

@@ -3,7 +3,8 @@ return {
   keys = {
     { "<leader>gdo", "<CMD>DiffviewOpen<CR>", desc = "Diffview open" },
     { "<leader>gdc", "<CMD>DiffviewClose<CR>", desc = "Diffview close" },
-    { "<leader>gdf", "<CMD>DiffviewFileHistory<CR>", desc = "Diffview file history" },
+    { "<leader>gdb", "<CMD>DiffviewFileHistory<CR>", desc = "Diffview file history (branch)" },
+    { "<leader>gdf", "<CMD>DiffviewFileHistory %<CR>", desc = "Diffview file history (current buffer)" },
   },
   config = true,
 }

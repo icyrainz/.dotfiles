@@ -47,6 +47,10 @@ vim.keymap.set("n", "<A-Down>", ":resize -2<CR>", { silent = true, desc = "Resiz
 
 vim.keymap.set("n", "<leader>cp", "<CMD>call setreg('+', expand('%:p:~'))<CR>", { desc = "Copy current buffer file path to clipboard"})
 vim.keymap.set("n", "<leader>cP", "<CMD>call setreg('+', expand('%:p:~:h'))<CR>", { desc = "Copy current buffer path to clipboard"})
+vim.keymap.set("n", "<leader>cf", "<CMD>call setreg('+', expand('%:t'))<CR>", { desc = "Copy current buffer file name to clipboard"})
 
 vim.keymap.set("i", "<C-a>", "<Esc>I", { silent = true, desc = "Goto start of line" })
 vim.keymap.set("i", "<C-e>", "<Esc>A", { silent = true, desc = "Goto end of line" })
+
+vim.keymap.set("n", "<leader>t2", "<CMD>lua vim.opt.shiftwidth = 2<CR>", { desc = "Change tab size to 2"})
+

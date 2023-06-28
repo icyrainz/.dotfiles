@@ -66,13 +66,13 @@ return {
         function() require("telescope.builtin").registers() end,
         desc = "[Telescope] registers",
       },
+      -- {
+      --   "<leader>flw",
+      --   function() require("telescope.builtin").lsp_workspace_symbols() end,
+      --   desc = "[Telescope] lsp workspace symbols",
+      -- },
       {
-        "<leader>flw",
-        function() require("telescope.builtin").lsp_workspace_symbols() end,
-        desc = "[Telescope] lsp workspace symbols",
-      },
-      {
-        "<leader>fld",
+        "<leader>fl",
         function() require("telescope.builtin").lsp_dynamic_workspace_symbols() end,
         desc = "[Telescope] lsp dynamic workspace symbols",
       },
