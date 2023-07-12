@@ -101,7 +101,20 @@ return {
 
     -- require("mini.fuzzy").setup()
 
-    require('mini.files').setup()
+    require('mini.files').setup({
+      mappings = {
+        close       = 'q',
+        go_in       = 'L',
+        go_in_plus  = 'l',
+        go_out      = 'h',
+        go_out_plus = 'H',
+        reset       = '<BS>',
+        show_help   = 'g?',
+        synchronize = '=',
+        trim_left   = '<',
+        trim_right  = '>',
+      },
+    })
     vim.keymap.set("n", "-", ":lua MiniFiles.open()<CR>", { desc = "Mini files" })
 
     -- Mini starter
@@ -134,8 +147,8 @@ return {
       query_updaters = [[abcdefghilmnopqrstuvwxyz0123456789_-,.ABCDEFGHIJKLMNOPQRSTUVWXYZ]],
       items = {
         starter.sections.recent_files(9, true, false),
-        { action = "Telescope find_files",            name = "F: Find Files",  section = "Telescope" },
-        { action = "Telescope oldfiles",              name = "O: Old Files",   section = "Telescope" },
+        { action = "Telescope find_files", name = "F: Find Files",  section = "Telescope" },
+        { action = "Telescope oldfiles",   name = "O: Old Files",   section = "Telescope" },
         -- { action = "FzfLua files", name = "F: Find Files", section = "Telescope" },
         -- {
         -- 	action = function()
@@ -148,10 +161,10 @@ return {
         -- 	name = "O: Old Files",
         -- 	section = "Actions",
         -- },
-        { action = "Neotree toggle",                  name = "E: Neo-tree",    section = "Explorer" },
-        { action = "Lazy",                            name = "L: Lazy",        section = "Plugins" },
-        { action = "enew",                            name = "N: New Buffer",  section = "Builtin actions" },
-        { action = "qall!",                           name = "Q: Quit Neovim", section = "Builtin actions" },
+        { action = "Neotree toggle",       name = "E: Neo-tree",    section = "Explorer" },
+        { action = "Lazy",                 name = "L: Lazy",        section = "Plugins" },
+        { action = "enew",                 name = "N: New Buffer",  section = "Builtin actions" },
+        { action = "qall!",                name = "Q: Quit Neovim", section = "Builtin actions" },
       },
     })
 

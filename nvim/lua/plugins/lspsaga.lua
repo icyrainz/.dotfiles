@@ -25,6 +25,7 @@ return {
   config = function()
     require('lspsaga').setup({
       symbol_in_winbar = {
+        show_file = false,
         folder_level = 0,
         ignore_patterns = {
           "oil://*",
