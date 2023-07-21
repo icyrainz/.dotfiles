@@ -1,6 +1,6 @@
 return {
   "nvim-neo-tree/neo-tree.nvim",
-  branch = "v2.x",
+  branch = "v3.x",
   opts = {
     close_if_last_window = false,
     popup_border_style = "NC",
