@@ -6,6 +6,10 @@ return {
     -- require("mini.align").setup()
     local align = require('mini.align')
     require("mini.align").setup({
+      mappings = {
+        start = '<leader>ma',
+        start_with_preview = '<leader>mA',
+      },
       modifiers = {
         i = function(steps, _) table.insert(steps.pre_split, align.gen_step.ignore_split({ '".-"', "'.-'" })) end,
       },
