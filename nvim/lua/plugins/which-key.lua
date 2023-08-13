@@ -26,7 +26,7 @@ return {
       },
       ["<leader>"] = {
         b = { name = "+buffer" },
-        c = { name = "+copy" },
+        c = { name = "+copy+chatgpt" },
         d = { name = "+dap" },
         f = { name = "+file" },
         g = {
@@ -37,8 +37,10 @@ return {
         },
         h = { name = "+harpoon" },
         l = { name = "+leap" },
-        n = { name = "+chatgpt" },
+        n = { name = "+noice" },
+        m = { name = "+mini" },
         s = { name = "+symbols" },
+        t = { name = "+tab" },
         w = { name = "+window" },
         x = { name = "+trouble" },
         [","] = { desc = "Toggle end of line ','" },
