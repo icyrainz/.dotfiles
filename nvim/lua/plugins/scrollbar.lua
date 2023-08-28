@@ -1,4 +1,5 @@
 return {
+  enabled = false,
   "petertriho/nvim-scrollbar",
   opts = {
     excluded_filetypes = {

@@ -55,7 +55,7 @@ return {
         widgets.centered_float(widgets.scopes)
       end, opts("scopes"))
 
-      vim.keymap.set("n", "<Leader>dt", function()
+      vim.keymap.set("n", "<Leader>d", function()
         require("dapui").toggle()
       end, opts("toggle UI"))
       vim.keymap.set("n", "<Leader>d1", function()

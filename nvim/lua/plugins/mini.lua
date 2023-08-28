@@ -113,13 +113,14 @@ return {
         go_out      = 'h',
         go_out_plus = 'H',
         reset       = '<BS>',
+        reveal_cwd  = '@',
         show_help   = 'g?',
         synchronize = '=',
         trim_left   = '<',
         trim_right  = '>',
       },
     })
-    vim.keymap.set("n", "-", ":lua MiniFiles.open()<CR>", { desc = "Mini files" })
+    vim.keymap.set("n", "-", ":lua MiniFiles.open(vim.api.nvim_buf_get_name(0))<CR>", { desc = "Mini files" })
 
     -- Mini starter
     local status, starter = pcall(require, "mini.starter")
