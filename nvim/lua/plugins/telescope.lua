@@ -23,6 +23,21 @@ return {
         desc = "[Telescope] live grep current dir",
       },
       {
+        "<leader>fe1",
+        function() require("telescope.builtin").live_grep({ cwd = vim.fn.expand("%:p:h:h") }) end,
+        desc = "[Telescope] live grep current dir",
+      },
+      {
+        "<leader>fe2",
+        function() require("telescope.builtin").live_grep({ cwd = vim.fn.expand("%:p:h:h:h") }) end,
+        desc = "[Telescope] live grep current dir",
+      },
+      {
+        "<leader>fe3",
+        function() require("telescope.builtin").live_grep({ cwd = vim.fn.expand("%:p:h:h:h:h") }) end,
+        desc = "[Telescope] live grep current dir",
+      },
+      {
         "<leader>fg",
         "<CMD>Telescope live_grep<CR>",
         desc = "[Telescope] live grep",
