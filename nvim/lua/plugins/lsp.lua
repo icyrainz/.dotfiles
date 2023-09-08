@@ -48,6 +48,7 @@ return {
 
       require("lspconfig").lua_ls.setup(lsp.nvim_lua_ls())
 
+
       lsp.on_attach(function(_, bufnr)
         local function opts(desc)
           return { desc = "[LSP] " .. desc, buffer = bufnr, remap = false }
@@ -85,7 +86,7 @@ return {
         end, opts("Format buffer"))
       end)
 
-      lsp.skip_server_setup({ "rust_analyzer", "tsserver" })
+      lsp.skip_server_setup({ "rust_analyzer", "tsserver", "elixirls" })
 
       -- Setup for ufo
       lsp.set_server_config({
