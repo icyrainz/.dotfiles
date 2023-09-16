@@ -1,4 +1,4 @@
-theme = "tokyonight_transparent"
+theme = "kanagawa_transparent"
 
 [editor]
 line-number = "relative"
@@ -7,3 +7,6 @@ line-number = "relative"
 insert = "bar"
 normal = "block"
 select = "underline"
+
+[keys.normal]
+"F3" = ":format"

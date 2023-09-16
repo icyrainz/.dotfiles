@@ -29,6 +29,8 @@
       path: karabiner/karabiner.json
     ~/.hammerspoon:
       path: hammerspoon
+    ~/.config/helix:
+      path: helix
 
 - shell:
     - [git submodule update --init --recursive, Installing submodules]
