@@ -22,19 +22,27 @@ return {
       vim.keymap.set("n", "<F12>", function()
         require("dap").step_out()
       end, opts("step out"))
+      vim.keymap.set("n", "<F6>", function()
+        require("dap").toggle_breakpoint()
+      end, opts("toggle breakpoint"))
+      vim.keymap.set("n", "<F7>", function()
+        require("dap").set_breakpoint(vim.fn.input("Breakpoint condition: "))
+      end, opts("toggle breakpoint"))
+
       vim.keymap.set("n", "<Leader>db", function()
         require("dap").toggle_breakpoint()
       end, opts("toggle breakpoint"))
       vim.keymap.set("n", "<Leader>dB", function()
         require("dap").set_breakpoint()
       end, opts("set breakpoint"))
-      vim.keymap.set("n", "<Leader>dm", function()
+      vim.keymap.set("n", "<Leader>dl", function()
         require("dap").set_breakpoint(nil, nil, vim.fn.input("Log point message: "))
       end, opts("Log point"))
-      vim.keymap.set("n", "<Leader>dr", function()
+
+      vim.keymap.set("n", "<Leader>dor", function()
         require("dap").repl.open()
       end, opts("open REPL"))
-      vim.keymap.set("n", "<Leader>dl", function()
+      vim.keymap.set("n", "<Leader>dr", function()
         require("dap").run_last()
       end, opts("run last"))
       vim.keymap.set("n", "<Leader>dc", function()
@@ -119,16 +127,18 @@ return {
           id = "watches",
           size = 0.25
         } },
-        position = "left",
-        size = 40
+        position = "right",
+        size = 10
       }, {
         elements = { {
           id = "console",
           size = 0.5
-        }, {
-          id = "repl",
-          size = 0.5
-        } },
+        },
+          -- {
+          --   id = "repl",
+          --   size = 0.5
+          -- }
+        },
         position = "bottom",
         size = 15
       } },

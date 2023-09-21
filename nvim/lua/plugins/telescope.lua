@@ -97,7 +97,7 @@ return {
         desc = "[Telescope] marks",
       },
       {
-        "<leader>ft",
+        "<leader>f'",
         function() require("telescope.builtin").resume() end,
         desc = "[Telescope] resume",
       },

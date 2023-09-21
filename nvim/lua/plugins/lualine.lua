@@ -11,8 +11,8 @@ return {
 						outerbg = "#16161d",
 						normal = "#7e9cd8",
 						insert = "#98bb6c",
-						visual = "#9745be",
-						replace = "#e46876",
+						visual = "#e46876",
+						replace = "#9745be",
 						command = "#e6c384",
 					}
 					return {
