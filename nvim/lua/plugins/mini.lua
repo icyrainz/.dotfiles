@@ -154,6 +154,7 @@ return {
         starter.sections.recent_files(9, true, false),
         { action = "Telescope find_files", name = "F: Find Files",  section = "Telescope" },
         { action = "Telescope oldfiles",   name = "O: Old Files",   section = "Telescope" },
+        { action = "Telescope live_grep",   name = "G: Grep Files",   section = "Telescope" },
         -- { action = "FzfLua files", name = "F: Find Files", section = "Telescope" },
         -- {
         -- 	action = function()
@@ -168,6 +169,7 @@ return {
         -- },
         { action = "Neotree toggle",       name = "E: Neo-tree",    section = "Explorer" },
         { action = "Lazy",                 name = "L: Lazy",        section = "Plugins" },
+        { action = "Mason",                name = "M: Mason",       section = "Plugins" },
         { action = "enew",                 name = "N: New Buffer",  section = "Builtin actions" },
         { action = "qall!",                name = "Q: Quit Neovim", section = "Builtin actions" },
       },
