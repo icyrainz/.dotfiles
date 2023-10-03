@@ -29,7 +29,17 @@ return {
         name = "recommended",
         set_lsp_keymaps = {
           preserve_mappings = false,
-          omit = { "gi", "go", "<F3>" },
+          omit = {
+            "gd",
+            "gD",
+            "gi",
+            "go",
+            "gr",
+            "gs",
+            "<F3>",
+
+            "gl"
+          },
         },
       })
 
@@ -65,9 +75,16 @@ return {
         -- vim.keymap.set("n", "<leader>rr", function() vim.lsp.buf.references() end, opts("References"))
         -- vim.keymap.set("n", "<leader>rn", function() vim.lsp.buf.rename() end, opts("Rename"))
         -- vim.keymap.set("n", "<leader>wf", function() vim.lsp.buf.format() end, opts("Format"))
-        vim.keymap.set("n", "gt", function() vim.lsp.buf.type_definition() end, opts("Type definition"))
+        vim.keymap.set("n", "gd", "<cmd>lua vim.lsp.buf.definition()<cr>", opts("Definition"))
+        vim.keymap.set("n", "gD", "<cmd>lua vim.lsp.buf.declaration()<cr>", opts("Declaration"))
         vim.keymap.set("n", "ge", function() vim.lsp.buf.implementation() end, opts("Implementation"))
+        vim.keymap.set("n", "gt", function() vim.lsp.buf.type_definition() end, opts("Type definition"))
+        vim.keymap.set("n", "gr", "<cmd>lua vim.lsp.buf.references()<cr>", opts("References"))
+        vim.keymap.set("n", "<leader>k", function() vim.lsp.buf.signature_help() end, opts("Signature help"))
         vim.keymap.set("i", "<C-s>", function() vim.lsp.buf.signature_help() end, opts("Signature help"))
+
+        vim.keymap.set("n", "gl", "<cmd>lua vim.diagnostic.open_float()<cr>", opts("Diagnostics float"))
+
 
         -- If null-ls exists, run format using null-ls. Otherwise use other LSP.
         vim.keymap.set({ "n", "x" }, "<F3>", function()
