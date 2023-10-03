@@ -29,7 +29,7 @@ return {
         name = "recommended",
         set_lsp_keymaps = {
           preserve_mappings = false,
-          omit = { "go", "<F3>" },
+          omit = { "gi", "go", "<F3>" },
         },
       })
 
@@ -65,7 +65,8 @@ return {
         -- vim.keymap.set("n", "<leader>rr", function() vim.lsp.buf.references() end, opts("References"))
         -- vim.keymap.set("n", "<leader>rn", function() vim.lsp.buf.rename() end, opts("Rename"))
         -- vim.keymap.set("n", "<leader>wf", function() vim.lsp.buf.format() end, opts("Format"))
-        vim.keymap.set("n", "ge", function() vim.lsp.buf.type_definition() end, opts("Type definition"))
+        vim.keymap.set("n", "gt", function() vim.lsp.buf.type_definition() end, opts("Type definition"))
+        vim.keymap.set("n", "ge", function() vim.lsp.buf.implementation() end, opts("Implementation"))
         vim.keymap.set("i", "<C-s>", function() vim.lsp.buf.signature_help() end, opts("Signature help"))
 
         -- If null-ls exists, run format using null-ls. Otherwise use other LSP.

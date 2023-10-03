@@ -30,8 +30,6 @@ vim.keymap.set("n", "<leader>j", "o<Esc>", { desc = "Goto new line below" })
 vim.keymap.set("n", "c*", "*``cgn", { desc = "Replace word" })
 vim.keymap.set("n", "c#", "#``cgN", { desc = "Replace word reverse" })
 
-vim.keymap.set("i", "<C-h>", "<Left>", { desc = "Move cursor left" })
-vim.keymap.set("i", "<C-l>", "<Right>", { desc = "Move cursor right" })
 vim.keymap.set("i", "<C-k>", "<Esc>O", { desc = "Insert empty line above" })
 
 -- vim.keymap.set("v", "<", "<gv", { desc = "Shift left" })

@@ -5,5 +5,5 @@ return {
     "neovim/nvim-lspconfig",
   },
   opts = {},
-  ft = "typescript",
+  ft = { "typescript", "typescriptreact", "typescript.tsx" },
 }
