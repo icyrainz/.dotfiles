@@ -21,14 +21,11 @@ abbr tl 'tmux list-sessions'
 abbr tka 'tmux kill-server'
 abbr tks 'tmux kill-session -t'
 
+abbr yz 'yazi'
+
 abbr v nvim
 abbr lg lazygit
 abbr lgit lazygit
-
-abbr fi 'fisher install'
-abbr fl 'fisher list'
-abbr fu 'fisher update'
-abbr fr 'fisher remove'
 
 abbr bk 'cd -'
 abbr home 'cd ~'
@@ -41,7 +38,9 @@ abbr zd 'z dotfiles'
 function ..    ; cd .. ; end
 function ...   ; cd ../.. ; end
 function ....  ; cd ../../.. ; end
+function .3    ; cd ../../.. ; end
 function ..... ; cd ../../../.. ; end
+function .4    ; cd ../../../.. ; end
 
 abbr dcu docker-compose up
 abbr dcd docker-compose down
