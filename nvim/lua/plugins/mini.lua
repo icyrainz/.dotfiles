@@ -59,7 +59,7 @@ return {
 
     -- require("mini.cursorword").setup()
 
-    -- require("mini.tabline").setup()
+    require("mini.tabline").setup()
     -- require("mini.statusline").setup({
     -- 	content = {
     -- 		active = function()
@@ -108,8 +108,8 @@ return {
     require('mini.files').setup({
       mappings = {
         close       = 'q',
-        go_in       = '<CR>',
-        go_in_plus  = 'l',
+        go_in       = 'l',
+        go_in_plus  = '<CR>',
         go_out      = 'h',
         go_out_plus = 'H',
         reset       = '<BS>',

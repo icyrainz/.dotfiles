@@ -1,5 +1,6 @@
 return {
   "glepnir/lspsaga.nvim",
+  enabled = false,
   event = "LspAttach",
   dependencies = {
     { "nvim-tree/nvim-web-devicons" },

@@ -59,7 +59,7 @@ return {
       require("lspconfig").lua_ls.setup(lsp.nvim_lua_ls())
 
 
-      lsp.on_attach(function(_, bufnr)
+      lsp.on_attach(function(lspclient, bufnr)
         local function opts(desc)
           return { desc = "[LSP] " .. desc, buffer = bufnr, remap = false }
         end
@@ -84,6 +84,7 @@ return {
         vim.keymap.set("i", "<C-s>", function() vim.lsp.buf.signature_help() end, opts("Signature help"))
 
         vim.keymap.set("n", "gl", "<cmd>lua vim.diagnostic.open_float()<cr>", opts("Diagnostics float"))
+
 
 
         -- If null-ls exists, run format using null-ls. Otherwise use other LSP.

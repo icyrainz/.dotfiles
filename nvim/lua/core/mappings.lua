@@ -17,12 +17,12 @@ vim.keymap.set("n", "<C-u>", "<C-u>zz", { desc = "Go up half page" })
 vim.keymap.set("n", "n", "nzzzv")
 vim.keymap.set("n", "N", "Nzzzv")
 
-vim.keymap.set("n", "x", "\"_x", { desc = "Delete character without yanking" })
+vim.keymap.set("n", "x", '"_x', { desc = "Delete character without yanking" })
 
 vim.keymap.set("i", "jj", "<Esc>", { desc = "Escape" })
 
 vim.keymap.set("n", "<leader>A", "ggVG", { desc = "Select all" })
-vim.keymap.set("n", "<leader>a", "ggVG\"+y", { desc = "Yank whole buffer" })
+vim.keymap.set("n", "<leader>a", 'ggVG"+y', { desc = "Yank whole buffer" })
 
 vim.keymap.set("n", "<leader>o", "i<CR><Esc>^", { desc = "Split line" })
 vim.keymap.set("n", "<leader>j", "o<Esc>", { desc = "Goto new line below" })
@@ -43,12 +43,26 @@ vim.keymap.set("n", "<A-Right>", ":vertical resize +5<CR>", { silent = true, des
 vim.keymap.set("n", "<A-Up>", ":resize +2<CR>", { silent = true, desc = "Resize +2" })
 vim.keymap.set("n", "<A-Down>", ":resize -2<CR>", { silent = true, desc = "Resize -2" })
 
-vim.keymap.set("n", "<leader>cp", "<CMD>call setreg('+', expand('%:p'))<CR>", { desc = "Copy current buffer file path to clipboard"})
-vim.keymap.set("n", "<leader>cP", "<CMD>call setreg('+', expand('%:p:~'))<CR>", { desc = "Copy current buffer path to clipboard"})
-vim.keymap.set("n", "<leader>cf", "<CMD>call setreg('+', expand('%:t'))<CR>", { desc = "Copy current buffer file name to clipboard"})
+vim.keymap.set(
+	"n",
+	"<leader>cp",
+	"<CMD>call setreg('+', expand('%:p'))<CR>",
+	{ desc = "Copy current buffer file path to clipboard" }
+)
+vim.keymap.set(
+	"n",
+	"<leader>cP",
+	"<CMD>call setreg('+', expand('%:p:~'))<CR>",
+	{ desc = "Copy current buffer path to clipboard" }
+)
+vim.keymap.set(
+	"n",
+	"<leader>cf",
+	"<CMD>call setreg('+', expand('%:t'))<CR>",
+	{ desc = "Copy current buffer file name to clipboard" }
+)
 
 vim.keymap.set("i", "<C-a>", "<Esc>I", { silent = true, desc = "Goto start of line" })
 vim.keymap.set("i", "<C-e>", "<Esc>A", { silent = true, desc = "Goto end of line" })
 
-vim.keymap.set("n", "<leader>t2", "<CMD>lua vim.opt.shiftwidth = 2<CR>", { desc = "Change tab size to 2"})
-
+vim.keymap.set("n", "<leader>t2", "<CMD>lua vim.opt.shiftwidth = 2<CR>", { desc = "Change tab size to 2" })

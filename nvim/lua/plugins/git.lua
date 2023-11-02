@@ -33,6 +33,7 @@ return {
     },
 		init = function()
 			vim.g.gitblame_display_virtual_text = 0 -- Disable virtual text
+      vim.g.gitblame_date_format = "%x %X"
 		end,
 	},
 }

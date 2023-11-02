@@ -41,7 +41,7 @@ return {
     event = "VeryLazy",
     opts = {
       enable = true,            -- Enable this plugin (Can be enabled/disabled later via commands)
-      max_lines = 2,            -- How many lines the window should span. Values <= 0 mean no limit.
+      max_lines = 4,            -- How many lines the window should span. Values <= 0 mean no limit.
       min_window_height = 0,    -- Minimum editor window height to enable context. Values <= 0 mean no limit.
       line_numbers = true,
       multiline_threshold = 20, -- Maximum number of lines to collapse for a single context line

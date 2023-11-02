@@ -1,5 +1,6 @@
 return {
 	"b0o/incline.nvim",
+  enabled = false,
 	opts = {
 		render = function(props)
 			local filename = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(props.buf), ":.")
