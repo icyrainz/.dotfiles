@@ -17,6 +17,6 @@ return {
 		-- vim.keymap.set("n", "<a-p>", ":FloatermPrev<CR>", opts("Previous terminal") )
 		-- vim.keymap.set("t", "<a-p>", "<C-\\><C-n>:FloatermPrev<CR>", opts("Previous terminal") )
 
-		vim.keymap.set("t", "<Esc>", "<C-\\><C-n>", opts("Switch from terminal to normal mode") )
+		-- vim.keymap.set("t", "<Esc>", "<C-\\><C-n>", opts("Switch from terminal to normal mode") )
 	end,
 }

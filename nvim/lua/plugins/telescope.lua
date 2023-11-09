@@ -18,28 +18,28 @@ return {
         desc = "[Telescope] files (all)",
       },
       {
-        "<leader>fe",
+        "<leader>fG",
         function() require("telescope.builtin").live_grep({ cwd = require("telescope.utils").buffer_dir() }) end,
         desc = "[Telescope] live grep current dir",
       },
       {
-        "<leader>fE1",
+        "<leader>fe1",
         function() require("telescope.builtin").live_grep({ cwd = vim.fn.expand("%:p:h:h") }) end,
         desc = "[Telescope] live grep 1",
       },
       {
-        "<leader>fE2",
+        "<leader>fe2",
         function() require("telescope.builtin").live_grep({ cwd = vim.fn.expand("%:p:h:h:h") }) end,
         desc = "[Telescope] live grep 2",
       },
       {
-        "<leader>fE3",
+        "<leader>fe3",
         function() require("telescope.builtin").live_grep({ cwd = vim.fn.expand("%:p:h:h:h:h") }) end,
         desc = "[Telescope] live grep 3",
       },
       {
         "<leader>fg",
-        "<CMD>Telescope live_grep<CR>",
+        function() require("telescope.builtin").live_grep({ additional_args = {"--smart-case" }}) end,
         desc = "[Telescope] live grep",
       },
       {
