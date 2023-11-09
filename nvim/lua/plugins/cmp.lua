@@ -31,6 +31,7 @@ return {
           { name = "copilot" },
           { name = "codeium" },
           { name = "nvim_lsp" },
+          { name = "nvim_lsp_signature_help" },
           { name = "luasnip", keyword_length = 2 },
           { name = "path" },
           { name = "buffer", keyword_length = 4 },
