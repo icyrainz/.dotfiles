@@ -1,6 +1,7 @@
 return {
   {
-    "jose-elias-alvarez/null-ls.nvim",
+    -- "jose-elias-alvarez/null-ls.nvim",
+    "nvimtools/none-ls.nvim",
     event = { "BufReadPre", "BufNewFile" },
     dependencies = {
       "neovim/nvim-lspconfig",
@@ -13,6 +14,7 @@ return {
         sources = {
           null_ls.builtins.formatting.prettierd,
           null_ls.builtins.formatting.jq,
+          null_ls.builtins.diagnostics.eslint_d,
           -- require("typescript.extensions.null-ls.code-actions"),
         },
       })
