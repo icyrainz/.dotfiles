@@ -18,7 +18,7 @@ return {
         desc = "[Telescope] files (all)",
       },
       {
-        "<leader>fG",
+        "<leader>fe",
         function() require("telescope.builtin").live_grep({ cwd = require("telescope.utils").buffer_dir() }) end,
         desc = "[Telescope] live grep current dir",
       },
@@ -39,7 +39,7 @@ return {
       },
       {
         "<leader>fg",
-        function() require("telescope.builtin").live_grep({ additional_args = {"--smart-case" }}) end,
+        function() require("telescope.builtin").live_grep({ additional_args = { "--smart-case" } }) end,
         desc = "[Telescope] live grep",
       },
       {
@@ -161,13 +161,14 @@ return {
     },
     keys = {
       {
-        "<leader>fj",
+        "<leader>fG",
         "<CMD>Telescope live_grep_args<CR>",
         desc = "[Telescope] live grep with args",
       }
     },
     config = function()
       local telescope = require("telescope")
+      local actions = require("telescope.actions")
       local lga_actions = require("telescope-live-grep-args.actions")
 
       telescope.setup({
@@ -178,6 +179,7 @@ return {
               i = {
                 ["<C-k>"] = lga_actions.quote_prompt(),
                 ["<C-i>"] = lga_actions.quote_prompt({ postfix = " --iglob " }),
+                ["<C-o>"] = actions.to_fuzzy_refine,
               },
             },
           },

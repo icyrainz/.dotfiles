@@ -38,6 +38,7 @@ config.colors = {
   indexed = { [16] = "#ffa066", [17] = "#ff5d62" },
 }
 config.hide_tab_bar_if_only_one_tab = true
+config.tab_bar_at_bottom = true
 
 config.scrollback_lines = 1000000
 
@@ -199,6 +200,16 @@ config.keys = {
     'CTRL',
     act.ActivatePaneDirection('Up')
   ),
+  {
+    key = '<',
+    mods = "CMD",
+    action = act.MoveTabRelative(-1),
+  },
+  {
+    key = '>',
+    mods = "CMD",
+    action = act.MoveTabRelative(1),
+  },
   {
     key = "d",
     mods = "CMD",
