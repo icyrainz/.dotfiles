@@ -22,19 +22,12 @@ for file in $FISH_PATH/stuffs/*.fish
     source $file
 end
 
-# auto-switch node version via nvm.fish
-function __nvm_auto --on-variable PWD
-    nvm use system --silent
-    nvm use --silent 2>/dev/null
-end
-__nvm_auto
-
 if status is-interactive
     # Commands to run in interactive sessions can go here
     zoxide init fish | source
-    thefuck --alias | source
-
 end
 
 direnv hook fish | source
-source /opt/homebrew/opt/asdf/libexec/asdf.fish
+
+set ERL_AFLAGS "-kernel shell_history enabled"
+

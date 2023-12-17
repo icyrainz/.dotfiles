@@ -77,3 +77,5 @@ vim.keymap.set("n", "i", function()
   end
 end, { expr = true, desc = "Indent on empty line" }
 )
+
+vim.keymap.set("n", "<leader>tr", "<CMD>lua vim.lsp.codelens.run()<CR>", { desc = "Run code lens" })

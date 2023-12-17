@@ -17,6 +17,7 @@ return {
         cmd = "/Users/tuephan/.local/share/nvim/mason/bin/elixir-ls",
         settings = elixirls.settings {
           enableTestLenses = true,
+          suggestSpecs = true,
         },
       }
     }
