@@ -15,7 +15,7 @@ fish_add_path "$HOME/.cargo/bin"
 fish_add_path "$HOME/.local/share/nvim/mason/bin"
 
 # Source all .fish files in include folder
-for file in $FISH_PATH/include/*/*.fish
+for file in $FISH_PATH/include/**/*.fish
     source $file
 end
 

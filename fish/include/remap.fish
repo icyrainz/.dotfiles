@@ -29,7 +29,7 @@ abbr lgit lazygit
 
 abbr bk 'cd -'
 abbr home 'cd ~'
-abbr c clear
+abbr c 'clear'
 abbr src 'source ~/.config/fish/config.fish'
 
 abbr zd 'z dotfiles'
