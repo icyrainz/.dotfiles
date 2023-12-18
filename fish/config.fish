@@ -14,12 +14,8 @@ fish_add_path /opt/homebrew/sbin
 fish_add_path "$HOME/.cargo/bin"
 fish_add_path "$HOME/.local/share/nvim/mason/bin"
 
-# Source all .fish files in stuffs folder
-for file in $FISH_PATH/stuffs/*.fish
-    source $file
-end
-
-for file in $FISH_PATH/ignore/*.fish
+# Source all .fish files in include folder
+for file in $FISH_PATH/include/*/*.fish
     source $file
 end
 

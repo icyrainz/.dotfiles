@@ -23,8 +23,8 @@
       path: wezterm
     ~/.config/fish/config.fish:
       path: fish/config.fish
-    ~/.config/fish/stuffs:
-      path: fish/stuffs
+    ~/.config/fish/include:
+      path: fish/include
     ~/.config/karabiner/karabiner.json:
       path: karabiner/karabiner.json
     ~/.hammerspoon:
