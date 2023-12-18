@@ -5,7 +5,7 @@ tmux/plugins
 tmux/resurrect
 
 # Fish
-fish/extra.fish
+fish/ignore/*
 
 # Zsh
 zsh/extra.zsh
