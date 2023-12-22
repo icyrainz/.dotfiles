@@ -27,5 +27,4 @@
 - shell:
     - [git submodule update --init --recursive, Installing submodules]
     - [./install_tools.sh, Installing tools]
-    # - [./install_antidote.sh, Installing antidote]
     - [./install_tmux_tpm.sh, Installing tmux tpm]

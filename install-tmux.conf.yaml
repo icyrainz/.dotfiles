@@ -1,0 +1,15 @@
+- defaults:
+    link:
+      create: true
+      relink: true
+      force: true
+
+- clean: ['~']
+
+- link:
+    ~/.config/tmux:
+      path: tmux
+
+- shell:
+    - [git submodule update --init --recursive, Installing submodules]
+    - [./install_tmux_tpm.sh, Installing tmux tpm]
