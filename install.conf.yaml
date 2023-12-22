@@ -7,16 +7,8 @@
 - clean: ['~']
 
 - link:
-    ~/.zshrc:
-      path: zshrc
-    ~/.config/zsh:
-      path: zsh
     ~/.config/nvim:
       path: nvim
-    ~/.config/kitty:
-      path: kitty
-    ~/.config/alacritty:
-      path: alacritty
     ~/.config/tmux:
       path: tmux
     ~/.config/wezterm:

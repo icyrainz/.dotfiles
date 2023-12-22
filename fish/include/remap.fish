@@ -45,3 +45,7 @@ function .4    ; cd ../../../.. ; end
 abbr dcu docker-compose up
 abbr dcd docker-compose down
 abbr dcp docker-compose pull
+
+function ssh-tmux
+    ssh -t $argv "tmux attach || tmux new"
+end
