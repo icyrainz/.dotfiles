@@ -3,7 +3,7 @@ return {
 	opts = {},
 	keys = {
         -- Define your keybinds
-		{ "<M-b>", "<cmd>lua require('backout').back()<cr>", mode = { "i" } },
-		{ "<M-n>", "<cmd>lua require('backout').out()<cr>", mode = { "i" } },
+		{ "<A-b>", "<cmd>lua require('backout').back()<cr>", mode = { "i" } },
+		{ "<A-f>", "<cmd>lua require('backout').out()<cr>", mode = { "i" } },
 	},
 }
