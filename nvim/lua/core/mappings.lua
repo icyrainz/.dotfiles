@@ -38,10 +38,10 @@ vim.keymap.set("i", "<C-k>", "<Esc>O", { desc = "Insert empty line above" })
 vim.keymap.set("n", "<leader>bd", ":bd<CR>", { desc = "Delete buffer" })
 vim.keymap.set("n", "<leader>bD", ":bd!<CR>", { desc = "Delete buffer without saving" })
 
-vim.keymap.set("n", "<A-Left>", ":vertical resize -5<CR>", { silent = true, desc = "Resize vertical -5" })
-vim.keymap.set("n", "<A-Right>", ":vertical resize +5<CR>", { silent = true, desc = "Resize vertical +5" })
-vim.keymap.set("n", "<A-Up>", ":resize +2<CR>", { silent = true, desc = "Resize +2" })
-vim.keymap.set("n", "<A-Down>", ":resize -2<CR>", { silent = true, desc = "Resize -2" })
+-- vim.keymap.set("n", "<A-Left>", ":vertical resize -5<CR>", { silent = true, desc = "Resize vertical -5" })
+-- vim.keymap.set("n", "<A-Right>", ":vertical resize +5<CR>", { silent = true, desc = "Resize vertical +5" })
+-- vim.keymap.set("n", "<A-Up>", ":resize +2<CR>", { silent = true, desc = "Resize +2" })
+-- vim.keymap.set("n", "<A-Down>", ":resize -2<CR>", { silent = true, desc = "Resize -2" })
 
 vim.keymap.set(
 

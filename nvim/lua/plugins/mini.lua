@@ -122,6 +122,32 @@ return {
     })
     vim.keymap.set("n", "-", ":lua MiniFiles.open(vim.api.nvim_buf_get_name(0))<CR>", { desc = "Mini files" })
 
+    local map_split = function(buf_id, lhs, direction)
+      local rhs = function()
+        -- Make new window and set it as target
+        local new_target_window
+        vim.api.nvim_win_call(MiniFiles.get_target_window(), function()
+          vim.cmd(direction .. ' split')
+          new_target_window = vim.api.nvim_get_current_win()
+        end)
+
+        MiniFiles.set_target_window(new_target_window)
+      end
+
+      -- Adding `desc` will result into `show_help` entries
+      local desc = 'Split ' .. direction
+      vim.keymap.set('n', lhs, rhs, { buffer = buf_id, desc = desc })
+    end
+
+    vim.api.nvim_create_autocmd('User', {
+      pattern = 'MiniFilesBufferCreate',
+      callback = function(args)
+        local buf_id = args.data.buf_id
+        -- Tweak keys to your liking
+        map_split(buf_id, 'gs', 'belowright horizontal')
+        map_split(buf_id, 'gv', 'belowright vertical')
+      end,
+    })
     local miniclue = require('mini.clue')
     miniclue.setup({
       triggers = {
@@ -197,9 +223,9 @@ return {
       query_updaters = [[abcdefghilmnopqrstuvwxyz0123456789_-,.ABCDEFGHIJKLMNOPQRSTUVWXYZ]],
       items = {
         starter.sections.recent_files(9, true, false),
-        { action = "Telescope find_files", name = "F: Find Files",  section = "Telescope" },
-        { action = "Telescope oldfiles",   name = "O: Old Files",   section = "Telescope" },
-        { action = "Telescope live_grep",  name = "G: Grep Files",  section = "Telescope" },
+        { action = "Telescope find_files",  name = "F: Find Files",  section = "Telescope" },
+        { action = "Telescope oldfiles",    name = "O: Old Files",   section = "Telescope" },
+        { action = "Telescope live_grep",   name = "G: Grep Files",  section = "Telescope" },
         -- { action = "FzfLua files", name = "F: Find Files", section = "Telescope" },
         -- {
         -- 	action = function()
@@ -212,11 +238,12 @@ return {
         -- 	name = "O: Old Files",
         -- 	section = "Actions",
         -- },
-        { action = "Neotree toggle",       name = "E: Neo-tree",    section = "Explorer" },
-        { action = "Lazy",                 name = "L: Lazy",        section = "Plugins" },
-        { action = "Mason",                name = "M: Mason",       section = "Plugins" },
-        { action = "enew",                 name = "N: New Buffer",  section = "Builtin actions" },
-        { action = "qall!",                name = "Q: Quit Neovim", section = "Builtin actions" },
+        { action = "Neotree toggle",        name = "E: Neo-tree",    section = "Explorer" },
+        { action = ":lua MiniFiles.open()", name = "-: MiniFiles",   section = "Explorer" },
+        { action = "Lazy",                  name = "L: Lazy",        section = "Plugins" },
+        { action = "Mason",                 name = "M: Mason",       section = "Plugins" },
+        { action = "enew",                  name = "N: New Buffer",  section = "Builtin actions" },
+        { action = "qall!",                 name = "Q: Quit Neovim", section = "Builtin actions" },
       },
     })
 

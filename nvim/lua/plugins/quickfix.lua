@@ -1,5 +1,6 @@
 return {
   {
+    enabled = false,
     "stevearc/qf_helper.nvim",
     event = "VeryLazy",
     keys = {
@@ -18,6 +19,7 @@ return {
     },
   },
   {
+    enabled = false,
     "kevinhwang91/nvim-bqf",
     event = "VeryLazy",
     opts = {
