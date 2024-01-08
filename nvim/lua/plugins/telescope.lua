@@ -106,6 +106,11 @@ return {
         function() require("telescope.builtin").resume() end,
         desc = "[Telescope] resume",
       },
+      {
+        "<leader>ft",
+        function() require("telescope.builtin").git_status() end,
+        desc = "[Telescope] git_status",
+      },
     },
     config = function()
       local telescope = require("telescope")
