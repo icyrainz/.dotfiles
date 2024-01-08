@@ -1,7 +1,8 @@
 return {
+  enabled = false,
   "simrat39/symbols-outline.nvim",
   opts = {
-    auto_preview = true,
+    auto_preview = false,
     preview_bg_highlight = 'NormalFloat',
     autofold_depth = 1,
     keymaps = {
