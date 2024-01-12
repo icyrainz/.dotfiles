@@ -9,10 +9,13 @@ set -gx ERL_AFLAGS "-kernel shell_history enabled"
 
 set -gx BAT_THEME "1337"
 
+set -gx DOOMDIR "$HOME/.config/doom"
+
 fish_add_path /opt/homebrew/bin
 fish_add_path /opt/homebrew/sbin
 fish_add_path "$HOME/.cargo/bin"
 fish_add_path "$HOME/.local/share/nvim/mason/bin"
+fish_add_path "$HOME/.config/emacs/bin"
 
 # Source all .fish files in include folder
 for file in $FISH_PATH/include/**/*.fish
