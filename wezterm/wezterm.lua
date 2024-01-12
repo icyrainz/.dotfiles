@@ -101,7 +101,7 @@ local function bind_if(cond, key, mods, action)
   return { key = key, mods = mods, action = wezterm.action_callback(callback) }
 end
 
-_G.tmux_navigation_enabled = false
+_G.tmux_navigation_enabled = true
 
 local function toggle_tmux_navigation(window)
   _G.tmux_navigation_enabled = not _G.tmux_navigation_enabled

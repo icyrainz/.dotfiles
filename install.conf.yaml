@@ -23,6 +23,8 @@
       path: hammerspoon
     ~/.config/helix:
       path: helix
+    ~/.config/doom:
+      path: doom
 
 - shell:
     - [git submodule update --init --recursive, Installing submodules]
