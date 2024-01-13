@@ -1,6 +1,6 @@
 local M = {}
 
-M.toggle = function(character)
+local toggle = function(character)
   local api = vim.api
   local delimiters = { ",", ";" }
   local line = api.nvim_get_current_line()
@@ -40,10 +40,10 @@ M.toggle = function(character)
 end
 
 vim.keymap.set("n", "<leader>;", function()
-  M.toggle(";")
+  toggle(";")
 end, { desc = "Toggle ; EOL" })
 vim.keymap.set("n", "<leader>,,", function()
-  M.toggle(",")
+  toggle(",")
 end, { desc = "Toggle , EOL" })
 
 return M
