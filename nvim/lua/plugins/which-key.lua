@@ -15,8 +15,8 @@ wk.register({
     ["<space>"] = { desc = "Space Case (not reversible)" },
   },
   ["<leader>"] = {
-    [","] = { desc = "Toggle ',' EOL" },
-    [";"] = { desc = "Toggle ';' EOL" },
+    o = { name = "+open" },
+    i = { name = "+insert" },
   },
 })
 

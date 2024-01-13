@@ -14,4 +14,14 @@ for i, config in ipairs(dap.configurations.typescript or {}) do
   })
 end
 
-return M
+return {
+  "mfussenegger/nvim-dap",
+
+  -- stylua: ignore
+  keys = {
+    { "<F9>", function() require("dap").continue() end, "[DAP] Continue" },
+    { "<F10>", function() require("dap").step_over() end, "[DAP] Step over" },
+    { "<F11>", function() require("dap").step_into() end, "[DAP] Step into" },
+    { "<F12>", function() require("dap").step_out() end, "[DAP] Step out" },
+  },
+}
