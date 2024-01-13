@@ -42,7 +42,7 @@ end
 vim.keymap.set("n", "<leader>;", function()
   toggle(";")
 end, { desc = "Toggle ; EOL" })
-vim.keymap.set("n", "<leader>,,", function()
+vim.keymap.set("n", "<leader>,", function()
   toggle(",")
 end, { desc = "Toggle , EOL" })
 

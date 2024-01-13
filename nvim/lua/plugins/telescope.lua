@@ -2,6 +2,10 @@ return {
   "nvim-telescope/telescope.nvim",
   keys = {
     {
+      "<leader>,",
+      false,
+    },
+    {
       "<leader>see",
       function()
         require("telescope.builtin").live_grep({ cwd = require("telescope.utils").buffer_dir() })
