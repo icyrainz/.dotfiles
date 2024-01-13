@@ -47,7 +47,6 @@ return {
         -- 	section = "Actions",
         -- },
         { action = "Neotree toggle", name = "E: Neo-tree", section = "Explorer" },
-        { action = ":lua MiniFiles.open()", name = "-: MiniFiles", section = "Explorer" },
         { action = "Lazy", name = "L: Lazy", section = "Plugins" },
         { action = "Mason", name = "M: Mason", section = "Plugins" },
         { action = "enew | startinsert", name = "N: New Buffer", section = "Builtin actions" },
