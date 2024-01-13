@@ -1,7 +1,9 @@
 {
   "extras": [
     "lazyvim.plugins.extras.dap.core",
-    "lazyvim.plugins.extras.lang.typescript"
+    "lazyvim.plugins.extras.editor.mini-files",
+    "lazyvim.plugins.extras.lang.typescript",
+    "lazyvim.plugins.extras.linting.eslint"
   ],
   "news": {
     "NEWS.md": "2123"

@@ -7,4 +7,8 @@ return {
       },
     },
   },
+  keys = {
+    -- Remote flash
+    { "r", mode = { "o" }, false },
+  },
 }
