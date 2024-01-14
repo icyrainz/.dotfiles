@@ -1,14 +1,5 @@
 return {
   {
-    "stevearc/qf_helper.nvim",
-    ft = "qf",
-    opts = {
-      quickfix = {
-        default_bindings = false,
-      },
-    },
-  },
-  {
     "kevinhwang91/nvim-bqf",
     dependencies = {
       "junegunn/fzf",
