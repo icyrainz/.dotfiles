@@ -29,28 +29,19 @@ return {
         [[───────────────────────────────────]],
       }, "\n"),
       query_updaters = [[abcdefghilmnopqrstuvwxyz0123456789_-,.ABCDEFGHIJKLMNOPQRSTUVWXYZ]],
+
+      -- stylua: ignore
       items = {
         starter.sections.recent_files(9, true, false),
-        { action = "Telescope find_files", name = "F: Find Files", section = "Telescope" },
-        { action = "Telescope oldfiles", name = "R: Recent Files", section = "Telescope" },
-        { action = "Telescope live_grep", name = "G: Grep Files", section = "Telescope" },
-        -- { action = "FzfLua files", name = "F: Find Files", section = "Telescope" },
-        -- {
-        -- 	action = function()
-        -- 		require("fzf-lua").oldfiles({
-        -- 			cwd_only = function()
-        -- 				return vim.api.nvim_command("pwd") ~= vim.env.HOME
-        -- 			end,
-        -- 		})
-        -- 	end,
-        -- 	name = "O: Old Files",
-        -- 	section = "Actions",
-        -- },
-        { action = "Neotree toggle", name = "E: Neo-tree", section = "Explorer" },
-        { action = "Lazy", name = "L: Lazy", section = "Plugins" },
-        { action = "Mason", name = "M: Mason", section = "Plugins" },
-        { action = "enew | startinsert", name = "N: New Buffer", section = "Builtin actions" },
-        { action = "qall!", name = "Q: Quit Neovim", section = "Builtin actions" },
+        { action = "Telescope find_files", name = "F: Find Files"  , section = "Telescope" },
+        { action = "Telescope oldfiles"  , name = "R: Recent Files", section = "Telescope" },
+        { action = "Telescope live_grep" , name = "G: Grep Files"  , section = "Telescope" },
+        { action = "Neotree toggle"      , name = "E: Neo-tree"    , section = "Explorer" },
+        { action = "Lazy"                , name = "L: Lazy"        , section = "Plugins" },
+        { action = "LazyExtra"           , name = "X: LazyExtras"  , section = "Plugins" },
+        { action = "Mason"               , name = "M: Mason"       , section = "Plugins" },
+        { action = "enew | startinsert"  , name = "N: New Buffer"  , section = "Builtin actions" },
+        { action = "qall!"               , name = "Q: Quit Neovim" , section = "Builtin actions" },
       },
     })
 
