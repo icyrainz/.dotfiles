@@ -1,7 +1,4 @@
-local M = {}
-
 local dap = require("dap")
-local dap_utils = require("dap.utils")
 
 dap.adapters["pwa-node"] = dap.adapters.node2
 

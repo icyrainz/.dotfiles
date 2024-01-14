@@ -1,5 +1,5 @@
 return {
   "echasnovski/mini.splitjoin",
-  event = "VeryLazy",
+  event = "LazyFile",
   opts = {},
 }

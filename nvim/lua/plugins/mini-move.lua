@@ -1,6 +1,6 @@
 return {
   "echasnovski/mini.move",
-  event = "VeryLazy",
+  event = "LazyFile",
   opts = {
     mappings = {
       -- Move visual selection in Visual mode. Defaults are Alt (Meta) + hjkl.

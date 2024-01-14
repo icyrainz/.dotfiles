@@ -7,7 +7,7 @@ wk.register({
 
 return {
   "echasnovski/mini.visits",
-  event = "BufEnter",
+  event = "VeryLazy",
   config = function()
     require("mini.visits").setup()
 
