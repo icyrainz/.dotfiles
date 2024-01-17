@@ -1,16 +1,3 @@
-local dap = require("dap")
-
-dap.adapters["pwa-node"] = dap.adapters.node2
-
-require("dap.ext.vscode").load_launchjs(nil, { ["pwa-node"] = { "typescript" } })
-
-for i, config in ipairs(dap.configurations.typescript or {}) do
-  dap.configurations.typescript[i] = vim.tbl_deep_extend("force", config, {
-    cwd = vim.fn.getcwd(),
-    sourceMaps = true,
-  })
-end
-
 return {
   "mfussenegger/nvim-dap",
 
@@ -21,4 +8,20 @@ return {
     { "<F11>", function() require("dap").step_into() end, "[DAP] Step into" },
     { "<F12>", function() require("dap").step_out() end, "[DAP] Step out" },
   },
+  opts = function()
+    local dap = require("dap")
+
+    dap.adapters["pwa-node"] = dap.adapters.node2
+
+    print(dap.adapters["pwa-node"])
+
+    require("dap.ext.vscode").load_launchjs(nil, { ["pwa-node"] = { "typescript" } })
+
+    for i, config in ipairs(dap.configurations.typescript or {}) do
+      dap.configurations.typescript[i] = vim.tbl_deep_extend("force", config, {
+        cwd = vim.fn.getcwd(),
+        sourceMaps = true,
+      })
+    end
+  end,
 }
