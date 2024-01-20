@@ -1,3 +1,12 @@
+local wk = require("which-key")
+wk.register({
+  ["<leader>"] = {
+    g = {
+      b = { name = "+blame" },
+    },
+  },
+})
+
 return {
   "f-person/git-blame.nvim",
   keys = {

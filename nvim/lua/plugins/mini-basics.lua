@@ -1,5 +1,6 @@
 return {
   "echasnovski/mini.basics",
+  enabled = false,
   opts = {
     options = {
       basic = false,

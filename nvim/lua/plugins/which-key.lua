@@ -4,6 +4,10 @@ wk.register({
     o = { name = "+open" },
     i = { name = "+insert" },
   },
+  g = {
+    t = { name = "" },
+    T = { name = "" },
+  },
 })
 
 return {

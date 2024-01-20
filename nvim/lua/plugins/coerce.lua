@@ -7,6 +7,6 @@ wk.register({
 
 return {
   "gregorias/coerce.nvim",
-  event = "LazyFile",
+  event = "BufEnter",
   config = true,
 }

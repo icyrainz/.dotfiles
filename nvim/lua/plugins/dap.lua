@@ -3,6 +3,8 @@ return {
 
   -- stylua: ignore
   keys = {
+    { "<F6>", function() require("dap").toggle_breakpoint() end, "[DAP] Toggle breakpoint" },
+    { "<F7>", function() require("dap").set_breakpoint(vim.fn.input("Breakpoint condition: ")) end, "[DAP] Set breakpoint" },
     { "<F9>", function() require("dap").continue() end, "[DAP] Continue" },
     { "<F10>", function() require("dap").step_over() end, "[DAP] Step over" },
     { "<F11>", function() require("dap").step_into() end, "[DAP] Step into" },
@@ -12,8 +14,6 @@ return {
     local dap = require("dap")
 
     dap.adapters["pwa-node"] = dap.adapters.node2
-
-    print(dap.adapters["pwa-node"])
 
     require("dap.ext.vscode").load_launchjs(nil, { ["pwa-node"] = { "typescript" } })
 

@@ -31,6 +31,7 @@ vim.keymap.set("n", "gp", '"+p', { desc = "Paste from system clipboard" })
 vim.keymap.set("x", "gp", '"+P', { desc = "Paste from system clipboard" })
 
 -- Add empty lines before and after cursor line supporting dot-repeat
+MiniBasics = {}
 MiniBasics.put_empty_line = function(put_above)
   -- This has a typical workflow for enabling dot-repeat:
   -- - On first call it sets `operatorfunc`, caches data, and calls
@@ -49,3 +50,5 @@ end
 
 vim.keymap.set("n", "gO", "v:lua.MiniBasics.put_empty_line(v:true)", { expr = true, desc = "Put empty line above" })
 vim.keymap.set("n", "go", "v:lua.MiniBasics.put_empty_line(v:false)", { expr = true, desc = "Put empty line below" })
+
+vim.keymap.set("i", "jj", "<Esc>", { desc = "Escape Insert mode" })

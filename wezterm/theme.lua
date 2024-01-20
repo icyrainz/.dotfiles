@@ -1,4 +1,5 @@
 return {
+	-- Kanagawa
 	force_reverse_video_cursor = true,
 	colors = {
 		foreground = "#dcd7ba",

@@ -5,20 +5,18 @@ return {
     -- disable a keymap
     keys[#keys + 1] = { "gy", false }
     keys[#keys + 1] = {
-      "<C-s>",
-      mode = { "i" },
-      function()
-        vim.lsp.buf.signature_help()
-      end,
-      desc = "Signature Help",
-    }
-
-    keys[#keys + 1] = {
       "gl",
       function()
         vim.diagnostic.open_float()
       end,
       desc = "Diagnostics float",
+    }
+    keys[#keys + 1] = {
+      "gt",
+      function()
+        require("telescope.builtin").lsp_type_definitions({ reuse_win = true })
+      end,
+      desc = "Goto Type Definition",
     }
   end,
 
