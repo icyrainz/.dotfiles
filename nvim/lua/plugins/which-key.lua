@@ -1,18 +1,10 @@
-local wk = require("which-key")
-wk.register({
-  ["<leader>"] = {
-    o = { name = "+open" },
-    i = { name = "+insert" },
-  },
-  g = {
-    t = { name = "" },
-    T = { name = "" },
-  },
-})
-
 return {
   "folke/which-key.nvim",
   opts = {
+    defaults = {
+      ["<leader>o"] = { name = "+open" },
+      ["<leader>i"] = { name = "+insert" },
+    },
     key_labels = {
       ["<space>"] = "SPC",
       ["<cr>"] = "RET",

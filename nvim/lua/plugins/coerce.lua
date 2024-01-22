@@ -1,12 +1,16 @@
-local wk = require("which-key")
-wk.register({
-  c = {
-    r = { name = "+coerce" },
-  },
-})
-
 return {
-  "gregorias/coerce.nvim",
-  event = "BufEnter",
-  config = true,
+  {
+    "folke/which-key.nvim",
+    opts = {
+      defaults = {
+        ["cr"] = { name = "+coerce" },
+      },
+    },
+  },
+  {
+
+    "gregorias/coerce.nvim",
+    event = "BufEnter",
+    config = true,
+  },
 }
