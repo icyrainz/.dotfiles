@@ -5,9 +5,8 @@ return {
   },
   config = function()
     require("lsp_lines").setup()
-    vim.diagnostic.config({
-      virtual_text = false,
-      virtual_lines = { only_current_line = true },
-    })
+    vim.diagnostic.config({ virtual_text = false })
+
+    vim.cmd([[autocmd! CursorHold * lua vim.diagnostic.config({ virtual_lines = { only_current_line = true } })]])
   end,
 }
