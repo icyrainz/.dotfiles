@@ -3,6 +3,6 @@ return {
   event = "VeryLazy",
   config = true,
   keys = {
-    { "<leader>oc", "<CMD>CccHighlighterToggle<CR>", desc = "Toggle CCC" },
+    { "<leader>oc", "<CMD>CccHighlighterToggle<CR>", desc = "CCC" },
   },
 }

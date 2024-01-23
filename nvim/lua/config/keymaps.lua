@@ -51,4 +51,14 @@ end
 vim.keymap.set("n", "gO", "v:lua.MiniBasics.put_empty_line(v:true)", { expr = true, desc = "Put empty line above" })
 vim.keymap.set("n", "go", "v:lua.MiniBasics.put_empty_line(v:false)", { expr = true, desc = "Put empty line below" })
 
-vim.keymap.set("i", "jj", "<Esc>", { desc = "Escape Insert mode" })
+vim.keymap.set("i", "jjj", "<Esc>", { desc = "Escape Insert mode" })
+
+vim.keymap.set({ "n", "x" }, "H", "^", { desc = "Begin of line" })
+vim.keymap.set({ "n", "x" }, "L", "$", { desc = "End of line" })
+
+vim.keymap.set("n", "<Esc>", ":w<CR>", { desc = "Save" })
+
+vim.keymap.set("n", "s", "ciw", { desc = "ciw" })
+vim.keymap.set("n", "X", "daw", { desc = "daw" })
+
+vim.keymap.set("n", "<leader>r", ":%s/", { desc = "Start replace" })
