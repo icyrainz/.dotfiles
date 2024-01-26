@@ -1,6 +1,7 @@
 return {
   {
     "hedyhli/outline.nvim",
+    cmd = { "Outline" },
     keys = {
       { "<leader>co", "<CMD>Outline<CR>", desc = "Symbols outline" },
     },

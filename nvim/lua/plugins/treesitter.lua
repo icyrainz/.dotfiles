@@ -5,7 +5,7 @@ return {
       keymaps = {
         init_selection = "<CR>",
         node_incremental = "<CR>",
-        node_decremental = "<C-CR>",
+        node_decremental = "\\",
       },
     },
   },

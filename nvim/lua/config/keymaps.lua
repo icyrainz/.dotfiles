@@ -2,11 +2,11 @@
 -- Default keymaps that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/keymaps.lua
 -- Add any additional keymaps here
 
-vim.keymap.set("n", "<leader>A", "ggVG", { desc = "Select all" })
-vim.keymap.set("n", "<leader>a", 'ggVG"+y', { desc = "Yank whole buffer" })
+vim.keymap.set("n", "<leader>A", "ggVG", { silent = true, desc = "Select all" })
+vim.keymap.set("n", "<leader>a", 'ggVG"+y', { silent = true, desc = "Yank whole buffer" })
 
-vim.keymap.set("n", "c*", "*``cgn", { desc = "Replace word" })
-vim.keymap.set("n", "c#", "#``cgN", { desc = "Replace word reverse" })
+vim.keymap.set("n", "c*", "*``cgn", { silent = true, desc = "Replace word" })
+vim.keymap.set("n", "c#", "#``cgN", { silent = true, desc = "Replace word reverse" })
 
 vim.keymap.set(
   "n",
@@ -22,8 +22,8 @@ vim.keymap.set(
   { desc = "Copy current buffer file path to clipboard" }
 )
 
-vim.keymap.set("i", "<C-a>", "<Esc>I", { silent = true, desc = "Goto start of line" })
-vim.keymap.set("i", "<C-e>", "<Esc>A", { silent = true, desc = "Goto end of line" })
+-- vim.keymap.set("i", "<C-a>", "<Esc>I", { silent = true, desc = "Goto start of line" })
+-- vim.keymap.set("i", "<C-e>", "<Esc>A", { silent = true, desc = "Goto end of line" })
 
 -- Copy/paste with system clipboard
 vim.keymap.set({ "n", "x" }, "gy", '"+y', { desc = "Copy to system clipboard" })
@@ -56,7 +56,7 @@ vim.keymap.set("n", "go", "v:lua.MiniBasics.put_empty_line(v:false)", { expr = t
 vim.keymap.set({ "n", "x" }, "H", "^", { desc = "Begin of line" })
 vim.keymap.set({ "n", "x" }, "L", "$", { desc = "End of line" })
 
-vim.keymap.set("n", "<Esc>", ":w<CR>", { desc = "Save" })
+vim.keymap.set("n", "<Esc>", ":noh<CR>:w<CR>", { silent = true, desc = "Save" })
 
 vim.keymap.set("n", "s", "ciw", { desc = "ciw" })
 vim.keymap.set("n", "X", "daw", { desc = "daw" })

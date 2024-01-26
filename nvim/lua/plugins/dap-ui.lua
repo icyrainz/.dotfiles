@@ -62,16 +62,19 @@ return {
       opts.right = opts.right or {}
       table.insert(opts.right, {
         title = "Scopes",
+        size = { width = 0.2 },
         ft = "dapui_scopes",
         pinned = false,
       })
       table.insert(opts.right, {
         title = "Breakpoints",
+        size = { width = 0.2 },
         ft = "dapui_breakpoints",
         pinned = false,
       })
       table.insert(opts.right, {
         title = "Watches",
+        size = { width = 0.2 },
         ft = "dapui_watches",
         pinned = false,
       })
@@ -79,6 +82,7 @@ return {
       opts.bottom = opts.bottom or {}
       table.insert(opts.bottom, {
         title = "Console",
+        size = { height = 0.25 },
         ft = "dapui_console",
         pinned = false,
       })
