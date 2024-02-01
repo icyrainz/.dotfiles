@@ -7,7 +7,7 @@ set -gx FISH_PATH ~/.config/fish
 set -gx RUSTC_WRAPPER /opt/homebrew/bin/sccache
 set -gx ERL_AFLAGS "-kernel shell_history enabled"
 
-set -gx BAT_THEME "1337"
+set -gx BAT_THEME 1337
 
 set -gx DOOMDIR "$HOME/.config/doom"
 

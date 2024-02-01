@@ -16,5 +16,6 @@ function __check_nvm --on-variable PWD --description 'Do nvm stuff'
 end
 
 if type -q nvm
+    and status is-interactive
     __check_nvm
 end
