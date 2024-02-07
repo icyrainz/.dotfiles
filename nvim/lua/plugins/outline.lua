@@ -5,7 +5,12 @@ return {
     keys = {
       { "<leader>co", "<CMD>Outline<CR>", desc = "Symbols outline" },
     },
-    opts = {},
+    opts = {
+      keymaps = {
+        up_and_jump = "<C-p>",
+        down_and_jump = "<C-n>",
+      },
+    },
   },
   {
     "folke/edgy.nvim",
@@ -14,7 +19,6 @@ return {
       table.insert(opts.right, {
         title = "Symbols Outline",
         ft = "Outline",
-        pinned = true,
         open = "Outline",
       })
     end,
