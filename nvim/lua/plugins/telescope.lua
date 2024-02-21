@@ -60,30 +60,26 @@ return {
       },
       {
         "<leader>see",
-        function()
-          require("telescope.builtin").live_grep({ cwd = require("telescope.utils").buffer_dir() })
-        end,
+      -- stylua: ignore
+        function() require("telescope.builtin").live_grep({ cwd = require("telescope.utils").buffer_dir() }) end,
         desc = "Live grep current dir",
       },
       {
         "<leader>se1",
-        function()
-          require("telescope.builtin").live_grep({ cwd = vim.fn.expand("%:p:h:h") })
-        end,
+      -- stylua: ignore
+        function() require("telescope.builtin").live_grep({ cwd = vim.fn.expand("%:p:h:h") }) end,
         desc = "Live grep 1",
       },
       {
         "<leader>se2",
-        function()
-          require("telescope.builtin").live_grep({ cwd = vim.fn.expand("%:p:h:h:h") })
-        end,
+      -- stylua: ignore
+        function() require("telescope.builtin").live_grep({ cwd = vim.fn.expand("%:p:h:h:h") }) end,
         desc = "Live grep 2",
       },
       {
         "<leader>se3",
-        function()
-          require("telescope.builtin").live_grep({ cwd = vim.fn.expand("%:p:h:h:h:h") })
-        end,
+      -- stylua: ignore
+        function() require("telescope.builtin").live_grep({ cwd = vim.fn.expand("%:p:h:h:h:h") }) end,
         desc = "Live grep 3",
       },
       {
@@ -91,6 +87,7 @@ return {
         "<CMD>Telescope live_grep_args<CR>",
         desc = "Live grep with args",
       },
+      { "<leader>s'", "<cmd>Telescope resume<cr>", desc = "Resume" },
     },
   },
 }
