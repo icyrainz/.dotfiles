@@ -12,7 +12,7 @@ return {
       opts = {
         defaults = {
           ["<leader>ct"] = { name = "+typescript-tools" },
-          ["<leader>cti"] = { name = "+imports" },
+          ["<leader>ci"] = { name = "+typescript-tools/imports" },
         },
       },
     },
@@ -35,10 +35,10 @@ return {
   opts = {},
   ft = { "typescript", "typescriptreact", "typescript.tsx" },
   keys = {
-    key_opts("<leader>ctio", ":TSToolsOrganizeImports<CR>", "Organize Imports"),
-    key_opts("<leader>ctis", ":TSToolsSortImports<CR>", "Sort Imports"),
-    key_opts("<leader>ctia", ":TSToolsAddMissingImports<CR>", "Add Missing Imports"),
-    key_opts("<leader>ctir", ":TSToolsRemoveUnusedImports<CR>", "Remove Unused Imports"),
+    key_opts("<leader>cio", ":TSToolsOrganizeImports<CR>", "Organize Imports"),
+    key_opts("<leader>cis", ":TSToolsSortImports<CR>", "Sort Imports"),
+    key_opts("<leader>cia", ":TSToolsAddMissingImports<CR>", "Add Missing Imports"),
+    key_opts("<leader>cir", ":TSToolsRemoveUnusedImports<CR>", "Remove Unused Imports"),
     key_opts("<leader>ctf", ":TSToolsFixAll<CR>", "Fix All"),
     key_opts("<leader>ctr", ":TSToolsRenameFile<CR>", "Rename File"),
     key_opts("<leader>ctg", ":TSToolsGoToSourceDefinition<CR>", "Goto Source Definition"),

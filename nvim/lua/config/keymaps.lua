@@ -62,3 +62,4 @@ vim.keymap.set("n", "s", "ciw", { desc = "ciw" })
 vim.keymap.set("n", "X", "daw", { desc = "daw" })
 
 vim.keymap.set("n", "<leader>r", ":%s/", { desc = "Start replace" })
+vim.keymap.set("v", "<leader>r", '"zy<ESC>:%s/<C-R>z//g<Left><Left>', { desc = "Start replace" })
