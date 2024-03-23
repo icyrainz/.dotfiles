@@ -1,5 +1,5 @@
 if type -P lsd >/dev/null 2>&1
-    abbr ls 'lsd'
+    abbr ls lsd
     abbr l 'lsd -l --all --group-directories-first'
     abbr ll 'lsd -l --all --group-directories-first'
     abbr lt 'lsd --tree --depth=2 --group-directories-first'
@@ -21,26 +21,39 @@ abbr tl 'tmux list-sessions'
 abbr tka 'tmux kill-server'
 abbr tks 'tmux kill-session -t'
 
-abbr yz 'yazi'
+abbr yz yazi
 
 abbr v nvim
+abbr nv neovide
 abbr lg lazygit
 abbr lgit lazygit
 
 abbr bk 'cd -'
 abbr home 'cd ~'
-abbr c 'clear'
+abbr c clear
 abbr src 'source ~/.config/fish/config.fish'
 
 abbr zd 'z dotfiles'
 
 # Navigation
-function ..    ; cd .. ; end
-function ...   ; cd ../.. ; end
-function ....  ; cd ../../.. ; end
-function .3    ; cd ../../.. ; end
-function ..... ; cd ../../../.. ; end
-function .4    ; cd ../../../.. ; end
+function ..
+    cd ..
+end
+function ...
+    cd ../..
+end
+function ....
+    cd ../../..
+end
+function .3
+    cd ../../..
+end
+function .....
+    cd ../../../..
+end
+function .4
+    cd ../../../..
+end
 
 abbr dcu docker-compose up
 abbr dcd docker-compose down
