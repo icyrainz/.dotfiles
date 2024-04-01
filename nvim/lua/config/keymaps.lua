@@ -53,8 +53,8 @@ vim.keymap.set("n", "go", "v:lua.MiniBasics.put_empty_line(v:false)", { expr = t
 
 -- vim.keymap.set("i", "jjj", "<Esc>", { desc = "Escape Insert mode" })
 
-vim.keymap.set({ "n", "x" }, "H", "^", { desc = "Begin of line" })
-vim.keymap.set({ "n", "x" }, "L", "$", { desc = "End of line" })
+vim.keymap.set({ "n" }, "H", "^", { desc = "Begin of line" })
+vim.keymap.set({ "n" }, "L", "$", { desc = "End of line" })
 
 vim.keymap.set("n", "<Esc>", ":noh<CR>:w<CR>", { silent = true, desc = "Save" })
 
