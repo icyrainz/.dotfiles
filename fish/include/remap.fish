@@ -45,13 +45,13 @@ end
 function ....
     cd ../../..
 end
-function .3
+function ..3
     cd ../../..
 end
 function .....
     cd ../../../..
 end
-function .4
+function ..4
     cd ../../../..
 end
 
