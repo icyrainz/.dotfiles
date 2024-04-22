@@ -9,6 +9,7 @@ return {
   },
   {
     "lewis6991/gitsigns.nvim",
+    enabled = true,
     opts = {
       current_line_blame_opts = {
         delay = 0,
@@ -16,7 +17,7 @@ return {
     },
     keys = {
       {
-        "<leader>gbl",
+        "<leader>gl",
         function()
           require("gitsigns").toggle_current_line_blame()
         end,
