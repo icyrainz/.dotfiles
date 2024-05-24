@@ -34,11 +34,12 @@ return {
       -- stylua: ignore
       items = {
         starter.sections.recent_files(9, true, false),
-        { action = "Lazy"                , name = "L: Lazy"        , section = "Plugins" },
-        { action = "LazyExtra"           , name = "X: LazyExtras"  , section = "Plugins" },
-        { action = "Mason"               , name = "M: Mason"       , section = "Plugins" },
-        { action = "enew | startinsert"  , name = "N: New Buffer"  , section = "Builtin actions" },
-        { action = "qall!"               , name = "Q: Quit Neovim" , section = "Builtin actions" },
+        { action = "Lazy",                                        name = "L: Lazy",        section = "Plugins" },
+        { action = "LazyExtra",                                   name = "X: LazyExtras",  section = "Plugins" },
+        { action = "Mason",                                       name = "M: Mason",       section = "Plugins" },
+        { action = ":lua require('lazyvim.util.lazygit').open()", name = "G: LazyGit",     section = "Plugins" },
+        { action = "enew | startinsert",                          name = "N: New Buffer",  section = "Builtin actions" },
+        { action = "qall!",                                       name = "Q: Quit Neovim", section = "Builtin actions" },
       },
     })
 
