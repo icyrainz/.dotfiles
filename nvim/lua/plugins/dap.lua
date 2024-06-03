@@ -35,13 +35,50 @@ return {
       }
     end
 
-    require("dap.ext.vscode").load_launchjs(nil, { ["pwa-node"] = { "typescript" } })
+    if not dap.adapters["node"] then
+      dap.adapters["node"] = function(cb, config)
+        if config.type == "node" then
+          config.type = "pwa-node"
+        end
+        local nativeAdapter = dap.adapters["pwa-node"]
+        if type(nativeAdapter) == "function" then
+          nativeAdapter(cb, config)
+        else
+          cb(nativeAdapter)
+        end
+      end
+    end
 
-    for i, config in ipairs(dap.configurations.typescript or {}) do
-      dap.configurations.typescript[i] = vim.tbl_deep_extend("force", config, {
-        cwd = vim.fn.getcwd(),
-        sourceMaps = true,
-      })
+    for _, language in ipairs({ "typescript", "javascript", "typescriptreact", "javascriptreact" }) do
+      if not dap.configurations[language] then
+        dap.configurations[language] = {
+          {
+            type = "pwa-node",
+            request = "launch",
+            name = "Integration Test (custom)",
+            program = "${workspaceFolder}/node_modules/.bin/mocha",
+            cwd = "${workspaceFolder}",
+            sourceMaps = true,
+            skipFiles = { "<node_internals>/**", "node_modules/**" },
+            env = {
+              ENV = "test",
+              TZ = "UTC",
+              TASKS_IN_CHILD_PROCESS = "false",
+              LOG_DEFAULT_DB = "false",
+              CONSOLE_LOG_LEVEL = "debug",
+            },
+            args = {
+              "--timeout",
+              "0",
+              "--require",
+              "ts-node/register",
+              "--file",
+              "${workspaceFolder}/src/test/integration/lifecycle.ts",
+              "${file}",
+            },
+          },
+        }
+      end
     end
   end,
 }
