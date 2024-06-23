@@ -3,7 +3,7 @@ return {
     "folke/which-key.nvim",
     opts = {
       defaults = {
-        ["<leader>gh"] = { name = "+hunks" },
+        ["<leader>gt"] = { name = "+toggle" },
       },
     },
   },
@@ -17,7 +17,7 @@ return {
     },
     keys = {
       {
-        "<leader>gl",
+        "<leader>gtl",
         function()
           require("gitsigns").toggle_current_line_blame()
         end,
