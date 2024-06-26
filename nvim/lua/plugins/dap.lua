@@ -52,6 +52,13 @@ return {
               "${port}",
             },
           },
+          enrich_config = function(config, on_config)
+            local final_config = vim.deepcopy(config)
+            final_config.cwd = vim.fn.getcwd()
+            final_config.sourceMaps = true
+
+            on_config(final_config)
+          end,
         }
       end
 
@@ -67,15 +74,6 @@ return {
             cb(nativeAdapter)
           end
         end
-      end
-
-      require("dap.ext.vscode").load_launchjs(nil, { ["pwa-node"] = { "typescript" } })
-
-      for i, config in ipairs(dap.configurations.typescript or {}) do
-        dap.configurations.typescript[i] = vim.tbl_deep_extend("force", config, {
-          cwd = vim.fn.getcwd(),
-          sourceMaps = true,
-        })
       end
     end,
   },
