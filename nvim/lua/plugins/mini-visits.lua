@@ -1,12 +1,9 @@
+local wk = require("which-key")
+wk.add({
+  { "<leader>v", group = "visits" },
+})
+
 return {
-  {
-    "folke/which-key.nvim",
-    opts = {
-      defaults = {
-        ["<leader>v"] = { name = "+visits" },
-      },
-    },
-  },
   {
     "echasnovski/mini.visits",
     event = "VeryLazy",

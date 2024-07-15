@@ -1,12 +1,9 @@
+local wk = require("which-key")
+wk.add({
+  { "<leader>gu", group = "url" },
+})
+
 return {
-  {
-    "folke/which-key.nvim",
-    opts = {
-      defaults = {
-        ["<leader>gu"] = { name = "+url" },
-      },
-    },
-  },
   {
     "f-person/git-blame.nvim",
     keys = {

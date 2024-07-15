@@ -2,20 +2,17 @@ local function key_opts(key, action, desc)
   return { key, action, desc = desc, ft = { "typescript", "typescriptreact", "typescript.tsx" } }
 end
 
+local wk = require("which-key")
+wk.add({
+  { "<leader>ci", group = "typescript-tools/imports" },
+  { "<leader>ct", group = "typescript-tools" },
+})
+
 return {
   "pmizio/typescript-tools.nvim",
   dependencies = {
     "nvim-lua/plenary.nvim",
     "neovim/nvim-lspconfig",
-    {
-      "folke/which-key.nvim",
-      opts = {
-        defaults = {
-          ["<leader>ct"] = { name = "+typescript-tools" },
-          ["<leader>ci"] = { name = "+typescript-tools/imports" },
-        },
-      },
-    },
     {
       "nvim-treesitter/nvim-treesitter",
       opts = function(_, opts)

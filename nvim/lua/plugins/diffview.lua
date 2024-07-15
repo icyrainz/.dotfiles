@@ -1,12 +1,9 @@
+local wk = require("which-key")
+wk.add({
+  { "<leader>gd", group = "diffview" },
+})
+
 return {
-  {
-    "folke/which-key.nvim",
-    opts = {
-      defaults = {
-        ["<leader>gd"] = { name = "+diffview" },
-      },
-    },
-  },
   {
     "sindrets/diffview.nvim",
     keys = {

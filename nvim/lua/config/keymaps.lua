@@ -5,8 +5,8 @@
 vim.keymap.set("n", "<leader>A", "ggVG", { silent = true, desc = "Select all" })
 vim.keymap.set("n", "<leader>a", 'ggVG"+y', { silent = true, desc = "Yank whole buffer" })
 
-vim.keymap.set("n", "c*", "*``cgn", { silent = true, desc = "Replace word" })
-vim.keymap.set("n", "c#", "#``cgN", { silent = true, desc = "Replace word reverse" })
+-- vim.keymap.set("n", "c*", "*``cgn", { silent = true, desc = "Replace word" })
+-- vim.keymap.set("n", "c#", "#``cgN", { silent = true, desc = "Replace word reverse" })
 
 vim.keymap.set(
   "n",

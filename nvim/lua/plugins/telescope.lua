@@ -1,12 +1,9 @@
+local wk = require("which-key")
+wk.add({
+  { "<leader>set", group = "live_grep" },
+})
+
 return {
-  {
-    "folke/which-key.nvim",
-    opts = {
-      defaults = {
-        ["<leader>se"] = { name = "+live_grep" },
-      },
-    },
-  },
   {
     "nvim-telescope/telescope.nvim",
     dependencies = {

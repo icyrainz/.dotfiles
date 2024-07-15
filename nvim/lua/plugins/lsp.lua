@@ -1,14 +1,5 @@
 return {
   {
-    "folke/which-key.nvim",
-    opts = {
-      defaults = {
-        ["gt"] = { name = "" },
-        ["gT"] = { name = "" },
-      },
-    },
-  },
-  {
     "neovim/nvim-lspconfig",
     init = function()
       local keys = require("lazyvim.plugins.lsp.keymaps").get()

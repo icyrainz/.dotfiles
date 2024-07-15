@@ -1,12 +1,9 @@
+local wk = require("which-key")
+wk.add({
+  { "<leader>gt", group = "toggle" },
+})
+
 return {
-  {
-    "folke/which-key.nvim",
-    opts = {
-      defaults = {
-        ["<leader>gt"] = { name = "+toggle" },
-      },
-    },
-  },
   {
     "lewis6991/gitsigns.nvim",
     enabled = true,
