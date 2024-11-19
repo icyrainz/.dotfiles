@@ -65,3 +65,6 @@ vim.keymap.set("v", "<leader>r", '"zy<ESC>:%s/<C-R>z//g<Left><Left>', { desc = "
 
 vim.cmd([[command! Qa :qa]])
 vim.cmd([[command! Q :q]])
+
+vim.keymap.set("n", "<leader>'", ":%s/\\(.*\\)/'\\1',/g<CR>", { desc = "Wrap line with quote" })
+vim.keymap.set("n", '<leader>"', ':%s/\\(.*\\)/"\\1",/g<CR>', { desc = "Wrap line with quote" })
