@@ -35,6 +35,8 @@ abbr src 'source ~/.config/fish/config.fish'
 
 abbr zd 'z dotfiles'
 
+abbr cp 'rsync -avzhr --progress'
+
 # Navigation
 function ..
     cd ..

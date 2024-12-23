@@ -20,5 +20,11 @@ return {
         end,
       }),
     })
+
+    opts.groups.zig = {
+      augend.constant.new({ elements = { "var", "const" } }),
+    }
+
+    opts.dials_by_ft.zig = "zig"
   end,
 }

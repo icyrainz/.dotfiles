@@ -2,8 +2,16 @@
 -- Default keymaps that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/keymaps.lua
 -- Add any additional keymaps here
 
-vim.keymap.set("n", "<leader>A", "ggVG", { silent = true, desc = "Select all" })
-vim.keymap.set("n", "<leader>a", 'ggVG"+y', { silent = true, desc = "Yank whole buffer" })
+vim.keymap.set("n", "<leader>A", function()
+  vim.cmd("normal! gg")
+  vim.cmd("normal! VG")
+end, { silent = true, desc = "Select all" })
+
+vim.keymap.set("n", "<leader>a", function()
+  vim.cmd("normal! gg")
+  vim.cmd("normal! VG")
+  vim.cmd('normal! "+y')
+end, { silent = true, desc = "Yank whole buffer" })
 
 -- vim.keymap.set("n", "c*", "*``cgn", { silent = true, desc = "Replace word" })
 -- vim.keymap.set("n", "c#", "#``cgN", { silent = true, desc = "Replace word reverse" })

@@ -11,13 +11,6 @@ return {
   },
   {
     "mfussenegger/nvim-dap",
-    dependencies = {
-
-      {
-        "Joakker/lua-json5",
-        build = "./install.sh",
-      },
-    },
 
   -- stylua: ignore
   keys = {
@@ -35,8 +28,6 @@ return {
 
     opts = function()
       local dap = require("dap")
-
-      require("dap.ext.vscode").json_decode = require("json5").parse
 
       if not dap.adapters["pwa-node"] then
         require("dap").adapters["pwa-node"] = {
