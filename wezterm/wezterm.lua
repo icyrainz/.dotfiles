@@ -17,6 +17,8 @@ config.font_size = 19.0
 local font_index = 1
 config.font = font_array[font_index]
 
+config.max_fps = 120
+config.animation_fps = 60
 config.color_scheme = "tokyonight_night"
 -- local custom_theme, theme = pcall(require, "theme")
 -- if custom_theme then
@@ -242,5 +244,10 @@ config.keys = {
 --   'connect',
 --   'localhost'
 -- }
+
+config.window_padding = {
+	bottom = 0,
+	top = 0,
+}
 
 return config
