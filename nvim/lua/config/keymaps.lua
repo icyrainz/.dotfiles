@@ -74,5 +74,13 @@ vim.keymap.set("v", "<leader>r", '"zy<ESC>:%s/<C-R>z//g<Left><Left>', { desc = "
 vim.cmd([[command! Qa :qa]])
 vim.cmd([[command! Q :q]])
 
-vim.keymap.set("n", "<leader>'", ":%s/\\(.*\\)/'\\1',/g<CR>", { desc = "Wrap line with quote" })
-vim.keymap.set("n", '<leader>"', ':%s/\\(.*\\)/"\\1",/g<CR>', { desc = "Wrap line with quote" })
+vim.keymap.set("n", "<leader>'", ":%s/\\(.*\\)/'\\1',/g<CR><ESC>", { desc = "Wrap line with quote" })
+vim.keymap.set("n", '<leader>"', ':%s/\\(.*\\)/"\\1",/g<CR><ESC>', { desc = "Wrap line with quote" })
+
+vim.keymap.set("n", "yc", function()
+  vim.api.nvim_feedkeys("yygccp", "m", false)
+end, { desc = "Copy line and comment" })
+
+vim.keymap.set("v", "gyc", function()
+  vim.api.nvim_feedkeys("y'>pgvgc'>j", "m", false)
+end, { desc = "Copy line and comment visual" })
