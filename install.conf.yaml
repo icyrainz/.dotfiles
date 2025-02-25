@@ -4,7 +4,7 @@
       relink: true
       force: true
 
-- clean: ['~']
+- clean: ["~"]
 
 - link:
     ~/.config/nvim:
@@ -25,6 +25,8 @@
       path: helix
     ~/.config/doom:
       path: doom
+    ~/.ideavimrc:
+      path: ideavim/.ideavimrc
 
 - shell:
     - [git submodule update --init --recursive, Installing submodules]

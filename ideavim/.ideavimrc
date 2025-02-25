@@ -1,0 +1,141 @@
+set scrolloff=5
+set incsearch
+set ideajoin
+set hlsearch
+set ignorecase
+set smartcase
+set smartcase
+
+let mapleader = ' '
+
+" Don't use Ex mode, use Q for formatting.
+map Q gq
+
+Plug 'machakann/vim-highlightedyank'
+Plug 'tpope/vim-commentary'
+Plug 'tpope/vim-surround'
+Plug 'vim-scripts/argtextobj.vim'
+let g:argtextobj_pairs="[:],(:),<:>"
+
+set mini-ai
+
+set which-key
+set notimeout
+set timeoutlen=5000
+
+set switch
+let g:switch_definitions = 'group:basic,group:java'
+nnoremap <C-s> :Switch<CR>
+nnoremap <C-S-s> :SwitchReverse<CR>
+
+set peekaboo
+
+Plug 'tommcdo/vim-exchange'
+
+Plug 'preservim/nerdtree'
+
+noremap <Esc> :nohlsearch<cr>
+
+nnoremap <leader>ls :source ~/.ideavimrc<CR>
+
+nmap <leader>gl <Action>(ShowHoverInfo)
+nmap <leader>go <Action>(EditorStartNewLine)
+nmap <leader>gO <Action>(EditorStartNewLineBefore)
+
+"Git stuffs
+nmap <leader>gb <Action>(Annotate)
+nmap <leader>gg <Action>(ActivateCommitToolWindow)
+nmap <leader>gG <Action>(ActivateVersionControlToolWindow)
+
+nmap gn <Action>(VcsShowNextChangeMarker)
+nmap gN <Action>(VcsShowPrevChangeMarker)
+
+nmap <leader>cr <Action>(RenameElement)
+nmap <leader>cf <Action>(ReformatCode)
+nmap <leader>co <Action>(OptimizeImports)
+nmap <leader>ca <Action>(ShowIntentionActions)
+nmap <leader>cs <Action>(FileStructurePopup)
+
+nmap <leader>t <Action>(ActivateTerminalToolWindow)
+nmap <c-t> <Action>(Terminal.OpenInTerminal)
+
+"Debug stuffs
+nmap <leader>db <Action>(ToggleLineBreakpoint)
+nmap <leader>dn <Action>(StepOver)
+nmap <leader>di <Action>(StepInto)
+nmap <leader>do <Action>(StepOut)
+nmap <leader>dc <Action>(Resume)
+nmap <leader>drd <Action>(Debug)
+nmap <leader>drr <Action>(Run)
+nmap <leader>drc <Action>(RunClass)
+nmap <leader>dl <Action>(Rerun)
+nmap <leader>dt <Action>(ActivateDebugToolWindow)
+nmap <leader>dd <Action>(Debugger.RemoveAllBreakpointsInFile)
+nmap <leader>dD <Action>(Debugger.RemoveAllBreakpoints)
+nmap <leader>dg <Action>(ForceRunToCursor)
+
+vnoremap < <gv
+vnoremap > >gv
+
+nnoremap x "_x
+xnoremap x "_x
+nnoremap r "_r
+xnoremap r "_r
+
+map H ^
+map L $
+
+"nnoremap <c-h> <c-w>h
+"nnoremap <c-l> <c-w>l
+"nnoremap <c-j> <c-w>j
+"nnoremap <c-k> <c-w>k
+
+nmap ]e <Action>(GotoNextError)
+nmap [e <Action>(GotoPreviousError)
+nmap ]q <Action>(GotoNextElementUnderCaretUsage)
+nmap [q <Action>(GotoPrevElementUnderCaretUsage)
+nmap [[ <Action>(MethodUp)
+nmap ]] <Action>(MethodDown)
+nmap ]t <Action>(NextTab)
+nmap [t <Action>(PreviousTab)
+
+nmap <leader><leader> <Action>(GotoFile)
+nmap <leader>/ <Action>(TextSearchAction)
+nmap gr <Action>(ShowUsages)
+nmap gR <Action>(FindUsages)
+nmap gL <Action>(QuickImplementations)
+nmap <leader>r <Action>(Refactorings.QuickListPopupAction)
+
+nmap <c-w><c-v> <Action>(SplitVertically)
+nmap <c-w><c-s> <Action>(SplitHorizontally)
+nmap <c-w><c-q> <Action>(CloseEditor)
+
+nmap <leader>e :NERDTreeToggle<CR>
+nmap <leader>wh <Action>(HideAllWindows)
+
+nmap <leader>fe <Action>(SelectInProjectView)
+nmap <leader>fr <Action>(RecentFiles)
+nmap <leader>fl <Action>(RecentLocations)
+
+nmap <leader>ss <Action>(GotoSymbol)
+
+nmap <leader>oa <Action>(ActivateAugmentToolWindow)
+
+nmap <leader>A ggVG
+nmap <leader>a mzggVG"+y'z
+
+nnoremap <leader>sw viw:action FindInPath<CR>
+
+"Relative number
+set relativenumber
+let g:relative_number_set = 0
+function! ToggleRelativeNumber()
+    if g:relative_number_set
+        set relativenumber
+        let g:relative_number_set = 0
+    else
+        set norelativenumber
+        let g:relative_number_set = 1
+    endif
+endfunction
+nmap \l :call ToggleRelativeNumber()<CR>
