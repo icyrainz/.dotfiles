@@ -34,16 +34,15 @@ Plug 'tommcdo/vim-exchange'
 
 Plug 'preservim/nerdtree'
 
-noremap <Esc> :nohlsearch<cr>
+nnoremap <Esc> :nohlsearch<cr>
 
 nnoremap <leader>ls :source ~/.ideavimrc<CR>
+nnoremap <leader>lr :e ~/.ideavimrc<CR>
 
-nmap <leader>gl <Action>(ShowHoverInfo)
-nmap <leader>go <Action>(EditorStartNewLine)
-nmap <leader>gO <Action>(EditorStartNewLineBefore)
 
 "Git stuffs
-nmap <leader>gb <Action>(Annotate)
+nmap <leader>gtb <Action>(Annotate)
+nmap <leader>gb <Action>(Git.Branches)
 nmap <leader>gg <Action>(ActivateCommitToolWindow)
 nmap <leader>gG <Action>(ActivateVersionControlToolWindow)
 
@@ -57,7 +56,7 @@ nmap <leader>ca <Action>(ShowIntentionActions)
 nmap <leader>cs <Action>(FileStructurePopup)
 
 nmap <leader>t <Action>(ActivateTerminalToolWindow)
-nmap <c-t> <Action>(Terminal.OpenInTerminal)
+nmap <leader>ot <Action>(Terminal.OpenInTerminal)
 
 "Debug stuffs
 nmap <leader>db <Action>(ToggleLineBreakpoint)
@@ -68,6 +67,7 @@ nmap <leader>dc <Action>(Resume)
 nmap <leader>drd <Action>(Debug)
 nmap <leader>drr <Action>(Run)
 nmap <leader>drc <Action>(RunClass)
+
 nmap <leader>dl <Action>(Rerun)
 nmap <leader>dt <Action>(ActivateDebugToolWindow)
 nmap <leader>dd <Action>(Debugger.RemoveAllBreakpointsInFile)
@@ -90,6 +90,12 @@ map L $
 "nnoremap <c-j> <c-w>j
 "nnoremap <c-k> <c-w>k
 
+nmap zM <Action>(CollapseAllRegions)
+nmap zR <Action>(ExpandAllRegions)
+
+nmap go <Action>(EditorStartNewLine)
+nmap gO <Action>(EditorStartNewLineBefore)
+
 nmap ]e <Action>(GotoNextError)
 nmap [e <Action>(GotoPreviousError)
 nmap ]q <Action>(GotoNextElementUnderCaretUsage)
@@ -101,13 +107,21 @@ nmap [t <Action>(PreviousTab)
 
 nmap <leader><leader> <Action>(GotoFile)
 nmap <leader>/ <Action>(TextSearchAction)
+nmap gl <Action>(ShowHoverInfo)
 nmap gr <Action>(ShowUsages)
 nmap gR <Action>(FindUsages)
 nmap gL <Action>(QuickImplementations)
+nmap gty <Action>(GotoTypeDeclaration)
+nmap gti <Action>(GotoImplementation)
+nmap gtm <Action>(GotoSuperMethod)
+nmap gtt <Action>(GotoTest)
+nmap gte <Action>(ExpressionTypeInfo)
 nmap <leader>r <Action>(Refactorings.QuickListPopupAction)
 
 nmap <c-w><c-v> <Action>(SplitVertically)
 nmap <c-w><c-s> <Action>(SplitHorizontally)
+nmap <c-w><c-u> <Action>(Unsplit)
+nmap <c-w><c-m> <Action>(MoveEditorToOppositeTabGroup)
 nmap <c-w><c-q> <Action>(CloseEditor)
 
 nmap <leader>e :NERDTreeToggle<CR>
@@ -116,15 +130,23 @@ nmap <leader>wh <Action>(HideAllWindows)
 nmap <leader>fe <Action>(SelectInProjectView)
 nmap <leader>fr <Action>(RecentFiles)
 nmap <leader>fl <Action>(RecentLocations)
+nmap <leader>fn <Action>(NewScratchFile)
 
 nmap <leader>ss <Action>(GotoSymbol)
+nnoremap <leader>sw viw:action FindInPath<CR>
 
 nmap <leader>oa <Action>(ActivateAugmentToolWindow)
+nmap <leader>ob <Action>(ActivateBuildToolWindow)
 
 nmap <leader>A ggVG
 nmap <leader>a mzggVG"+y'z
 
-nnoremap <leader>sw viw:action FindInPath<CR>
+xnoremap J :move'>+<CR>gv=gv
+xnoremap K :move-2<CR>gv=gv
+
+nmap <leader>ya <Action>(CopyAbsolutePath)
+nmap <leader>yn <Action>(CopyFileName)
+nmap <leader>yp <Action>(CopyContentRootPath)
 
 "Relative number
 set relativenumber
