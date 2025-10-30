@@ -65,6 +65,7 @@ function obj:updateMouse(window)
 	local window_name = window:application():name()
 	if window_name == "Dato" then
 		return
+	elseif window_name == "Slack" then
 	end
 
 	local current_pos = hs.geometry(hs.mouse.absolutePosition())

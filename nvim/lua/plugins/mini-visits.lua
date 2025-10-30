@@ -5,7 +5,7 @@ wk.add({
 
 return {
   {
-    "echasnovski/mini.visits",
+    "nvim-mini/mini.visits",
     event = "VeryLazy",
     config = function()
       require("mini.visits").setup()

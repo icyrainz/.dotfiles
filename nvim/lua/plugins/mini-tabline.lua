@@ -1,5 +1,5 @@
 return {
-  "echasnovski/mini.tabline",
+  "nvim-mini/mini.tabline",
   event = "BufEnter",
   opts = {},
 }
