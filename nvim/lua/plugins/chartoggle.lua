@@ -39,10 +39,10 @@ local toggle = function(character)
   return api.nvim_set_current_line(new_line)
 end
 
-vim.keymap.set("n", "<leader>;", function()
+vim.keymap.set("n", "<leader>i;", function()
   toggle(";")
 end, { desc = "Toggle ; EOL" })
-vim.keymap.set("n", "<leader>,", function()
+vim.keymap.set("n", "<leader>i,", function()
   toggle(",")
 end, { desc = "Toggle , EOL" })
 

@@ -34,7 +34,7 @@ vim.keymap.set(
 -- vim.keymap.set("i", "<C-e>", "<Esc>A", { silent = true, desc = "Goto end of line" })
 
 -- Copy/paste with system clipboard
-vim.keymap.set({ "n", "x" }, "<leader>y", '"+y', { desc = "Copy to system clipboard" })
+-- vim.keymap.set({ "n", "x" }, "<leader>y", '"+y', { desc = "Copy to system clipboard" })
 vim.keymap.set("v", "p", [["_dP]], { desc = "Keep the yanked text when pasting in visual mode" })
 
 -- Add empty lines before and after cursor line supporting dot-repeat
@@ -55,8 +55,8 @@ MiniBasics.put_empty_line = function(put_above)
   vim.fn.append(target_line, vim.fn["repeat"]({ "" }, vim.v.count1))
 end
 
-vim.keymap.set("n", "gO", "v:lua.MiniBasics.put_empty_line(v:true)", { expr = true, desc = "Put empty line above" })
-vim.keymap.set("n", "go", "v:lua.MiniBasics.put_empty_line(v:false)", { expr = true, desc = "Put empty line below" })
+-- vim.keymap.set("n", "gO", "v:lua.MiniBasics.put_empty_line(v:true)", { expr = true, desc = "Put empty line above" })
+-- vim.keymap.set("n", "go", "v:lua.MiniBasics.put_empty_line(v:false)", { expr = true, desc = "Put empty line below" })
 
 -- vim.keymap.set("i", "jjj", "<Esc>", { desc = "Escape Insert mode" })
 

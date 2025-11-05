@@ -1,6 +1,5 @@
 return {
   "uga-rosa/ccc.nvim",
-  enabled = false,
   event = "VeryLazy",
   config = true,
   keys = {
