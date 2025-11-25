@@ -1,4 +1,6 @@
-Use this commands:
+# Setting up Docker on Proxmox LXC Turnkey Core
+
+## Install Docker without sudo
 
 ```sh
 apt update
@@ -14,4 +16,18 @@ echo \
 
 apt update
 apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+```
+
+## Issue when starting Docker
+
+```
+Error response from daemon: failed to create task for container: failed to create shim task: OCI runtime create failed: runc create failed: unable to start container process: error during container init: open sysctl net.ipv4.ip_unprivileged_port_start file: reopen fd 8: permission denied
+```
+
+Open lxc config is in `/etc/pve/lxc/100.conf`.
+Add these at the end:
+
+```
+lxc.mount.entry: /dev/null sys/module/apparmor/parameters/enabled none bind 0 0
+lxc.apparmor.profile: unconfined
 ```
