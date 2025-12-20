@@ -1,0 +1,55 @@
+__preset__:
+  overrides:
+    tv_show_directory: "/disk2/tv_shows"
+    music_directory: "/disk2/music"
+    music_video_directory: "/disk2/music_videos"
+
+    enable_throttle_protection: False
+    chunk_max_downloads: 20
+
+  match_filters:
+    filters:
+      - "original_url!*=/shorts/"
+
+  ytdl_options:
+    cookiefile: "/disk2/cookies.txt"
+
+Plex TV Show by Date:
+  = Multi | Chunk Downloads:
+    "SEA": "https://www.youtube.com/@SEA"
+    "Astrum": "https://www.youtube.com/@astrumspace"
+    "Cool Worlds": "https://www.youtube.com/@CoolWorldsLab"
+    "Real Engineering": "https://www.youtube.com/@RealEngineering"
+    "Ben Eater": "https://www.youtube.com/@BenEater"
+    "Code Bullet": "https://www.youtube.com/@CodeBullet"
+    "fern": "https://www.youtube.com/@fern-tv"
+    "Vsauce3": "https://www.youtube.com/@Vsauce3"
+    "Folding Ideas": "https://www.youtube.com/@FoldingIdeas"
+    "Ahoy": "https://www.youtube.com/@XboxAhoy"
+    "Zepherus": "https://www.youtube.com/@Zepherus"
+    "Mustard": "https://www.youtube.com/@MustardChannel"
+    "Jay and Mark": "https://www.youtube.com/@JayForeman"
+    "neo": "https://www.youtube.com/@neoexplains"
+    "CaspianReport": "https://www.youtube.com/@CaspianReport"
+    "Masaman": "https://www.youtube.com/@Masaman"
+    "Anton Petrov": "https://www.youtube.com/@whatdamath"
+    "Aperture": "https://www.youtube.com/@ApertureThinking"
+    "CGP Grey": "https://www.youtube.com/@CGPGrey"
+    "Curious Archive": "https://www.youtube.com/@CuriousArchive"
+    "exurb1a": "https://www.youtube.com/@Exurb1a"
+    "exurb2a": "https://www.youtube.com/@exurb2a114"
+    "Atlas Pro": "https://www.youtube.com/@AtlasPro1"
+    "LEMMiNO": "https://www.youtube.com/@LEMMiNO"
+    "Vsauce": "https://www.youtube.com/@Vsauce"
+    "Fredrik Knudsen": "https://www.youtube.com/@FredrikKnudsen"
+    "Not Just Bikes": "https://www.youtube.com/@NotJustBikes"
+    "Innuendo Studios": "https://www.youtube.com/@InnuendoStudios"
+    "Second Thought": "https://www.youtube.com/@SecondThought"
+    "munecat": "https://www.youtube.com/munecat"
+    "Super Eyepatch Wolf": "https://www.youtube.com/@supereyepatchwolf0"
+    "hbomberguy": "https://www.youtube.com/@hbomberguy"
+    "Summoning Salt": "https://www.youtube.com/@SummoningSalt"
+    "I Finished A Video Game": "https://www.youtube.com/@IFinishedAVideoGame"
+    "Gaming Historian": "https://www.youtube.com/@GamingHistorian"
+    "Jacob Geller": "https://www.youtube.com/@JacobGeller"
+    "Historia Civilis": "https://www.youtube.com/@HistoriaCivilis"
