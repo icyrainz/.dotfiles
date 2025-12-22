@@ -53,6 +53,7 @@ bind -n M-Right resize-pane -R 5
 # Vi copy mode
 bind-key -T copy-mode-vi v send-keys -X begin-selection
 bind-key -T copy-mode-vi y send-keys -X copy-selection
+unbind -T copy-mode-vi MouseDragEnd1Pane
 
 # Kill
 bind X kill-pane
