@@ -27,9 +27,11 @@ FZF_VERSION=$(curl -s https://api.github.com/repos/junegunn/fzf/releases/latest 
 if [ ! -d ~/.fzf ]; then
   git clone --depth 1 --branch "$FZF_VERSION" https://github.com/junegunn/fzf.git ~/.fzf
   ~/.fzf/install --bin --no-update-rc
-  echo "Installed fzf $FZF_VERSION to ~/.fzf"
+  cp ~/.fzf/bin/fzf /usr/local/bin/fzf
+  echo "Installed fzf $FZF_VERSION to /usr/local/bin/fzf"
 else
   cd ~/.fzf && git fetch --tags && git checkout "$FZF_VERSION" && ./install --bin --no-update-rc
+  cp ~/.fzf/bin/fzf /usr/local/bin/fzf
   echo "Updated fzf to $FZF_VERSION (idempotent)"
 fi
 
