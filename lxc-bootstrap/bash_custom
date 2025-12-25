@@ -1,0 +1,26 @@
+# --- Custom ---
+# Add local bin to PATH
+export PATH="$HOME/.local/bin:$PATH"
+
+# fzf integration (Ctrl+R: history, Ctrl+T: files, Alt+C: cd)
+eval "$(~/.fzf/bin/fzf --bash)"
+
+alias c='clear'
+alias q='exit'
+alias ..='cd ..'
+alias ...='cd ../..'
+
+alias v='nvim'
+export EDITOR=nvim
+
+alias rg='rg --smart-case'
+alias t='tmux attach || tmux new-session'
+alias bat='batcat'
+
+alias d='docker'
+alias dc='docker compose'
+alias dcup='docker compose pull && docker compose down && docker compose up -d'
+alias dcre='docker compose down && docker compose up -d'
+alias dps='docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"'
+alias dlogs='docker logs -f'
+alias lzd='lazydocker'
