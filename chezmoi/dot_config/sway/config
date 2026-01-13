@@ -1,0 +1,87 @@
+set $mod Mod4
+set $mod2 Menu
+
+# Output configuration
+output eDP-1 scale 2
+
+bindsym $mod+Return exec wezterm
+bindsym $mod+Shift+Return exec foot
+bindsym $mod2+Return exec wezterm
+bindsym $mod2+Shift+Return exec foot
+
+bindsym $mod+b exec firefox
+bindsym $mod2+b exec firefox
+
+bindsym $mod+Shift+q kill
+bindsym $mod2+Shift+q kill
+
+bindsym $mod+Shift+c reload
+bindsym $mod2+Shift+c reload
+
+bindsym $mod+Shift+e exit
+bindsym $mod2+Shift+e exit
+
+bindsym $mod+h focus left
+bindsym $mod+j focus down
+bindsym $mod+k focus up
+bindsym $mod+l focus right
+bindsym $mod2+h focus left
+bindsym $mod2+j focus down
+bindsym $mod2+k focus up
+bindsym $mod2+l focus right
+
+bindsym $mod+Shift+h move left
+bindsym $mod+Shift+j move down
+bindsym $mod+Shift+k move up
+bindsym $mod+Shift+l move right
+bindsym $mod2+Shift+h move left
+bindsym $mod2+Shift+j move down
+bindsym $mod2+Shift+k move up
+bindsym $mod2+Shift+l move right
+
+bindsym $mod+s layout stacking
+bindsym $mod+w layout tabbed
+bindsym $mod+e layout toggle split
+bindsym $mod2+s layout stacking
+bindsym $mod2+w layout tabbed
+bindsym $mod2+e layout toggle split
+
+bindsym $mod+v exec ~/.config/sway/set-split.sh v
+bindsym $mod+Shift+v exec ~/.config/sway/set-split.sh h
+bindsym $mod2+v exec ~/.config/sway/set-split.sh v
+bindsym $mod2+Shift+v exec ~/.config/sway/set-split.sh h
+
+bindsym $mod+f fullscreen
+bindsym $mod2+f fullscreen
+
+input type:keyboard {
+  xkb_options ctrl:swapcaps
+  repeat_delay 200
+  repeat_rate 50
+}
+
+# Window borders and colors
+default_border pixel 2
+default_floating_border pixel 2
+gaps inner 4
+
+# Color scheme (focused window, unfocused, urgent)
+# class                 border  backgr. text    indicator child_border
+client.focused          #6272a4 #6272a4 #f8f8f2 #6272a4   #6272a4
+client.focused_inactive #44475a #44475a #f8f8f2 #44475a   #44475a
+client.unfocused        #282a36 #282a36 #bfbfbf #282a36   #282a36
+client.urgent           #ff5555 #ff5555 #f8f8f2 #ff5555   #ff5555
+
+# Status bar
+bar {
+    position top
+    status_command ~/.config/sway/status.sh
+    font pango:JetBrainsMono Nerd Font 10
+
+    colors {
+        statusline #ffffff
+        background #282a36
+        focused_workspace  #6272a4 #6272a4 #ffffff
+        inactive_workspace #282a36 #282a36 #888888
+    }
+}
