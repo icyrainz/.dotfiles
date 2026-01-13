@@ -4,13 +4,20 @@ set $mod2 Menu
 # Output configuration
 output eDP-1 scale 2
 
+# Start clipboard manager
+exec wl-paste --type text --watch cliphist store
+exec wl-paste --type image --watch cliphist store
+
 bindsym $mod+Return exec wezterm
 bindsym $mod+Shift+Return exec foot
 bindsym $mod2+Return exec wezterm
 bindsym $mod2+Shift+Return exec foot
 
-bindsym $mod+b exec firefox
-bindsym $mod2+b exec firefox
+bindsym $mod+b exec env MOZ_ENABLE_WAYLAND=1 GDK_DPI_SCALE=0.75 firefox
+bindsym $mod2+b exec env MOZ_ENABLE_WAYLAND=1 GDK_DPI_SCALE=0.75 firefox
+
+bindsym $mod+c exec cliphist list | wofi --dmenu | cliphist decode | wl-copy
+bindsym $mod2+c exec cliphist list | wofi --dmenu | cliphist decode | wl-copy
 
 bindsym $mod+Shift+q kill
 bindsym $mod2+Shift+q kill
@@ -58,6 +65,10 @@ input type:keyboard {
   xkb_options ctrl:swapcaps
   repeat_delay 200
   repeat_rate 50
+}
+
+input type:touchpad {
+  natural_scroll enabled
 }
 
 # Window borders and colors

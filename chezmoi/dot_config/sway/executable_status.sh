@@ -36,7 +36,7 @@ while true; do
         battery_status="$battery_icon $capacity% | "
     fi
 
-    date_time=$(date +'%Y-%m-%d %H:%M:%S')
+    date_time=$(date +'%Y-%m-%d %I:%M:%S %p')
     echo "$split_text | ${battery_status}$date_time"
     sleep 0.2
 done

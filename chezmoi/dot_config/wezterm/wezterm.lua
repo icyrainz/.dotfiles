@@ -59,12 +59,30 @@ config.inactive_pane_hsb = {
 	brightness = 0.7,
 }
 
+-- Enable smooth scrolling
+config.enable_scroll_bar = false
+config.min_scroll_bar_height = "2cell"
+config.colors = {
+	scrollbar_thumb = "rgba(30, 30, 30, 0.4)",
+}
+
 config.mouse_bindings = {
 	-- Ctrl-click will open the link under the mouse cursor
 	{
 		event = { Up = { streak = 1, button = "Left" } },
 		mods = "CTRL",
 		action = act.OpenLinkAtMouseCursor,
+	},
+	-- Smooth scrolling with touchpad/mouse wheel
+	{
+		event = { Down = { streak = 1, button = { WheelUp = 1 } } },
+		mods = "NONE",
+		action = act.ScrollByLine(-3),
+	},
+	{
+		event = { Down = { streak = 1, button = { WheelDown = 1 } } },
+		mods = "NONE",
+		action = act.ScrollByLine(3),
 	},
 }
 
