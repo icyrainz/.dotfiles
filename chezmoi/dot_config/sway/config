@@ -1,17 +1,31 @@
+# ===== Variables =====
 set $mod Mod4
 set $mod2 Menu
 
-# Output configuration
+# Workspace names
+set $ws1 "1:term"
+set $ws2 "2:web"
+set $ws3 "3"
+set $ws4 "4"
+set $ws5 "5"
+set $ws6 "6"
+set $ws7 "7"
+set $ws8 "8"
+set $ws9 "9"
+
+# ===== Output Configuration =====
 output eDP-1 scale 2
 
-# Start clipboard manager
+# ===== Autostart =====
 exec wl-paste --type text --watch cliphist store
 exec wl-paste --type image --watch cliphist store
 
+# ===== Application Launchers =====
 bindsym $mod+Return exec wezterm
 bindsym $mod+Shift+Return exec foot
 bindsym $mod2+Return exec wezterm
 bindsym $mod2+Shift+Return exec foot
+bindsym $mod2+p exec wezterm start --always-new-process -- ssh -t root@akio-lab "tmux attach || tmux new"
 
 bindsym $mod+b exec env MOZ_ENABLE_WAYLAND=1 GDK_DPI_SCALE=0.75 firefox
 bindsym $mod2+b exec env MOZ_ENABLE_WAYLAND=1 GDK_DPI_SCALE=0.75 firefox
@@ -19,15 +33,14 @@ bindsym $mod2+b exec env MOZ_ENABLE_WAYLAND=1 GDK_DPI_SCALE=0.75 firefox
 bindsym $mod+c exec cliphist list | wofi --dmenu | cliphist decode | wl-copy
 bindsym $mod2+c exec cliphist list | wofi --dmenu | cliphist decode | wl-copy
 
+# ===== Window Management =====
 bindsym $mod+Shift+q kill
 bindsym $mod2+Shift+q kill
 
-bindsym $mod+Shift+c reload
-bindsym $mod2+Shift+c reload
+bindsym $mod+f fullscreen
+bindsym $mod2+f fullscreen
 
-bindsym $mod+Shift+e exit
-bindsym $mod2+Shift+e exit
-
+# ===== Focus =====
 bindsym $mod+h focus left
 bindsym $mod+j focus down
 bindsym $mod+k focus up
@@ -37,6 +50,7 @@ bindsym $mod2+j focus down
 bindsym $mod2+k focus up
 bindsym $mod2+l focus right
 
+# ===== Move Windows =====
 bindsym $mod+Shift+h move left
 bindsym $mod+Shift+j move down
 bindsym $mod+Shift+k move up
@@ -46,6 +60,7 @@ bindsym $mod2+Shift+j move down
 bindsym $mod2+Shift+k move up
 bindsym $mod2+Shift+l move right
 
+# ===== Layouts =====
 bindsym $mod+s layout stacking
 bindsym $mod+w layout tabbed
 bindsym $mod+e layout toggle split
@@ -58,9 +73,55 @@ bindsym $mod+Shift+v exec ~/.config/sway/set-split.sh h
 bindsym $mod2+v exec ~/.config/sway/set-split.sh v
 bindsym $mod2+Shift+v exec ~/.config/sway/set-split.sh h
 
-bindsym $mod+f fullscreen
-bindsym $mod2+f fullscreen
+# ===== Workspaces =====
+# Switch to workspace
+bindsym $mod+1 workspace $ws1
+bindsym $mod+2 workspace $ws2
+bindsym $mod+3 workspace $ws3
+bindsym $mod+4 workspace $ws4
+bindsym $mod+5 workspace $ws5
+bindsym $mod+6 workspace $ws6
+bindsym $mod+7 workspace $ws7
+bindsym $mod+8 workspace $ws8
+bindsym $mod+9 workspace $ws9
+bindsym $mod2+1 workspace $ws1
+bindsym $mod2+2 workspace $ws2
+bindsym $mod2+3 workspace $ws3
+bindsym $mod2+4 workspace $ws4
+bindsym $mod2+5 workspace $ws5
+bindsym $mod2+6 workspace $ws6
+bindsym $mod2+7 workspace $ws7
+bindsym $mod2+8 workspace $ws8
+bindsym $mod2+9 workspace $ws9
 
+# Move focused container to workspace
+bindsym $mod+Shift+1 move container to workspace $ws1
+bindsym $mod+Shift+2 move container to workspace $ws2
+bindsym $mod+Shift+3 move container to workspace $ws3
+bindsym $mod+Shift+4 move container to workspace $ws4
+bindsym $mod+Shift+5 move container to workspace $ws5
+bindsym $mod+Shift+6 move container to workspace $ws6
+bindsym $mod+Shift+7 move container to workspace $ws7
+bindsym $mod+Shift+8 move container to workspace $ws8
+bindsym $mod+Shift+9 move container to workspace $ws9
+bindsym $mod2+Shift+1 move container to workspace $ws1
+bindsym $mod2+Shift+2 move container to workspace $ws2
+bindsym $mod2+Shift+3 move container to workspace $ws3
+bindsym $mod2+Shift+4 move container to workspace $ws4
+bindsym $mod2+Shift+5 move container to workspace $ws5
+bindsym $mod2+Shift+6 move container to workspace $ws6
+bindsym $mod2+Shift+7 move container to workspace $ws7
+bindsym $mod2+Shift+8 move container to workspace $ws8
+bindsym $mod2+Shift+9 move container to workspace $ws9
+
+# ===== Sway Control =====
+bindsym $mod+Shift+c reload
+bindsym $mod2+Shift+c reload
+
+bindsym $mod+Shift+e exit
+bindsym $mod2+Shift+e exit
+
+# ===== Input Configuration =====
 input type:keyboard {
   xkb_options ctrl:swapcaps
   repeat_delay 200
@@ -71,19 +132,18 @@ input type:touchpad {
   natural_scroll enabled
 }
 
-# Window borders and colors
+# ===== Appearance =====
 default_border pixel 2
 default_floating_border pixel 2
 gaps inner 4
 
-# Color scheme (focused window, unfocused, urgent)
-# class                 border  backgr. text    indicator child_border
+# Color scheme (Dracula-inspired)
 client.focused          #6272a4 #6272a4 #f8f8f2 #6272a4   #6272a4
 client.focused_inactive #44475a #44475a #f8f8f2 #44475a   #44475a
 client.unfocused        #282a36 #282a36 #bfbfbf #282a36   #282a36
 client.urgent           #ff5555 #ff5555 #f8f8f2 #ff5555   #ff5555
 
-# Status bar
+# ===== Status Bar =====
 bar {
     position top
     status_command ~/.config/sway/status.sh

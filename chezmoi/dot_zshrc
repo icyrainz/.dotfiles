@@ -75,6 +75,9 @@ ssh-tmux() {
     ssh -t "$@" "tmux attach || tmux new"
 }
 
+# Quick SSH shortcuts
+alias ssh-lab='ssh -t root@akio-lab "tmux attach || tmux new"'
+
 # --- Docker Aliases ---
 alias d='docker'
 alias dc='docker compose'
@@ -110,6 +113,12 @@ fi
 
 # zoxide integration (smarter cd)
 eval "$(zoxide init zsh)"
+
+# --- Key Bindings ---
+# Set these AFTER fzf integration to prevent overrides
+bindkey -e  # Enable emacs mode
+bindkey '^P' up-line-or-history      # Ctrl+P for previous command
+bindkey '^N' down-line-or-history    # Ctrl+N for next command
 
 # --- Prompt ---
 # Simple two-line prompt with current directory and git branch
