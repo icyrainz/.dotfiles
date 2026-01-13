@@ -4,7 +4,7 @@ return {
     opts = {
       dashboard = {
         sections = {
-          { section = "terminal", cmd = "fortune -s | cowsay", hl = "header", padding = 1, indent = 8 },
+          { section = "terminal", cmd = "cowsay $(fortune -s) ", hl = "header", padding = 1, indent = 8 },
           { icon = " ", title = "Keymaps", section = "keys", indent = 2, padding = 1 },
           {
             icon = " ",

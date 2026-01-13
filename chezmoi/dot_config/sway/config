@@ -68,15 +68,15 @@ bindsym $mod2+s layout stacking
 bindsym $mod2+w layout tabbed
 bindsym $mod2+e layout toggle split
 
-bindsym $mod+v exec ~/.config/sway/set-split.sh v
-bindsym $mod+Shift+v exec ~/.config/sway/set-split.sh h
-bindsym $mod2+v exec ~/.config/sway/set-split.sh v
-bindsym $mod2+Shift+v exec ~/.config/sway/set-split.sh h
+bindsym $mod+v splith
+bindsym $mod+Shift+v splitv
+bindsym $mod2+v splith
+bindsym $mod2+Shift+v splitv
 
 # ===== Workspaces =====
 # Switch to workspace
-bindsym $mod+1 workspace $ws1
-bindsym $mod+2 workspace $ws2
+bindsym $mod+1 exec ~/.config/sway/workspace-1-switch.sh
+bindsym $mod+2 exec ~/.config/sway/workspace-2-switch.sh
 bindsym $mod+3 workspace $ws3
 bindsym $mod+4 workspace $ws4
 bindsym $mod+5 workspace $ws5
@@ -84,8 +84,8 @@ bindsym $mod+6 workspace $ws6
 bindsym $mod+7 workspace $ws7
 bindsym $mod+8 workspace $ws8
 bindsym $mod+9 workspace $ws9
-bindsym $mod2+1 workspace $ws1
-bindsym $mod2+2 workspace $ws2
+bindsym $mod2+1 exec ~/.config/sway/workspace-1-switch.sh
+bindsym $mod2+2 exec ~/.config/sway/workspace-2-switch.sh
 bindsym $mod2+3 workspace $ws3
 bindsym $mod2+4 workspace $ws4
 bindsym $mod2+5 workspace $ws5
@@ -132,6 +132,12 @@ input type:touchpad {
   natural_scroll enabled
 }
 
+# ===== Media Keys =====
+# Volume control (pipewire)
+bindsym XF86AudioLowerVolume exec wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-
+bindsym XF86AudioRaiseVolume exec wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+ --limit 1.0
+bindsym XF86AudioMute exec wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle
+
 # ===== Appearance =====
 default_border pixel 2
 default_floating_border pixel 2
@@ -145,14 +151,5 @@ client.urgent           #ff5555 #ff5555 #f8f8f2 #ff5555   #ff5555
 
 # ===== Status Bar =====
 bar {
-    position top
-    status_command ~/.config/sway/status.sh
-    font pango:JetBrainsMono Nerd Font 10
-
-    colors {
-        statusline #ffffff
-        background #282a36
-        focused_workspace  #6272a4 #6272a4 #ffffff
-        inactive_workspace #282a36 #282a36 #888888
-    }
+    swaybar_command waybar
 }
