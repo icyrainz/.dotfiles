@@ -1,0 +1,49 @@
+# --- Custom Bash Configuration ---
+
+# fzf integration (Ctrl+R: history, Ctrl+T: files, Alt+C: cd)
+eval "$(fzf --bash)"
+
+# fzf customizations
+export FZF_DEFAULT_OPTS="--height 40% --layout reverse --border"
+export FZF_CTRL_T_OPTS="--preview 'bat --color=always {}' --preview-window '~3'"
+export FZF_ALT_C_OPTS="--preview 'lsd -la {}'"
+
+# Basic aliases
+alias c='clear'
+alias q='exit'
+alias ..='cd ..'
+alias ...='cd ../..'
+
+# Modern CLI tools
+alias ls='lsd'
+alias ll='lsd -la'
+alias lt='lsd --tree'
+alias cat='bat'
+alias v='nvim'
+alias vim='nvim'
+
+# Editor
+export EDITOR=nvim
+export VISUAL=nvim
+
+# ripgrep smart case by default
+alias rg='rg --smart-case'
+
+# tmux
+alias t='tmux attach || tmux new-session'
+
+# Docker aliases
+alias d='docker'
+alias dc='docker compose'
+alias dcup='docker compose pull && docker compose down && docker compose up -d'
+alias dcre='docker compose down && docker compose up -d'
+alias dps='docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"'
+alias dlogs='docker logs -f'
+
+# Git aliases
+alias g='git'
+alias gs='git status'
+alias gd='git diff'
+alias gp='git push'
+alias gl='git pull'
+alias lg='lazygit'
