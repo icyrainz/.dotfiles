@@ -29,3 +29,5 @@ alias dcre='docker compose down && docker compose up -d'
 alias dps='docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"'
 alias dlogs='docker logs -f'
 alias lzd='lazydocker'
+
+alias ip192="ip address | grep '192\.' | awk '{print \$2}' | cut -d'/' -f1"
