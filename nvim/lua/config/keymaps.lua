@@ -34,7 +34,7 @@ vim.keymap.set(
 -- vim.keymap.set("i", "<C-e>", "<Esc>A", { silent = true, desc = "Goto end of line" })
 
 -- Copy/paste with system clipboard
--- vim.keymap.set({ "n", "x" }, "<leader>y", '"+y', { desc = "Copy to system clipboard" })
+vim.keymap.set({ "n", "x" }, "<leader>y", '"+y', { desc = "Copy to system clipboard" })
 vim.keymap.set("v", "p", [["_dP]], { desc = "Keep the yanked text when pasting in visual mode" })
 
 -- Add empty lines before and after cursor line supporting dot-repeat
