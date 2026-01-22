@@ -21,8 +21,6 @@
       path: karabiner/karabiner.json
     ~/.hammerspoon:
       path: hammerspoon
-    ~/.config/helix:
-      path: helix
     ~/.config/doom:
       path: doom
     ~/.ideavimrc:

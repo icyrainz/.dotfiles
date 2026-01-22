@@ -1,0 +1,5 @@
+# Ignore sway on non-Arch systems (Pop!_OS uses COSMIC)
+{{ if ne .chezmoi.osRelease.id "arch" }}
+.config/sway
+.config/sway/**
+{{ end }}
