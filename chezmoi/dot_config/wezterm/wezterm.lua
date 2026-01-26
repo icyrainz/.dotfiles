@@ -14,9 +14,9 @@ local is_linux = wezterm.target_triple:find("linux") ~= nil
 local mod = is_macos and "CMD" or "SUPER"
 
 local font_array = {
-	-- wezterm.font("Iosevka Nerd Font Mono", {weight="Regular", stretch="Normal", style="Normal"}),
-	is_macos and wezterm.font("PragmataProMonoLiga Nerd Font", { weight = "Regular", stretch = "Normal", style = "Normal" })
-		or wezterm.font("JetBrainsMono Nerd Font", { weight = "Regular" }),
+	wezterm.font("Iosevka Nerd Font Mono", { weight = "Regular", stretch = "Normal", style = "Normal" }),
+	-- is_macos and wezterm.font("PragmataProMonoLiga Nerd Font", { weight = "Regular", stretch = "Normal", style = "Normal" })
+	-- 	or wezterm.font("JetBrainsMono Nerd Font", { weight = "Regular" }),
 }
 config.font_size = is_macos and 19.0 or 11.0
 
