@@ -11,9 +11,6 @@ export VISUAL=nvim
 
 # Tool configurations
 export BAT_THEME=1337
-export FZF_DEFAULT_OPTS="--height 40% --layout reverse --border"
-export FZF_CTRL_T_OPTS="--preview 'bat --color=always {}' --preview-window '~3'"
-export FZF_ALT_C_OPTS="--preview 'lsd -la {}'"
 
 # --- Basic Settings ---
 setopt AUTO_CD              # cd by just typing directory name
@@ -105,11 +102,8 @@ alias cp='rsync -avzhr --progress'
 
 # --- Integrations ---
 
-# fzf integration
-if [ -f /usr/share/fzf/key-bindings.zsh ]; then
-  source /usr/share/fzf/key-bindings.zsh
-  source /usr/share/fzf/completion.zsh
-fi
+# fzf integration (Ctrl+R for history, Ctrl+T for files, Alt+C for cd)
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 # zoxide integration (smarter cd)
 eval "$(zoxide init zsh)"
