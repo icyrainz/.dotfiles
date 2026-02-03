@@ -6,6 +6,12 @@ The original Pragmasevka Nerd Font has `isFixedPitch=0` in its `post` table, whi
 
 The fonts in `pragmasevka-nf.tar.gz` have been patched to set `isFixedPitch=1`.
 
+### Upstream Source
+
+Pragmasevka is maintained at: https://github.com/shytikov/pragmasevka
+
+When a new version is released, download the Nerd Font variant and re-patch it using the script below.
+
 ### Installation
 
 ```bash
