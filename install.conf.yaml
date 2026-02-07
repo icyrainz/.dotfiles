@@ -41,3 +41,4 @@
 - shell:
     - [git submodule update --init --recursive, Installing submodules]
     - [./install_tools.sh, Installing tools]
+    - ["command -v fish >/dev/null && fish -c 'curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher update'", Installing Fisher plugins]
