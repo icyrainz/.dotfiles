@@ -62,11 +62,32 @@ Dotbot will create symlinks for all configs. To set zsh as default shell:
 chsh -s $(which zsh)
 ```
 
-## Post-migration cleanup
+## Machine-Specific Configs
 
-If you previously used chezmoi, you can clean up:
+The `master` branch contains shared configs that work on any machine. Machine-specific
+tweaks live on branches named after the hostname (e.g., `akio-macbook`).
+
+### Setup on a new/existing machine
 
 ```bash
-rm -rf ~/.config/chezmoi
-# Optionally: brew uninstall chezmoi / pacman -R chezmoi
+# After cloning and running ./install with the shared base:
+git checkout -b $(hostname | tr '[:upper:]' '[:lower:]' | sed 's/\.local$//')
+# Make machine-specific changes, commit to this branch
 ```
+
+### Day-to-day workflow
+
+- **Shared change** (new tool, plugin config everyone needs): commit on `master`, then rebase machine branches.
+- **Machine-specific change** (paths, SSH hosts, macOS-only tweaks): commit on the machine branch.
+
+```bash
+# After committing shared changes on master:
+git checkout akio-macbook
+git rebase master
+```
+
+### Existing machine branches
+
+| Branch | Machine |
+|--------|---------|
+| `akio-macbook` | MacBook (macOS) |
