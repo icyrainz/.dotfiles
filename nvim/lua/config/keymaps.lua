@@ -13,8 +13,7 @@ vim.keymap.set("n", "<leader>a", function()
   vim.cmd('normal! "+y')
 end, { silent = true, desc = "Yank whole buffer" })
 
--- vim.keymap.set("n", "c*", "*``cgn", { silent = true, desc = "Replace word" })
--- vim.keymap.set("n", "c#", "#``cgN", { silent = true, desc = "Replace word reverse" })
+vim.keymap.set("n", "c*", "*``cgn", { silent = true, desc = "Replace word" })
 
 vim.keymap.set(
   "n",
@@ -29,9 +28,6 @@ vim.keymap.set(
   "<CMD>call setreg('+', expand('%:p'))<CR>",
   { desc = "Copy current buffer file path to clipboard" }
 )
-
--- vim.keymap.set("i", "<C-a>", "<Esc>I", { silent = true, desc = "Goto start of line" })
--- vim.keymap.set("i", "<C-e>", "<Esc>A", { silent = true, desc = "Goto end of line" })
 
 -- Copy/paste with system clipboard
 vim.keymap.set({ "n", "x" }, "<leader>y", '"+y', { desc = "Copy to system clipboard" })
@@ -55,9 +51,6 @@ MiniBasics.put_empty_line = function(put_above)
   vim.fn.append(target_line, vim.fn["repeat"]({ "" }, vim.v.count1))
 end
 
--- vim.keymap.set("n", "gO", "v:lua.MiniBasics.put_empty_line(v:true)", { expr = true, desc = "Put empty line above" })
--- vim.keymap.set("n", "go", "v:lua.MiniBasics.put_empty_line(v:false)", { expr = true, desc = "Put empty line below" })
-
 -- vim.keymap.set("i", "jjj", "<Esc>", { desc = "Escape Insert mode" })
 
 vim.keymap.set({ "n" }, "H", "^", { desc = "Begin of line" })
@@ -65,7 +58,6 @@ vim.keymap.set({ "n" }, "L", "$", { desc = "End of line" })
 
 vim.keymap.set("n", "<Esc>", ":noh<CR>:w<CR>", { silent = true, desc = "Save" })
 
-vim.keymap.set("n", "s", "ciw", { desc = "ciw" })
 vim.keymap.set("n", "X", "daw", { desc = "daw" })
 
 vim.keymap.set("n", "<leader>r", ":%s/", { desc = "Start replace" })
