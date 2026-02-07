@@ -19,8 +19,10 @@
       path: fish/include
     ~/.config/karabiner/karabiner.json:
       path: karabiner/karabiner.json
+      if: '[ "$(uname)" = "Darwin" ]'
     ~/.hammerspoon:
       path: hammerspoon
+      if: '[ "$(uname)" = "Darwin" ]'
     ~/.config/doom:
       path: doom
     ~/.ideavimrc:
@@ -35,6 +37,7 @@
       path: bash/.bash_custom
     ~/.config/sway:
       path: sway
+      if: '[ "$(uname)" = "Linux" ]'
 
 - shell:
     - [git submodule update --init --recursive, Installing submodules]
