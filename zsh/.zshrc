@@ -103,7 +103,7 @@ alias cp='rsync -avzhr --progress'
 # --- Integrations ---
 
 # fzf integration (Ctrl+R for history, Ctrl+T for files, Alt+C for cd)
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+command -v fzf &>/dev/null && eval "$(fzf --zsh)"
 
 # zoxide integration (smarter cd)
 eval "$(zoxide init zsh)"

@@ -63,21 +63,7 @@ config.mouse_bindings = {
 }
 
 local function is_inside_vim(pane)
-	local tty = pane:get_tty_name()
-	if tty == nil then
-		return false
-	end
-
-	local success, stdout, stderr = wezterm.run_child_process({
-		"sh",
-		"-c",
-		"ps -o state= -o comm= -t"
-			.. wezterm.shell_quote_arg(tty)
-			.. " | "
-			.. "grep -iqE '^[^TXZ ]+ +(\\S+\\/)?g?(view|l?n?vim?x?)(diff)?$'",
-	})
-
-	return success
+	return pane:get_user_vars().IS_NVIM == "true"
 end
 
 local function is_outside_vim(pane)
