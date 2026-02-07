@@ -25,6 +25,16 @@
       path: doom
     ~/.ideavimrc:
       path: ideavim/.ideavimrc
+    ~/.zshrc:
+      path: zsh/.zshrc
+    ~/.bashrc:
+      path: bash/.bashrc
+    ~/.bash_profile:
+      path: bash/.bash_profile
+    ~/.bash_custom:
+      path: bash/.bash_custom
+    ~/.config/sway:
+      path: sway
 
 - shell:
     - [git submodule update --init --recursive, Installing submodules]

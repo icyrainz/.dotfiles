@@ -1,15 +1,21 @@
 # Dotfiles
 
-Personal dotfiles managed with **chezmoi**.
+Personal dotfiles managed with [dotbot](https://github.com/anishathalye/dotbot).
 
 ## What's Included
 
 | Config | Description |
 |--------|-------------|
 | zsh | Shell config with aliases, zoxide, fzf |
+| bash | Bash config with fzf integration |
 | nvim | Neovim with LazyVim |
 | wezterm | Terminal emulator |
 | tmux | Terminal multiplexer |
+| fish | Fish shell config |
+| karabiner | macOS keyboard remapping |
+| hammerspoon | macOS automation |
+| doom | Doom Emacs config |
+| ideavim | JetBrains IdeaVim config |
 | sway | Window manager (Arch Linux only) |
 
 ## Required CLI Tools
@@ -44,93 +50,23 @@ brew install zsh neovim fzf ripgrep bat lsd zoxide lazygit cowsay fortune
 
 ## Install
 
-### Pop!_OS / Ubuntu
+```bash
+git clone https://github.com/icyrainz/.dotfiles.git ~/repo/.dotfiles
+cd ~/repo/.dotfiles
+./install
+```
+
+Dotbot will create symlinks for all configs. To set zsh as default shell:
 
 ```bash
-# Clone the repo
-git clone https://github.com/icyrainz/.dotfiles.git ~/repo/.dotfiles
-
-# Install chezmoi
-sh -c "$(curl -fsLS get.chezmoi.io)" -- -b ~/.local/bin
-
-# Configure chezmoi source directory
-mkdir -p ~/.config/chezmoi
-echo 'sourceDir = "~/repo/.dotfiles/chezmoi"' > ~/.config/chezmoi/chezmoi.toml
-
-# Preview and apply
-chezmoi diff
-chezmoi apply
-
-# Set zsh as default shell
 chsh -s $(which zsh)
 ```
 
-### Arch Linux
+## Post-migration cleanup
+
+If you previously used chezmoi, you can clean up:
 
 ```bash
-# Clone the repo
-git clone https://github.com/icyrainz/.dotfiles.git ~/repo/.dotfiles
-
-# Install chezmoi
-pacman -S chezmoi
-
-# Configure chezmoi source directory
-mkdir -p ~/.config/chezmoi
-echo 'sourceDir = "~/repo/.dotfiles/chezmoi"' > ~/.config/chezmoi/chezmoi.toml
-
-# Preview and apply
-chezmoi diff
-chezmoi apply
-
-# Set zsh as default shell
-chsh -s $(which zsh)
+rm -rf ~/.config/chezmoi
+# Optionally: brew uninstall chezmoi / pacman -R chezmoi
 ```
-
-### macOS
-
-```bash
-# Clone the repo
-git clone https://github.com/icyrainz/.dotfiles.git ~/repo/.dotfiles
-
-# Install chezmoi
-brew install chezmoi
-
-# Configure chezmoi source directory
-mkdir -p ~/.config/chezmoi
-echo 'sourceDir = "~/repo/.dotfiles/chezmoi"' > ~/.config/chezmoi/chezmoi.toml
-
-# Preview and apply
-chezmoi diff
-chezmoi apply
-
-# Set zsh as default shell
-chsh -s $(which zsh)
-```
-
-## OS-Specific Configs
-
-The `.chezmoiignore` file handles OS-specific exclusions:
-- **sway**: Only applied on Arch Linux (excluded on Pop!_OS/Ubuntu which use COSMIC/GNOME)
-
-## Usage
-
-```bash
-# Apply changes from dotfiles to system
-chezmoi apply
-
-# See what would change
-chezmoi diff
-
-# Edit a managed file
-chezmoi edit ~/.zshrc
-
-# Add a new file to chezmoi
-chezmoi add ~/.config/some/config
-
-# Pull latest and apply
-chezmoi update
-```
-
-## Legacy
-
-This repo previously used **dotbot** for cross-platform configs. Those configs are still present but deprecated in favor of chezmoi.

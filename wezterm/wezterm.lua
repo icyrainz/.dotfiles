@@ -9,17 +9,19 @@ if wezterm.config_builder then
 end
 
 local font_array = {
-	-- wezterm.font("Iosevka Nerd Font Mono", {weight="Regular", stretch="Normal", style="Normal"}),
-	wezterm.font("PragmataProMonoLiga Nerd Font", { weight = "Regular", stretch = "Normal", style = "Normal" }),
+	wezterm.font("Iosevka Nerd Font", { weight = "Regular", stretch = "Normal", style = "Normal" }),
+	-- wezterm.font("PragmataProMonoLiga Nerd Font", { weight = "Regular", stretch = "Normal", style = "Normal" }),
 }
-config.font_size = 19.0
+config.font_size = 20.0
 
 local font_index = 1
 config.font = font_array[font_index]
 
 config.max_fps = 120
-config.animation_fps = 60
+config.animation_fps = 120
+
 config.color_scheme = "tokyonight_night"
+-- config.color_scheme = "tokyonight_night"
 -- local custom_theme, theme = pcall(require, "theme")
 -- if custom_theme then
 -- 	for k, v in pairs(theme) do
@@ -98,7 +100,7 @@ local function bind_if(cond, key, mods, action)
 	return { key = key, mods = mods, action = wezterm.action_callback(callback) }
 end
 
-_G.tmux_navigation_enabled = true
+_G.tmux_navigation_enabled = false
 
 local function toggle_tmux_navigation(window)
 	_G.tmux_navigation_enabled = not _G.tmux_navigation_enabled
@@ -238,6 +240,7 @@ config.keys = {
 			window:set_config_overrides(overrides)
 		end),
 	},
+	{ key = "Enter", mods = "SHIFT", action = wezterm.action({ SendString = "\x1b\r" }) },
 }
 
 -- config.default_gui_startup_args = {
@@ -248,6 +251,26 @@ config.keys = {
 config.window_padding = {
 	bottom = 0,
 	top = 0,
+	left = 0,
+	right = 0,
 }
+
+config.use_fancy_tab_bar = false
+
+-- Create custom event for Neovim detection
+wezterm.on("user-var-changed", function(window, pane, name, value)
+	local overrides = window:get_config_overrides() or {}
+
+	if name == "IS_NVIM" then
+		if value == "true" then
+			-- Set font size when Neovim is running
+			overrides.font_size = 20
+		else
+			-- Reset to default font size when Neovim is not running
+			overrides.font_size = config.font_size
+		end
+		window:set_config_overrides(overrides)
+	end
+end)
 
 return config
