@@ -30,12 +30,13 @@ abbr lgit lazygit
 
 abbr bk 'cd -'
 abbr home 'cd ~'
-abbr c clear
 abbr src 'source ~/.config/fish/config.fish'
 
 abbr zd 'z dotfiles'
 
 abbr cp 'rsync -avzhr --progress'
+
+abbr oc opencode
 
 # Navigation
 function ..
@@ -64,3 +65,25 @@ abbr dcp 'docker compose pull'
 function ssh-tmux
     ssh -t $argv "tmux attach || tmux new"
 end
+
+function ssh-homepage
+    ssh -t root@akio-lab "pct enter 108"
+end
+
+function ssh-lab
+    ssh -t root@akio-lab "tmux attach || tmux new"
+end
+
+function ssh-garage
+    ssh -t root@akio-garage "tmux attach || tmux new"
+end
+
+function ssh-lxc
+    ssh -t root@akio-lab "pct enter $argv"
+end
+
+function c
+    cd ~/claude && claude
+end
+
+abbr flushdns "sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder"

@@ -28,3 +28,18 @@ if status is-interactive
     # Commands to run in interactive sessions can go here
     zoxide init fish | source
 end
+
+direnv hook fish | source
+
+fzf --fish | source
+
+source /opt/homebrew/opt/asdf/libexec/asdf.fish
+
+navi widget fish | source
+
+# bun
+set --export BUN_INSTALL "$HOME/.bun"
+set --export PATH $BUN_INSTALL/bin $PATH
+
+# opencode
+fish_add_path /Users/tuephan/.opencode/bin
