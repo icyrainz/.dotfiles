@@ -7,7 +7,7 @@ set -gx FISH_PATH ~/.config/fish
 set -gx ERL_AFLAGS "-kernel shell_history enabled"
 
 set -gx BAT_THEME 1337
-set -gx NEOVIDE_FRAME transparent
+set -gx NEOVIDE_FRAME buttonless
 set -gx NEOVIDE_TITLE_HIDDEN 1
 
 # macOS (Homebrew)
@@ -30,3 +30,18 @@ if status is-interactive
     # Commands to run in interactive sessions can go here
     zoxide init fish | source
 end
+
+direnv hook fish | source
+
+fzf --fish | source
+
+source /opt/homebrew/opt/asdf/libexec/asdf.fish
+
+navi widget fish | source
+
+# bun
+set --export BUN_INSTALL "$HOME/.bun"
+set --export PATH $BUN_INSTALL/bin $PATH
+
+# opencode
+fish_add_path /Users/tuephan/.opencode/bin
