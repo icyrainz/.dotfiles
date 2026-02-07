@@ -4,7 +4,6 @@ set ideajoin
 set hlsearch
 set ignorecase
 set smartcase
-set smartcase
 
 let mapleader = ' '
 

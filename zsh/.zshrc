@@ -106,7 +106,7 @@ alias cp='rsync -avzhr --progress'
 command -v fzf &>/dev/null && eval "$(fzf --zsh)"
 
 # zoxide integration (smarter cd)
-eval "$(zoxide init zsh)"
+command -v zoxide &>/dev/null && eval "$(zoxide init zsh)"
 
 # --- Key Bindings ---
 # Set these AFTER fzf integration to prevent overrides

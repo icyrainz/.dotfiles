@@ -16,9 +16,6 @@
       path: fish/config.fish
     ~/.config/fish/include:
       path: fish/include
-    ~/.config/karabiner/karabiner.json:
-      path: karabiner/karabiner.json
-      if: '[ "$(uname)" = "Darwin" ]'
     ~/.hammerspoon:
       path: hammerspoon
       if: '[ "$(uname)" = "Darwin" ]'
@@ -34,9 +31,6 @@
       path: bash/.bash_profile
     ~/.bash_custom:
       path: bash/.bash_custom
-    ~/.config/sway:
-      path: sway
-      if: '[ "$(uname)" = "Linux" ]'
 
 - shell:
     - [git submodule update --init --recursive, Installing submodules]
