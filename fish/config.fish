@@ -7,8 +7,6 @@ set -gx FISH_PATH ~/.config/fish
 set -gx ERL_AFLAGS "-kernel shell_history enabled"
 
 set -gx BAT_THEME 1337
-set -gx NEOVIDE_FRAME transparent
-set -gx NEOVIDE_TITLE_HIDDEN 1
 
 # macOS (Homebrew)
 if test -d /opt/homebrew

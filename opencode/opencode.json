@@ -1,0 +1,67 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "llama-cpp": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "llama-cpp",
+      "options": {
+        "baseURL": "http://akio-fractal:8080/v1"
+      },
+      "models": {
+        "GLM-4.7-Flash": {
+          "name": "GLM-4.7-Flash",
+          "tool_call": true
+        },
+        "Qwen3-Coder-Next": {
+          "name": "Qwen3-Coder-Next",
+          "tool_call": true
+        },
+        "Nemotron-3-Nano-30B-A3B": {
+          "name": "Nemotron-3-Nano-30B-A3B",
+          "tool_call": true
+        }
+      }
+    },
+    "chutes": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Chutes",
+      "options": {
+        "baseURL": "https://llm.chutes.ai/v1",
+        "apiKey": "{env:CHUTES_API_KEY}"
+      }
+    }
+  },
+  "plugin": [
+    // "oh-my-opencode@latest"
+  ],
+  "agent": {
+    "explore": {
+      "disable": true
+    },
+    "general": {
+      "disable": true
+    }
+  },
+  "keybinds": {
+    "session_parent": "<leader>ctrl+u",
+    "session_child_cycle": "<leader>ctrl+n",
+    "session_child_cycle_reverse": "<leader>ctrl+p",
+    "messages_half_page_up": "alt+u",
+    "messages_half_page_down": "alt+d"
+  },
+  "mcp": {
+    "n8n-mcp": {
+      "type": "local",
+      "enabled": true,
+      "command": [
+        "npx",
+        "-y",
+        "supergateway",
+        "--streamableHttp",
+        "http://n8n.lan/mcp-server/http",
+        "--header",
+        "authorization:Bearer {env:N8N_MCP_TOKEN}"
+      ]
+    }
+  }
+}
