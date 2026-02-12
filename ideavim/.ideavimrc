@@ -1,11 +1,17 @@
+let mapleader=" "
+let maplocalleader="\\"
+
+set backspace=indent,eol,start
+set formatoptions=tcqj
+set listchars=tab:>\ ,trail:-,nbsp:+
+set shortmess=filnxtToOF
+
 set scrolloff=5
 set incsearch
 set ideajoin
 set hlsearch
 set ignorecase
 set smartcase
-
-let mapleader = ' '
 
 " Don't use Ex mode, use Q for formatting.
 map Q gq
@@ -16,37 +22,63 @@ Plug 'tpope/vim-surround'
 Plug 'vim-scripts/argtextobj.vim'
 let g:argtextobj_pairs="[:],(:),<:>"
 
+Plug 'tommcdo/vim-exchange'
+Plug 'preservim/nerdtree'
+let g:NERDTreeMapCloseDir = 'h'
+let g:NERDTreeMapCloseChildren = 'H'
+let g:NERDTreeMapActivateNode = 'l'
+
+"set multiple-cursors
+set multicursor
+
 set mini-ai
 
-set which-key
-set notimeout
-set timeoutlen=5000
+"set which-key
+"set notimeout
+"set timeoutlen=5000
 
 set switch
 let g:switch_definitions = 'group:basic,group:java'
+let g:switch_custom_definitions = [
+\     switchWords(['debug', 'info', 'warn', 'error']),
+\     switchNormalizedCaseWords(['GET', 'POST', 'PUT', 'DELETE']),
+\     switchWords(['val', 'var']),
+\ ]
 nnoremap <C-s> :Switch<CR>
 nnoremap <C-S-s> :SwitchReverse<CR>
 
 set peekaboo
 
-Plug 'tommcdo/vim-exchange'
+set matchit
 
-Plug 'preservim/nerdtree'
+" Increase Window Height
+nmap <C-Up> <Action>(IncrementWindowHeight)
+" Decrease Window Height
+nmap <C-Down> <Action>(DecrementWindowHeight)
+" Decrease Window Width
+nmap <C-Left> <Action>(DecrementWindowWidth)
+" Increase Window Width
+nmap <C-Right> <Action>(IncrementWindowWidth)
 
-nnoremap <Esc> :nohlsearch<cr>
+
+" Escape and Clear hlsearch
+"nmap <esc> :nohlsearch<CR>
+nmap <leader>ur :nohlsearch<CR>
+
+" Add Comment Below
+nmap gco o<c-o>gcc
+" Add Comment Above
+nmap gcO O<c-o>gcc
 
 nnoremap <leader>ls :source ~/.ideavimrc<CR>
-nnoremap <leader>lr :e ~/.ideavimrc<CR>
+nnoremap <leader>le :e ~/.ideavimrc<CR>
 
-
-"Git stuffs
-nmap <leader>gtb <Action>(Annotate)
-nmap <leader>gb <Action>(Git.Branches)
-nmap <leader>gg <Action>(ActivateCommitToolWindow)
-nmap <leader>gG <Action>(ActivateVersionControlToolWindow)
-
-nmap gn <Action>(VcsShowNextChangeMarker)
-nmap gN <Action>(VcsShowPrevChangeMarker)
+"""Git stuffs
+nmap <leader>gtl <Action>(Annotate)
+nmap <leader>gg <Action>(Git.Branches)
+"nmap <leader>gg <Action>(ActivateCommitToolWindow)
+"nmap <leader>gG <Action>(ActivateVersionControlToolWindow)
+nmap <leader>gf <Action>(Vcs.ShowTabbedFileHistory)
 
 nmap <leader>cr <Action>(RenameElement)
 nmap <leader>cf <Action>(ReformatCode)
@@ -54,24 +86,39 @@ nmap <leader>co <Action>(OptimizeImports)
 nmap <leader>ca <Action>(ShowIntentionActions)
 nmap <leader>cs <Action>(FileStructurePopup)
 
-nmap <leader>t <Action>(ActivateTerminalToolWindow)
+nmap <C-/> <Action>(ActivateTerminalToolWindow)
 nmap <leader>ot <Action>(Terminal.OpenInTerminal)
 
-"Debug stuffs
+""" Debug stuffs
+" Run with Args
+nmap <leader>da <Action>(ChooseRunConfiguration)
+" Toggle Breakpoint
 nmap <leader>db <Action>(ToggleLineBreakpoint)
+" Breakpoint Condition
+nmap <leader>dB <Action>(AddConditionalBreakpoint)
+" Step Over
 nmap <leader>dn <Action>(StepOver)
+" Step Into
 nmap <leader>di <Action>(StepInto)
+" Step Out
 nmap <leader>do <Action>(StepOut)
+" Continue
 nmap <leader>dc <Action>(Resume)
-nmap <leader>drd <Action>(Debug)
-nmap <leader>drr <Action>(Run)
-nmap <leader>drc <Action>(RunClass)
-
+nmap <leader>dR <Action>(Debug)
+nmap <leader>dr <Action>(Run)
+nmap <leader>dg <Action>(RunClass)
+nmap <leader>dG <Action>(RunContextGroup)
+" Terminate
+nmap <leader>dt <Action>(Stop)
+" Pause
+nmap <leader>dp <Action>(Pause)
+" Run Last
 nmap <leader>dl <Action>(Rerun)
-nmap <leader>dt <Action>(ActivateDebugToolWindow)
+"nmap <leader>dt <Action>(ActivateDebugToolWindow)
 nmap <leader>dd <Action>(Debugger.RemoveAllBreakpointsInFile)
 nmap <leader>dD <Action>(Debugger.RemoveAllBreakpoints)
-nmap <leader>dg <Action>(ForceRunToCursor)
+
+nmap <leader>de <Action>(EvaluateExpression)
 
 vnoremap < <gv
 vnoremap > >gv
@@ -84,6 +131,9 @@ xnoremap r "_r
 map H ^
 map L $
 
+nmap s ciw
+nmap X daw
+
 "nnoremap <c-h> <c-w>h
 "nnoremap <c-l> <c-w>l
 "nnoremap <c-j> <c-w>j
@@ -95,14 +145,21 @@ nmap zR <Action>(ExpandAllRegions)
 nmap go <Action>(EditorStartNewLine)
 nmap gO <Action>(EditorStartNewLineBefore)
 
+nmap gn <Action>(GotoNextElementUnderCaretUsage)
+nmap gN <Action>(GotoPrevElementUnderCaretUsage)
+nmap <c-g>n <Action>(NextOccurrence)
+nmap <c-g>N <Action>(PreviousOccurrence)
+
 nmap ]e <Action>(GotoNextError)
 nmap [e <Action>(GotoPreviousError)
-nmap ]q <Action>(GotoNextElementUnderCaretUsage)
-nmap [q <Action>(GotoPrevElementUnderCaretUsage)
 nmap [[ <Action>(MethodUp)
 nmap ]] <Action>(MethodDown)
 nmap ]t <Action>(NextTab)
 nmap [t <Action>(PreviousTab)
+nmap ]g <Action>(VcsShowNextChangeMarker)
+nmap [g <Action>(VcsShowPrevChangeMarker)
+nmap ]c <Action>(JumpToNextChange)
+nmap [c <Action>(JumpToLastChange)
 
 nmap <leader><leader> <Action>(GotoFile)
 nmap <leader>/ <Action>(TextSearchAction)
@@ -110,12 +167,18 @@ nmap gl <Action>(ShowHoverInfo)
 nmap gr <Action>(ShowUsages)
 nmap gR <Action>(FindUsages)
 nmap gL <Action>(QuickImplementations)
-nmap gty <Action>(GotoTypeDeclaration)
-nmap gti <Action>(GotoImplementation)
+nmap gD <Action>(GotoDeclaration)
+nmap gy <Action>(GotoTypeDeclaration)
+nmap gI <Action>(GotoImplementation)
 nmap gtm <Action>(GotoSuperMethod)
 nmap gtt <Action>(GotoTest)
 nmap gte <Action>(ExpressionTypeInfo)
-nmap <leader>r <Action>(Refactorings.QuickListPopupAction)
+" Search/replace (Neovim-style)
+nmap <leader>r :%s/
+vmap <leader>r "zy<ESC>:%s/<C-R>z//g<Left><Left>
+
+" Refactoring menu (moved from <leader>r)
+nmap <leader>cR <Action>(Refactorings.QuickListPopupAction)
 
 nmap <c-w><c-v> <Action>(SplitVertically)
 nmap <c-w><c-s> <Action>(SplitHorizontally)
@@ -124,21 +187,32 @@ nmap <c-w><c-m> <Action>(MoveEditorToOppositeTabGroup)
 nmap <c-w><c-q> <Action>(CloseEditor)
 
 nmap <leader>e :NERDTreeToggle<CR>
-nmap <leader>wh <Action>(HideAllWindows)
 
-nmap <leader>fe <Action>(SelectInProjectView)
+nmap <leader>wh <Action>(HideAllWindows)
+nmap <leader>wa <Action>(CloseAllEditorsButActive)
+
+nmap <leader>ff <Action>(SelectInProjectView)
+nmap <leader>fe <Action>(ShowNavBar)
 nmap <leader>fr <Action>(RecentFiles)
-nmap <leader>fl <Action>(RecentLocations)
-nmap <leader>fn <Action>(NewScratchFile)
+nmap <leader>fnb <Action>(NewScratchBuffer)
+nmap <leader>fnf <Action>(NewScratchFile)
 
 nmap <leader>ss <Action>(GotoSymbol)
+nmap <leader>sH <Action>(HighlightUsagesInFile)
+nmap <leader>sl <Action>(RecentLocations)
 nnoremap <leader>sw viw:action FindInPath<CR>
 
-nmap <leader>oa <Action>(ActivateAugmentToolWindow)
-nmap <leader>ob <Action>(ActivateBuildToolWindow)
+map <leader>oa <Action>(ActivateAugmentToolWindow)
+map <leader>ob <Action>(ActivateBuildToolWindow)
+map <leader>or <Action>(ActivateRunToolWindow)
+map <leader>og <Action>(ActivateGradleToolWindow)
 
 nmap <leader>A ggVG
 nmap <leader>a mzggVG"+y'z
+
+" Yank to clipboard
+nmap <leader>y "+yy
+vmap <leader>y "+y
 
 xnoremap J :move'>+<CR>gv=gv
 xnoremap K :move-2<CR>gv=gv
@@ -147,16 +221,40 @@ nmap <leader>ya <Action>(CopyAbsolutePath)
 nmap <leader>yn <Action>(CopyFileName)
 nmap <leader>yp <Action>(CopyContentRootPath)
 
-"Relative number
-set relativenumber
-let g:relative_number_set = 0
-function! ToggleRelativeNumber()
-    if g:relative_number_set
-        set relativenumber
-        let g:relative_number_set = 0
-    else
-        set norelativenumber
-        let g:relative_number_set = 1
-    endif
-endfunction
-nmap \l :call ToggleRelativeNumber()<CR>
+" Neovim-style copy filename/path
+nmap <leader>bf <Action>(CopyFileName)
+nmap <leader>bF <Action>(CopyAbsolutePath)
+
+nmap <leader>unt <Action>(NavBarLocationTop)
+nmap <leader>unb <Action>(NavBarLocationBottom)
+nmap <leader>unh <Action>(NavBarLocationHide)
+
+" Toggle Relative Number
+nmap <leader>uL :set relativenumber!<CR>
+" Toggle Line Numbers
+nmap <leader>ul :set number!<CR>
+" Toggle Wrap
+nmap <leader>uw :setlocal wrap!<CR>
+
+" Signature Help in Insert Mode
+imap <C-k> <C-o><Action>(ParameterInfo)
+
+nmap <leader>, <Action>(Switcher)
+
+nmap w [w
+vap w [w
+nmap e ]w
+vmap e ]w
+
+nmap <leader>bt <Action>(ShowBookmarks)
+nmap <leader>bb <Action>(ToggleBookmark)
+nmap <leader>be <Action>(EditBookmark)
+nmap <leader>bn <Action>(GotoNextBookmark)
+nmap <leader>bp <Action>(GotoPreviousBookmark)
+
+map g<C-n> <Action>(SelectAllOccurrences)
+
+map <leader>sf <action>(com.mituuz.fuzzier.Fuzzier)
+map <leader>fm <action>(com.mituuz.fuzzier.FuzzyMover)
+map <leader>sF <action>(com.mituuz.fuzzier.FuzzierVCS)
+map <leader>sg <action>(com.mituuz.fuzzier.FuzzyGrep)
