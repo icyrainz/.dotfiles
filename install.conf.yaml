@@ -38,6 +38,8 @@
       path: bash/.bash_custom
     ~/.config/opencode/opencode.json:
       path: opencode/opencode.json
+    ~/.claude/settings.json:
+      path: claude/settings.json
 
 - shell:
     - [git submodule update --init --recursive, Installing submodules]
