@@ -39,6 +39,11 @@
 
 - shell:
     - [git submodule update --init --recursive, Installing submodules]
+    - [
+        "test -d tmux/plugins/tpm || git clone https://github.com/tmux-plugins/tpm tmux/plugins/tpm",
+        Installing TPM,
+      ]
+    - [tmux/plugins/tpm/bin/install_plugins, Installing tmux plugins]
     - [./install_tools.sh, Installing tools]
     - [
         "command -v fish >/dev/null && fish -c 'curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher update'",
