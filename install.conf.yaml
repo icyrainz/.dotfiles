@@ -21,6 +21,9 @@
     ~/.config/fish/completions/:
       path: fish/completions/*
       glob: true
+    ~/.config/fish/functions/:
+      path: fish/functions/*
+      glob: true
     ~/.hammerspoon:
       path: hammerspoon
       if: '[ "$(uname)" = "Darwin" ]'
