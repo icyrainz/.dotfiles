@@ -12,4 +12,13 @@ cd "${BASEDIR}"
 git -C "${DOTBOT_DIR}" submodule sync --quiet --recursive
 git submodule update --init --recursive "${DOTBOT_DIR}"
 
+if [ "$1" = "--force" ] || [ "$1" = "-f" ]; then
+    shift
+    FORCE_CONFIG=$(mktemp)
+    trap 'rm -f "$FORCE_CONFIG"' EXIT
+    sed 's/relink: true/relink: true\n      force: true/' "${CONFIG}" > "$FORCE_CONFIG"
+    CONFIG="$FORCE_CONFIG"
+    echo "Force mode: existing files will be replaced with symlinks"
+fi
+
 "${BASEDIR}/${DOTBOT_DIR}/${DOTBOT_BIN}" -d "${BASEDIR}" -c "${CONFIG}" "${@}"
