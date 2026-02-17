@@ -16,6 +16,8 @@
       path: fish/config.fish
     ~/.config/fish/include:
       path: fish/include
+    ~/.config/fish/fish_plugins:
+      path: fish/fish_plugins
     ~/.config/fish/completions/:
       path: fish/completions/*
       glob: true
@@ -46,6 +48,6 @@
     - [tmux/plugins/tpm/bin/install_plugins, Installing tmux plugins]
     - [./install_tools.sh, Installing tools]
     - [
-        "command -v fish >/dev/null && fish -c 'curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher update'",
+        "if command -v fish >/dev/null; then fish -c 'curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher update'; fi",
         Installing Fisher plugins,
       ]
