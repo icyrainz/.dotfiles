@@ -52,7 +52,7 @@
   "mcp": {
     "n8n-mcp": {
       "type": "local",
-      "enabled": true,
+      "enabled": false,
       "command": [
         "npx",
         "-y",
@@ -60,7 +60,7 @@
         "--streamableHttp",
         "http://n8n.lan/mcp-server/http",
         "--header",
-        "authorization:Bearer {env:N8N_MCP_TOKEN}"
+        "authorization:Bearer {env:N8N_MCP_KEY}"
       ]
     }
   }
