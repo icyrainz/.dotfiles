@@ -28,13 +28,12 @@ abbr nv neovide
 abbr lg lazygit
 abbr lgit lazygit
 
-abbr bk 'cd -'
-abbr home 'cd ~'
+abbr cl clear
 abbr src 'source ~/.config/fish/config.fish'
 
 abbr zd 'z dotfiles'
 
-abbr cp 'rsync -avzhr --progress'
+abbr rsync 'rsync -avzhr --progress'
 
 abbr oc opencode
 
@@ -50,9 +49,6 @@ function ....
 end
 function ..3
     cd ../../..
-end
-function .....
-    cd ../../../..
 end
 function ..4
     cd ../../../..
