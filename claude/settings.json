@@ -74,7 +74,9 @@
       "Bash(realpath *)",
       "Bash(gh *)",
       "Bash(make *)",
-      "Bash(make)"
+      "Bash(make)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:github.com)"
     ],
     "defaultMode": "default"
   },
