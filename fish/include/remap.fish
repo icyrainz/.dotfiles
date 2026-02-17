@@ -30,12 +30,13 @@ abbr lgit lazygit
 
 abbr bk 'cd -'
 abbr home 'cd ~'
-abbr c clear
 abbr src 'source ~/.config/fish/config.fish'
 
 abbr zd 'z dotfiles'
 
 abbr cp 'rsync -avzhr --progress'
+
+abbr oc opencode
 
 # Navigation
 function ..

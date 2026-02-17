@@ -60,7 +60,7 @@
         "--streamableHttp",
         "http://n8n.lan/mcp-server/http",
         "--header",
-        "authorization:Bearer {env:N8N_MCP_KEY}"
+        "authorization:Bearer {env:N8N_MCP_TOKEN}"
       ]
     }
   }
