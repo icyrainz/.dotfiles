@@ -93,6 +93,8 @@
       "Bash(gh *)",
       "Bash(make *)",
       "Bash(make)",
+      "Bash(tmux *)",
+      "Bash(sleep *)",
       "WebFetch(domain:raw.githubusercontent.com)",
       "WebFetch(domain:github.com)"
     ],
