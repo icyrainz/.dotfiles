@@ -27,4 +27,10 @@ end
 if status is-interactive
     # Commands to run in interactive sessions can go here
     zoxide init fish | source
+
+    # Auto-switch node version when entering a directory with .nvmrc
+    function _nvm_auto --on-variable PWD
+        test -f .nvmrc; or test -f .node-version; or return
+        nvm use 2>/dev/null
+    end
 end
