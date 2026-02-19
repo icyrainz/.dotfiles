@@ -8,9 +8,12 @@ if wezterm.config_builder then
 	config = wezterm.config_builder()
 end
 
+config.max_fps = 120
+config.animation_fps = 120
+
 local font_array = {
-	wezterm.font("Iosevka Nerd Font", { weight = "Regular", stretch = "Normal", style = "Normal" }),
-	-- wezterm.font("PragmataProMonoLiga Nerd Font", { weight = "Regular", stretch = "Normal", style = "Normal" }),
+	-- wezterm.font("Iosevka Nerd Font", { weight = "Regular", stretch = "Normal", style = "Normal" }),
+	wezterm.font("PragmataProMonoLiga Nerd Font", { weight = "Regular", stretch = "Normal", style = "Normal" }),
 }
 config.font_size = 20.0
 
@@ -21,7 +24,6 @@ config.max_fps = 120
 config.animation_fps = 120
 
 config.color_scheme = "tokyonight_night"
--- config.color_scheme = "tokyonight_night"
 -- local custom_theme, theme = pcall(require, "theme")
 -- if custom_theme then
 -- 	for k, v in pairs(theme) do
@@ -47,6 +49,8 @@ config.macos_window_background_blur = 20
 config.window_decorations = "RESIZE"
 
 config.native_macos_fullscreen_mode = true
+
+config.use_fancy_tab_bar = false
 
 config.inactive_pane_hsb = {
 	saturation = 0.8,

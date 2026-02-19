@@ -18,9 +18,11 @@ programs=(
   neovim
   ripgrep
   sccache
+  sesh
   tmux
   tree
   wget
+  worktrunk
   yazi
   zoxide
   zsh
@@ -37,8 +39,8 @@ if [ -x "$(command -v brew)" ]; then
 elif [ -x "$(command -v pacman)" ]; then
   arch_pkgs=(
     bat btop curl dust fd fish fzf github-cli git htop jq
-    lazygit lsd neovim ripgrep sccache tmux tree wget
-    yazi zoxide zsh
+    lazygit lsd neovim ripgrep sccache sesh tmux tree wget
+    yazi zoxide zsh worktrunk
     cowsay fortune-mod
   )
   sudo pacman -S --needed "${arch_pkgs[@]}"
@@ -63,5 +65,7 @@ elif [ -x "$(command -v apt-get)" ]; then
   echo "  lazygit:  https://github.com/jesseduffield/lazygit#ubuntu"
   echo "  yazi:     https://github.com/sxyazi/yazi#installation"
   echo "  zoxide:   curl -sS https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | bash"
+  echo "  sesh:     https://github.com/joshmedeski/sesh#installation"
+  echo "  worktrunk: cargo install worktrunk"
   echo "  Others:   cargo install lsd dust sccache"
 fi
