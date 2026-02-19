@@ -1,0 +1,7 @@
+customCommands:
+  - key: "C"
+    context: "files"
+    description: "AI-generated commit message"
+    command: "git commit"
+    subprocess: true
+    loadingText: "Opening editor with AI commit message..."

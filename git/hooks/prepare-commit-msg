@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+# AI-generated commit messages via Ollama (qwen3:8b on akio-ollama)
+# Works automatically with lazygit (Shift+C), git commit, etc.
+
+COMMIT_MSG_FILE="$1"
+COMMIT_SOURCE="$2"  # message, template, merge, squash, commit
+
+OLLAMA_MODEL="${OLLAMA_COMMIT_MODEL:-qwen3:8b}"
+TIMEOUT=15  # seconds — skip gracefully if server is slow/down
+
+# Skip if no ollama host configured
+if [ -z "$OLLAMA_HOST" ]; then
+    exit 0
+fi
+
+# Only generate for fresh commits (not merge, amend, message flag, etc.)
+if [ -n "$COMMIT_SOURCE" ]; then
+    exit 0
+fi
+
+diff=$(git diff --cached --diff-algorithm=minimal)
+
+if [ -z "$diff" ]; then
+    exit 0
+fi
+
+# Truncate large diffs to avoid overwhelming the model
+diff=$(echo "$diff" | head -300)
+
+prompt="Write a concise git commit message for these changes. Follow conventional commits format (e.g. feat:, fix:, refactor:, docs:, chore:). First line max 72 chars. Add a blank line then a brief body only if the change is non-trivial. Output ONLY the commit message, nothing else."
+
+# Call Ollama native API with thinking disabled
+response=$(curl -s --max-time "$TIMEOUT" "${OLLAMA_HOST}/api/chat" \
+    -H "Content-Type: application/json" \
+    -d "$(jq -n \
+        --arg model "$OLLAMA_MODEL" \
+        --arg prompt "$prompt" \
+        --arg diff "$diff" \
+        '{
+            model: $model,
+            messages: [
+                {role: "system", content: "You generate git commit messages. Be concise. No explanation."},
+                {role: "user", content: ($prompt + "\n\nDiff:\n" + $diff)}
+            ],
+            think: false,
+            stream: false,
+            options: {temperature: 0.3, num_predict: 200}
+        }')" \
+    2>/dev/null)
+
+if [ $? -ne 0 ] || [ -z "$response" ]; then
+    exit 0
+fi
+
+# Extract response (native Ollama format)
+message=$(echo "$response" | jq -r '.message.content // empty' 2>/dev/null)
+
+# Strip any thinking tags just in case
+message=$(echo "$message" | sed '/<think>/,/<\/think>/d')
+
+# Trim whitespace
+message=$(echo "$message" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
+
+if [ -n "$message" ]; then
+    existing=$(cat "$COMMIT_MSG_FILE")
+    printf '%s\n' "$message" > "$COMMIT_MSG_FILE"
+    if [ -n "$existing" ]; then
+        printf '\n%s\n' "$existing" >> "$COMMIT_MSG_FILE"
+    fi
+fi

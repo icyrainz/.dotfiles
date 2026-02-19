@@ -43,6 +43,11 @@
       path: opencode/opencode.json
     ~/.claude/settings.json:
       path: claude/settings.json
+    ~/.config/lazygit/config.yml:
+      path: lazygit/config.yml
+    ~/.config/git/hooks/:
+      path: git/hooks/*
+      glob: true
 
 - shell:
     - [git submodule update --init --recursive, Installing submodules]
