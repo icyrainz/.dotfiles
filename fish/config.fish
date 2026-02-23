@@ -26,6 +26,7 @@ end
 
 if status is-interactive
     # Commands to run in interactive sessions can go here
+    fzf --fish | source
     zoxide init fish | source
 
     # Auto-switch node version when entering a directory with .nvmrc
@@ -33,4 +34,7 @@ if status is-interactive
         test -f .nvmrc; or test -f .node-version; or return
         nvm use 2>/dev/null
     end
+
+    # Run once at shell startup (e.g. new tmux pane/split)
+    _nvm_auto
 end
