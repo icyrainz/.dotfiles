@@ -18,6 +18,47 @@ Personal dotfiles managed with [dotbot](https://github.com/anishathalye/dotbot).
 | ideavim | JetBrains IdeaVim config |
 | sway | Window manager (Arch Linux only) |
 
+## Tmux Keybindings
+
+Prefix is `C-Space`.
+
+### Popups (all 70%)
+
+| Key | Description |
+|-----|-------------|
+| `Ctrl+]` | Sesh session picker (no prefix needed) |
+| `prefix + t` | Sesh session picker |
+| `prefix + e` | File picker (fzf + bat preview) → open in nvim. `^a` show all, `^g` default |
+| `prefix + '` | Ripgrep search → open result in nvim at exact line |
+| `prefix + s` | Scratch terminal |
+| `prefix + g` | Lazygit |
+| `prefix + w` | Worktree picker |
+| `prefix + h` | Task monitor |
+| `prefix + f` | Fuzzy switch windows in current session |
+
+### Panes & Windows
+
+| Key | Description |
+|-----|-------------|
+| `prefix + \` or `\|` | Split horizontal |
+| `prefix + -` or `_` | Split vertical |
+| `Ctrl+h/j/k/l` | Navigate panes (vim-aware) |
+| `Alt+Arrow` | Resize panes |
+| `prefix + m` | Maximize/restore pane |
+| `prefix + <` / `>` | Swap windows left/right |
+
+### Session & Window Management
+
+| Key | Description |
+|-----|-------------|
+| `prefix + k` | Kill all panes except current (confirm) |
+| `prefix + K` | Kill all panes except current (no confirm) |
+| `prefix + X` | Kill pane (no confirm) |
+| `prefix + W` | Kill window (confirm) |
+| `prefix + S` | Save session (resurrect) |
+| `prefix + L` | Restore session (resurrect) |
+| `prefix + l` | Clear scrollback |
+
 ## Required CLI Tools
 
 ```bash
