@@ -1,6 +1,9 @@
 **/.luarc.json
 .DS_Store
 
+# Claude Code
+claude/settings.machine.json
+
 # Tmux
 tmux/plugins
 tmux/resurrect
