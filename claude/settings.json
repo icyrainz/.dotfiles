@@ -145,6 +145,5 @@
   },
   "alwaysThinkingEnabled": true,
   "effortLevel": "high",
-  "model": "opus",
-  "hooks": null
+  "model": "opus"
 }
