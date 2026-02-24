@@ -9,7 +9,7 @@
     "session.end": true,
     "task.acknowledge": false,
     "task.complete": true,
-    "task.error": true,
+    "task.error": false,
     "task.progress": true,
     "input.required": true,
     "resource.limit": true,
