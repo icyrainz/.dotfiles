@@ -49,6 +49,10 @@
       path: peon-ping/config.json
     ~/.config/opencode/peon-ping/config.json:
       path: peon-ping/config.json
+    ~/.config/ghostty/config:
+      path: ghostty/config
+    ~/.config/sesh/sesh.toml:
+      path: sesh/sesh.toml
     ~/.config/lazygit/config.yml:
       path: lazygit/config.yml
     ~/.config/git/hooks/:
@@ -59,5 +63,7 @@
     - [git submodule update --init --recursive, Setting up submodules]
     - [./install_tools.sh, Setting up tools]
     - [tmux/install.sh, Setting up tmux plugins]
+    - [sesh/install.sh, Setting up sesh]
+    - [fzf/install.sh, Setting up fzf]
     - [fish/install.sh, Setting up fish plugins]
     - [peon-ping/install.sh, Setting up peon-ping sound pack]
