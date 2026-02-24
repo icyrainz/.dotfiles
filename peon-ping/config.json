@@ -1,6 +1,6 @@
 {
   "active_pack": "clean_chimes",
-  "volume": 0.1,
+  "volume": 0.05,
   "enabled": true,
   "desktop_notifications": true,
   "default_pack": "clean_chimes",

@@ -67,3 +67,4 @@
         "command -v fish >/dev/null && fish -c 'curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher update' || true",
         Installing Fisher plugins,
       ]
+    - [peon-ping/install.sh, Installing active peon-ping sound pack]
