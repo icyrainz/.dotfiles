@@ -56,15 +56,8 @@
       glob: true
 
 - shell:
-    - [git submodule update --init --recursive, Installing submodules]
-    - [
-        "test -d tmux/plugins/tpm || git clone https://github.com/tmux-plugins/tpm tmux/plugins/tpm",
-        Installing TPM,
-      ]
-    - [tmux/plugins/tpm/bin/install_plugins, Installing tmux plugins]
-    - [./install_tools.sh, Installing tools]
-    - [
-        "command -v fish >/dev/null && fish -c 'curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher update' || true",
-        Installing Fisher plugins,
-      ]
-    - [peon-ping/install.sh, Installing active peon-ping sound pack]
+    - [git submodule update --init --recursive, Setting up submodules]
+    - [./install_tools.sh, Setting up tools]
+    - [tmux/install.sh, Setting up tmux plugins]
+    - [fish/install.sh, Setting up fish plugins]
+    - [peon-ping/install.sh, Setting up peon-ping sound pack]
