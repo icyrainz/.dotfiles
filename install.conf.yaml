@@ -43,6 +43,12 @@
       path: opencode/opencode.json
     ~/.claude/settings.json:
       path: claude/settings.json
+    ~/.claude/hooks/peon-ping/config.json:
+      path: peon-ping/config.json
+    ~/.openpeon/config.json:
+      path: peon-ping/config.json
+    ~/.config/opencode/peon-ping/config.json:
+      path: peon-ping/config.json
     ~/.config/lazygit/config.yml:
       path: lazygit/config.yml
     ~/.config/git/hooks/:
