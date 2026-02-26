@@ -27,7 +27,7 @@ fi
 # --- Model ---
 model=$(echo "$input" | jq -r '.model.display_name')
 
-# --- Context bar (10 blocks) ---
+# --- Context bar (10 blocks) with color coding ---
 used=$(echo "$input" | jq -r '.context_window.used_percentage // empty')
 bar=""
 if [ -n "$used" ]; then
@@ -35,7 +35,16 @@ if [ -n "$used" ]; then
   for t in 10 20 30 40 50 60 70 80 90 100; do
     if [ "$u" -ge "$t" ]; then bar="${bar}█"; else bar="${bar}░"; fi
   done
-  ctx_part=" | $bar"
+  # Color: default, yellow >=50%, red >=80%
+  if [ "$u" -ge 80 ]; then
+    BAR_COLOR=$'\033[0;31m'
+  elif [ "$u" -ge 50 ]; then
+    BAR_COLOR=$'\033[0;33m'
+  else
+    BAR_COLOR=""
+  fi
+  RST=$'\033[0m'
+  ctx_part=" | ${BAR_COLOR}${bar}${RST}"
 else
   ctx_part=""
 fi
