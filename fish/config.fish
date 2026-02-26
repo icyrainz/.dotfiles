@@ -29,12 +29,6 @@ if status is-interactive
     fzf --fish | source
     zoxide init fish | source
 
-    # Auto-switch node version when entering a directory with .nvmrc
-    function _nvm_auto --on-variable PWD
-        test -f .nvmrc; or test -f .node-version; or return
-        nvm use 2>/dev/null
-    end
-
-    # Run once at shell startup (e.g. new tmux pane/split)
-    _nvm_auto
+    # fnm — fast node manager with auto-switching
+    fnm env --use-on-cd --shell fish | source
 end

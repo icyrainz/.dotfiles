@@ -109,8 +109,7 @@
       "mcp__unblocked__unblocked_context_engine",
       "Read",
       "Skill(hi-pen)",
-      "WebFetch(domain:github.com)",
-      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch",
       "WebSearch",
       "Write"
     ],
@@ -249,7 +248,13 @@
     "lua-lsp@claude-plugins-official": true,
     "frontend-design@claude-plugins-official": true,
     "feature-dev@claude-plugins-official": true,
-    "typescript-lsp@claude-plugins-official": true
+    "typescript-lsp@claude-plugins-official": true,
+    "playwright@claude-plugins-official": true,
+    "hookify@claude-plugins-official": true,
+    "claude-session-driver@superpowers-marketplace": true,
+    "episodic-memory@superpowers-marketplace": true,
+    "skill-creator@claude-plugins-official": true
   },
-  "alwaysThinkingEnabled": true
+  "alwaysThinkingEnabled": true,
+  "skipDangerousModePermissionPrompt": true
 }

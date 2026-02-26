@@ -1,69 +1,120 @@
 #!/bin/bash
+set -euo pipefail
 
-# Tools used in shell configs (fish, zsh, bash) or universally useful
-programs=(
-  bat
-  btop
-  curl
-  dust
-  fd
-  fish
-  fzf
-  gh
-  git
-  htop
-  jq
-  lazygit
-  lsd
-  neovim
-  ripgrep
-  sccache
-  sesh
-  tmux
-  tree
-  wget
-  worktrunk
-  yazi
-  zoxide
-  zsh
-  cowsay
-  fortune
-)
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
-fonts=(font-jetbrains-mono-nerd-font)
+# --- OS-aware package manager detection ---
+OS=$(uname -s)
+if [ "$OS" = "Darwin" ]; then
+  PKG_MGR="brew"
+elif command -v pacman &>/dev/null; then
+  PKG_MGR="pacman"
+elif command -v apt-get &>/dev/null; then
+  PKG_MGR="apt"
+else
+  PKG_MGR=""
+fi
 
-if [ -x "$(command -v brew)" ]; then
-  brew install "${programs[@]}"
-  brew install "${fonts[@]}"
+apt_updated=false
 
-elif [ -x "$(command -v pacman)" ]; then
-  arch_pkgs=(
-    bat btop curl dust fd fish fzf github-cli git htop jq
-    lazygit lsd neovim ripgrep sccache sesh tmux tree wget
-    yazi zoxide zsh worktrunk
-    cowsay fortune-mod
-  )
-  sudo pacman -S --needed "${arch_pkgs[@]}"
-  echo ""
-  echo "Install nerd fonts from AUR: ttf-jetbrains-mono-nerd"
+# --- Helper: install a tool by name ---
+# Usage: pkg <display-name> [brew=<pkg>] [pacman=<pkg>] [apt=<pkg>] [script="<cmd>"]
+pkg() {
+  local name="$1"; shift
+  local brew="" pacman="" apt="" script=""
 
-elif [ -x "$(command -v apt-get)" ]; then
-  # Install what's available from default repos
-  sudo apt-get update
-  sudo apt-get install -y \
-    bat btop curl fd-find fish git htop jq \
-    neovim ripgrep tmux tree wget zoxide zsh \
-    cowsay fortune-mod
+  for arg in "$@"; do
+    case "$arg" in
+      brew=*)    brew="${arg#brew=}" ;;
+      pacman=*)  pacman="${arg#pacman=}" ;;
+      apt=*)     apt="${arg#apt=}" ;;
+      script=*)  script="${arg#script=}" ;;
+    esac
+  done
 
-  # Debian/Ubuntu renames bat -> batcat, fd -> fdfind
-  [ -x "$(command -v batcat)" ] && sudo ln -sf "$(command -v batcat)" /usr/local/bin/bat
-  [ -x "$(command -v fdfind)" ] && sudo ln -sf "$(command -v fdfind)" /usr/local/bin/fd
+  # Look up package name for current manager
+  local pkg_name=""
+  case "$PKG_MGR" in
+    brew)   pkg_name="$brew" ;;
+    pacman) pkg_name="$pacman" ;;
+    apt)    pkg_name="$apt" ;;
+  esac
 
-  echo ""
-  echo "Some tools need manual installation on Debian/Ubuntu:"
-  echo "  gh:        https://github.com/cli/cli/blob/trunk/docs/install_linux.md"
-  echo "  lazygit:   https://github.com/jesseduffield/lazygit#ubuntu"
-  echo "  yazi:      https://github.com/sxyazi/yazi#installation"
-  echo "  worktrunk: cargo install worktrunk"
-  echo "  Others:    cargo install lsd dust sccache"
+  if [ -n "$pkg_name" ]; then
+    echo "[$name] installing via $PKG_MGR: $pkg_name"
+    case "$PKG_MGR" in
+      brew)   brew install "$pkg_name" ;;
+      pacman) sudo pacman -S --needed --noconfirm "$pkg_name" ;;
+      apt)
+        if [ "$apt_updated" = false ]; then
+          sudo apt-get update -qq
+          apt_updated=true
+        fi
+        sudo apt-get install -y "$pkg_name"
+        ;;
+    esac
+  elif [ -n "$script" ]; then
+    echo "[$name] installing via script"
+    if ! eval "$script"; then
+      echo "  !! [$name] script install failed, continuing"
+    fi
+  else
+    echo "[$name] skipped — no install method for $PKG_MGR"
+  fi
+}
+
+# --- Symlink helper for apt renames ---
+apt_symlink() {
+  local from="$1" to="$2"
+  if [ "$PKG_MGR" = "apt" ] && command -v "$from" &>/dev/null && ! command -v "$to" &>/dev/null; then
+    sudo ln -sf "$(command -v "$from")" "/usr/local/bin/$to"
+    echo "  -> symlinked $from to $to"
+  fi
+}
+
+# ============================================================
+#  Tools — one entry per tool, alphabetical
+# ============================================================
+
+pkg bat          brew=bat        pacman=bat        apt=bat
+apt_symlink batcat bat
+
+pkg btop         brew=btop       pacman=btop       apt=btop
+pkg bun          script="curl -fsSL https://bun.sh/install | bash"
+pkg cowsay       brew=cowsay     pacman=cowsay     apt=cowsay
+pkg curl         brew=curl       pacman=curl       apt=curl
+pkg dust         brew=dust       pacman=dust       script="cargo install du-dust"
+
+pkg fd           brew=fd         pacman=fd         apt=fd-find
+apt_symlink fdfind fd
+
+pkg fish         brew=fish       pacman=fish       apt=fish
+pkg fnm          brew=fnm        script="curl -fsSL https://fnm.vercel.app/install | bash"
+pkg fortune      brew=fortune    pacman=fortune-mod apt=fortune-mod
+pkg fzf          brew=fzf        pacman=fzf        script="bash $SCRIPT_DIR/fzf/install.sh"
+pkg gh           brew=gh         pacman=github-cli  script="echo 'Install gh: https://github.com/cli/cli/blob/trunk/docs/install_linux.md'"
+pkg git          brew=git        pacman=git        apt=git
+pkg htop         brew=htop       pacman=htop       apt=htop
+pkg jq           brew=jq         pacman=jq         apt=jq
+pkg lazygit      brew=lazygit    pacman=lazygit    script="echo 'Install lazygit: https://github.com/jesseduffield/lazygit#installation'"
+pkg lsd          brew=lsd        pacman=lsd        script="cargo install lsd"
+
+pkg neovim       brew=neovim     pacman=neovim     script="echo 'Install neovim: https://github.com/neovim/neovim/releases/latest'"
+
+pkg ripgrep      brew=ripgrep    pacman=ripgrep    apt=ripgrep
+pkg sccache      brew=sccache    script="cargo install sccache"
+pkg sesh         brew=sesh       script="bash $SCRIPT_DIR/sesh/install.sh"
+pkg tmux         brew=tmux       pacman=tmux       apt=tmux
+pkg tree         brew=tree       pacman=tree       apt=tree
+pkg wget         brew=wget       pacman=wget       apt=wget
+pkg worktrunk    brew=worktrunk  script="cargo install worktrunk"
+pkg yazi         brew=yazi       pacman=yazi       script="echo 'Install yazi: https://github.com/sxyazi/yazi/releases/latest'"
+pkg zoxide       brew=zoxide     pacman=zoxide     apt=zoxide
+pkg zsh          brew=zsh        pacman=zsh        apt=zsh
+
+# --- Fonts ---
+if [ "$PKG_MGR" = "brew" ]; then
+  brew install font-jetbrains-mono-nerd-font
+else
+  echo "[font] Install nerd font manually: https://www.nerdfonts.com/font-downloads"
 fi

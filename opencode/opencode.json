@@ -1,33 +1,17 @@
 {
   "$schema": "https://opencode.ai/config.json",
   "provider": {
-    "llama-cpp": {
+    "akio-fractal": {
       "npm": "@ai-sdk/openai-compatible",
-      "name": "llama-cpp",
+      "name": "akio-fractal",
       "options": {
         "baseURL": "http://akio-fractal:8080/v1"
       },
       "models": {
-        "GLM-4.7-Flash": {
-          "name": "GLM-4.7-Flash",
-          "tool_call": true
-        },
-        "Qwen3-Coder-Next": {
-          "name": "Qwen3-Coder-Next",
-          "tool_call": true
-        },
-        "Nemotron-3-Nano-30B-A3B": {
-          "name": "Nemotron-3-Nano-30B-A3B",
+        "Qwen3.5-27B": {
+          "name": "Qwen3.5-27B",
           "tool_call": true
         }
-      }
-    },
-    "chutes": {
-      "npm": "@ai-sdk/openai-compatible",
-      "name": "Chutes",
-      "options": {
-        "baseURL": "https://llm.chutes.ai/v1",
-        "apiKey": "{env:CHUTES_API_KEY}"
       }
     }
   },
@@ -62,6 +46,11 @@
         "--header",
         "authorization:Bearer {env:N8N_MCP_TOKEN}"
       ]
+    },
+    "windmill-mcp": {
+      "type": "remote",
+      "enabled": true,
+      "url": "http://windmill.lan/api/mcp/w/akio-workspace/mcp?token={env:WINDMILL_MCP_TOKEN}"
     }
   }
 }
