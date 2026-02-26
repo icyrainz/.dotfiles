@@ -43,6 +43,8 @@
       path: opencode/opencode.json
     ~/.claude/settings.json:
       path: claude/settings.json
+    ~/.claude/statusline-command.sh:
+      path: claude/statusline-command.sh
     ~/.claude/hooks/peon-ping/config.json:
       path: peon-ping/config.json
     ~/.openpeon/config.json:

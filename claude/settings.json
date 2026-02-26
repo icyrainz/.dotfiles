@@ -237,7 +237,7 @@
   },
   "statusLine": {
     "type": "command",
-    "command": "input=$(cat); model=$(echo \"$input\" | jq -r '.model.display_name'); used=$(echo \"$input\" | jq -r '.context_window.used_percentage // empty'); if [ -n \"$used\" ]; then u=${used%.*}; b=''; for t in 10 20 30 40 50 60 70 80 90 100; do if [ \"$u\" -ge \"$t\" ]; then b=\"${b}█\"; else b=\"${b}░\"; fi; done; printf \"%s | %s\" \"$model\" \"$b\"; else echo \"$model\"; fi"
+    "command": "bash $HOME/.claude/statusline-command.sh"
   },
   "enabledPlugins": {
     "rust-analyzer-lsp@claude-plugins-official": true,
