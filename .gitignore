@@ -1,6 +1,13 @@
 **/.luarc.json
 .DS_Store
 
+# Machine-specific local overrides
+**/*.local.lua
+**/*.local.fish
+**/*.local.json
+**/*.local.toml
+**/*.local.conf
+
 # Claude Code
 claude/settings.machine.json
 

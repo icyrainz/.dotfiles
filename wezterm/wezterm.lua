@@ -263,4 +263,10 @@ wezterm.on("user-var-changed", function(window, pane, name, value)
 	end
 end)
 
+-- Machine-specific overrides (gitignored)
+local ok, local_config = pcall(dofile, wezterm.config_dir .. "/wezterm.local.lua")
+if ok and type(local_config) == "function" then
+	local_config(config, wezterm)
+end
+
 return config
