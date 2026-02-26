@@ -15,6 +15,11 @@ else
   PKG_MGR=""
 fi
 
+# Prompt for sudo upfront (while we still have a TTY)
+if [ "$PKG_MGR" = "pacman" ] || [ "$PKG_MGR" = "apt" ]; then
+  sudo -v || { echo "!! sudo required for $PKG_MGR installs"; exit 1; }
+fi
+
 apt_updated=false
 
 # --- Helper: install a tool by name ---
