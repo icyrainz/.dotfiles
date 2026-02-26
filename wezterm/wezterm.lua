@@ -11,20 +11,11 @@ end
 config.max_fps = 120
 config.animation_fps = 120
 
-local font_names = {
-	"PragmataPro Mono Liga",
-	"Iosevka Nerd Font",
-	"Pragmasevka Nerd Font",
-	-- "PragmataProMonoLiga Nerd Font",
-}
 local font_array = {
-	wezterm.font(font_names[1], { weight = "Regular", stretch = "Normal", style = "Normal" }),
-	wezterm.font(font_names[2], { weight = "Regular", stretch = "Normal", style = "Normal" }),
-	wezterm.font(font_names[3], { weight = "Regular", stretch = "Normal", style = "Normal" }),
-	-- wezterm.font(font_names[4], { weight = "Regular", stretch = "Normal", style = "Normal" }),
+	-- wezterm.font("Iosevka Nerd Font", { weight = "Regular", stretch = "Normal", style = "Normal" }),
+	wezterm.font("PragmataProMonoLiga Nerd Font", { weight = "Regular", stretch = "Normal", style = "Normal" }),
 }
 config.font_size = 20.0
-config.line_height = 0.9
 
 local font_index = 1
 config.font = font_array[font_index]
@@ -56,11 +47,6 @@ end
 config.macos_window_background_blur = 20
 
 config.window_decorations = "RESIZE"
-
--- Left Option sends Alt/Meta (for M-1..M-4 harpoon, etc.)
--- Right Option stays as compose for special characters
-config.send_composed_key_when_left_alt_is_pressed = false
-config.send_composed_key_when_right_alt_is_pressed = true
 
 config.native_macos_fullscreen_mode = true
 
@@ -233,12 +219,15 @@ config.keys = {
 		key = "p",
 		mods = "CMD",
 		action = wezterm.action_callback(function(window, pane)
-			font_index = font_index % #font_array + 1
+			if font_index > #font_array then
+				font_index = 1
+			else
+				font_index = font_index + 1
+			end
 
 			local overrides = window:get_config_overrides() or {}
 			overrides.font = font_array[font_index]
 			window:set_config_overrides(overrides)
-			window:toast_notification("Wezterm", "Font: " .. font_names[font_index], nil, 4000)
 		end),
 	},
 	{ key = "Enter", mods = "SHIFT", action = wezterm.action({ SendString = "\x1b\r" }) },
