@@ -81,13 +81,22 @@ function voice-listen -d "Toggle voice recording with Space, send transcription 
     echo (set_color brblack)"Space: record/stop/send | r: retry | q: quit"(set_color normal)
     echo ""
 
+    # Suppress key echo so cursor stays on the same line
+    stty -echo
+
+    # Restore terminal on exit
+    function __voice_cleanup --on-signal INT --on-signal TERM
+        stty echo
+    end
+
     while true
-        # --- IDLE: wait for Space to start ---
-        printf \r(set_color brblack)"  READY  "(set_color normal)" Press [Space] to record"
+        # --- IDLE ---
+        printf "\e[2K\r"(set_color brblack)"READY"(set_color normal)
         while true
             read -n 1 -P "" -l key
             if contains -- "$key" q \x03 \x04
-                echo ""
+                printf "\e[2K\r"
+                stty echo
                 return 0
             end
             if test "$key" = " "
@@ -100,7 +109,7 @@ function voice-listen -d "Toggle voice recording with Space, send transcription 
         # --- RECORDING ---
         rec -q $tmpfile rate 16k channels 1 2>/dev/null &
         set -l rec_pid $last_pid
-        printf \r(set_color red --bold)"  REC    "(set_color normal)" Press [Space] to stop  "
+        printf "\e[A\e[2K\r"(set_color red --bold)"REC"(set_color normal)
 
         while true
             read -n 1 -P "" -l key
@@ -108,7 +117,8 @@ function voice-listen -d "Toggle voice recording with Space, send transcription 
                 kill $rec_pid 2>/dev/null
                 wait $rec_pid 2>/dev/null
                 rm -f $tmpfile
-                echo ""
+                printf "\e[2K\r"
+                stty echo
                 return 0
             end
             if test "$key" = " "
@@ -121,12 +131,11 @@ function voice-listen -d "Toggle voice recording with Space, send transcription 
 
         if not test -s $tmpfile
             rm -f $tmpfile
-            printf \r(set_color yellow)"  ----   "(set_color normal)" No audio captured\n"
             continue
         end
 
         # --- TRANSCRIBING ---
-        printf \r(set_color brblack)"  ....   "(set_color normal)" Transcribing...        "
+        printf "\e[A\e[2K\r"(set_color brblack)"..."(set_color normal)
 
         set -l raw (whisper-cli --no-prints -m $model_path -f $tmpfile --no-timestamps -l en 2>/dev/null)
         rm -f $tmpfile
@@ -134,24 +143,24 @@ function voice-listen -d "Toggle voice recording with Space, send transcription 
         set -l text (printf '%s\n' $raw | string trim | string match -rv '^\[.*\]$' | string join ' ' | string trim)
 
         if test -z "$text"
-            printf \r(set_color yellow)"  ----   "(set_color normal)" No speech detected\n"
             continue
         end
 
-        # --- CONFIRM ---
-        printf \r"  >>      "(set_color white --bold)"%s"(set_color normal)"\n" "$text"
+        # --- CONFIRM (no read before this, so no \e[A needed) ---
+        printf "\e[2K\r"(set_color yellow)">> "(set_color white --bold)"%s"(set_color normal) "$text"
         while true
             read -n 1 -P "" -l key
             if test "$key" = " "
-                printf \r(set_color green)"  SENT   "(set_color white --bold)"%s"(set_color normal)"\n" "$text"
+                printf "\e[A\e[2K\r"(set_color white --bold)"%s"(set_color normal)"\n" "$text"
                 tmux send-keys -t $target -l -- "$text"
                 tmux send-keys -t $target Enter
                 break
             else if test "$key" = r
-                printf \r(set_color red)"  RETRY  "(set_color normal)" Cancelled\n"
+                printf "\e[A\e[2K\r"
                 break
             else if contains -- "$key" q \x03 \x04
-                echo ""
+                printf "\e[2K\r"
+                stty echo
                 return 0
             end
         end
