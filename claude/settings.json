@@ -256,9 +256,6 @@
     "claude-session-driver@superpowers-marketplace": true,
     "episodic-memory@superpowers-marketplace": true,
     "commit-commands@claude-plugins-official": true,
-    "hookify@claude-plugins-official": true,
-    "claude-session-driver@superpowers-marketplace": true,
-    "hi-git-conventions@captain401-claude-plugins": true,
     "skill-creator@claude-plugins-official": true
   },
   "alwaysThinkingEnabled": true,

@@ -67,3 +67,4 @@
     - [tmux/install.sh, Setting up tmux plugins]
     - [fish/install.sh, Setting up fish plugins]
     - [peon-ping/install.sh, Setting up peon-ping sound pack]
+    - [claude/install.sh, Setting up Claude Code]
