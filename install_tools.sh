@@ -21,12 +21,13 @@ if [ "$PKG_MGR" = "pacman" ] || [ "$PKG_MGR" = "apt" ]; then
 fi
 
 apt_updated=false
+manual_installs=()
 
 # --- Helper: install a tool by name ---
-# Usage: pkg <display-name> [brew=<pkg>] [pacman=<pkg>] [apt=<pkg>] [script="<cmd>"]
+# Usage: pkg <display-name> [brew=<pkg>] [pacman=<pkg>] [apt=<pkg>] [script="<cmd>"] [manual=<url>]
 pkg() {
   local name="$1"; shift
-  local brew="" pacman="" apt="" script=""
+  local brew="" pacman="" apt="" script="" manual=""
 
   for arg in "$@"; do
     case "$arg" in
@@ -34,6 +35,7 @@ pkg() {
       pacman=*)  pacman="${arg#pacman=}" ;;
       apt=*)     apt="${arg#apt=}" ;;
       script=*)  script="${arg#script=}" ;;
+      manual=*)  manual="${arg#manual=}" ;;
     esac
   done
 
@@ -46,7 +48,6 @@ pkg() {
   esac
 
   if [ -n "$pkg_name" ]; then
-    echo "[$name] installing via $PKG_MGR: $pkg_name"
     case "$PKG_MGR" in
       brew)   brew install "$pkg_name" ;;
       pacman) sudo pacman -S --needed --noconfirm "$pkg_name" ;;
@@ -59,12 +60,13 @@ pkg() {
         ;;
     esac
   elif [ -n "$script" ]; then
-    echo "[$name] installing via script"
     if ! eval "$script"; then
-      echo "  !! [$name] script install failed, continuing"
+      echo "!! $name: script install failed" >&2
     fi
+  elif [ -n "$manual" ]; then
+    manual_installs+=("$name -> $manual")
   else
-    echo "[$name] skipped — no install method for $PKG_MGR"
+    manual_installs+=("$name")
   fi
 }
 
@@ -73,7 +75,6 @@ apt_symlink() {
   local from="$1" to="$2"
   if [ "$PKG_MGR" = "apt" ] && command -v "$from" &>/dev/null && ! command -v "$to" &>/dev/null; then
     sudo ln -sf "$(command -v "$from")" "/usr/local/bin/$to"
-    echo "  -> symlinked $from to $to"
   fi
 }
 
@@ -97,14 +98,14 @@ pkg fish         brew=fish       pacman=fish       apt=fish
 pkg fnm          brew=fnm        script="curl -fsSL https://fnm.vercel.app/install | bash"
 pkg fortune      brew=fortune    pacman=fortune-mod apt=fortune-mod
 pkg fzf          brew=fzf        pacman=fzf        script="bash $SCRIPT_DIR/fzf/install.sh"
-pkg gh           brew=gh         pacman=github-cli  script="echo 'Install gh: https://github.com/cli/cli/blob/trunk/docs/install_linux.md'"
+pkg gh           brew=gh         pacman=github-cli  manual="https://github.com/cli/cli/blob/trunk/docs/install_linux.md"
 pkg git          brew=git        pacman=git        apt=git
 pkg htop         brew=htop       pacman=htop       apt=htop
 pkg jq           brew=jq         pacman=jq         apt=jq
-pkg lazygit      brew=lazygit    pacman=lazygit    script="echo 'Install lazygit: https://github.com/jesseduffield/lazygit#installation'"
+pkg lazygit      brew=lazygit    pacman=lazygit    manual="https://github.com/jesseduffield/lazygit#installation"
 pkg lsd          brew=lsd        pacman=lsd        script="cargo install lsd"
 
-pkg neovim       brew=neovim     pacman=neovim     script="echo 'Install neovim: https://github.com/neovim/neovim/releases/latest'"
+pkg neovim       brew=neovim     pacman=neovim     manual="https://github.com/neovim/neovim/releases/latest"
 
 pkg ripgrep      brew=ripgrep    pacman=ripgrep    apt=ripgrep
 pkg sox          brew=sox
@@ -115,7 +116,7 @@ pkg tree         brew=tree       pacman=tree       apt=tree
 pkg wget         brew=wget       pacman=wget       apt=wget
 pkg whisper-cpp  brew=whisper-cpp
 pkg worktrunk    brew=worktrunk  script="cargo install worktrunk"
-pkg yazi         brew=yazi       pacman=yazi       script="echo 'Install yazi: https://github.com/sxyazi/yazi/releases/latest'"
+pkg yazi         brew=yazi       pacman=yazi       manual="https://github.com/sxyazi/yazi/releases/latest"
 pkg zoxide       brew=zoxide     pacman=zoxide     apt=zoxide
 pkg zsh          brew=zsh        pacman=zsh        apt=zsh
 
@@ -123,5 +124,14 @@ pkg zsh          brew=zsh        pacman=zsh        apt=zsh
 if [ "$PKG_MGR" = "brew" ]; then
   brew install font-jetbrains-mono-nerd-font
 else
-  echo "[font] Install nerd font manually: https://www.nerdfonts.com/font-downloads"
+  manual_installs+=("nerd-font -> https://www.nerdfonts.com/font-downloads")
+fi
+
+# --- Summary of tools needing manual install ---
+if [ ${#manual_installs[@]} -gt 0 ]; then
+  echo "" >&2
+  echo "The following tools need manual installation:" >&2
+  for item in "${manual_installs[@]}"; do
+    echo "  - $item" >&2
+  done
 fi
