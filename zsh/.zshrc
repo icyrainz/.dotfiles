@@ -108,6 +108,18 @@ command -v fzf &>/dev/null && eval "$(fzf --zsh)"
 # zoxide integration (smarter cd)
 command -v zoxide &>/dev/null && eval "$(zoxide init zsh)"
 
+# fnm — fast node manager with auto-switching
+if [ -d "$HOME/.local/share/fnm" ]; then
+  export PATH="$HOME/.local/share/fnm:$PATH"
+  eval "$(fnm env --use-on-cd)"
+fi
+
+# bun
+if [ -d "$HOME/.bun" ]; then
+  export BUN_INSTALL="$HOME/.bun"
+  export PATH="$BUN_INSTALL/bin:$PATH"
+fi
+
 # --- Key Bindings ---
 # Set these AFTER fzf integration to prevent overrides
 bindkey -e  # Enable emacs mode

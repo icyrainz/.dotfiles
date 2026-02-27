@@ -86,7 +86,7 @@ pkg bat          brew=bat        pacman=bat        apt=bat
 apt_symlink batcat bat
 
 pkg btop         brew=btop       pacman=btop       apt=btop
-pkg bun          script="curl -fsSL https://bun.sh/install | bash"
+pkg bun          script="command -v bun &>/dev/null || curl -fsSL https://bun.sh/install | bash"
 pkg cowsay       brew=cowsay     pacman=cowsay     apt=cowsay
 pkg curl         brew=curl       pacman=curl       apt=curl
 pkg dust         brew=dust       pacman=dust       script="cargo install du-dust"
@@ -95,7 +95,7 @@ pkg fd           brew=fd         pacman=fd         apt=fd-find
 apt_symlink fdfind fd
 
 pkg fish         brew=fish       pacman=fish       apt=fish
-pkg fnm          brew=fnm        script="curl -fsSL https://fnm.vercel.app/install | bash"
+pkg fnm          brew=fnm        script="command -v fnm &>/dev/null || curl -fsSL https://fnm.vercel.app/install | bash"
 pkg fortune      brew=fortune    pacman=fortune-mod apt=fortune-mod
 pkg fzf          brew=fzf        pacman=fzf        script="bash $SCRIPT_DIR/fzf/install.sh"
 pkg gh           brew=gh         pacman=github-cli  script="bash $SCRIPT_DIR/gh/install.sh"
