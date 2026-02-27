@@ -65,20 +65,26 @@ function voice-listen -d "Toggle voice recording with Space, send transcription 
         end
     end
 
-    # Auto-download model
-    if not test -f $model_path
-        echo "Downloading whisper $model.en model..."
-        mkdir -p $model_dir
-        curl -L --progress-bar -o $model_path \
-            "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-$model.en.bin"
-        or begin
-            echo "Model download failed." >&2
-            return 1
+    # Auto-download model helper
+    function __voice_ensure_model --no-scope-shadowing
+        set model_path $model_dir/ggml-$model.en.bin
+        if not test -f $model_path
+            echo "Downloading whisper $model.en model..."
+            mkdir -p $model_dir
+            curl -L --progress-bar -o $model_path \
+                "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-$model.en.bin"
+            or begin
+                echo "Model download failed." >&2
+                return 1
+            end
         end
     end
 
+    __voice_ensure_model
+    or return 1
+
     echo (set_color cyan)"Voice Input"(set_color normal)" -> $target ($model.en)"
-    echo (set_color brblack)"Space: record/stop/send | r: retry | q: quit"(set_color normal)
+    echo (set_color brblack)"Space: record/stop/send | r: retry | m: toggle model | q: quit"(set_color normal)
     echo ""
 
     # Suppress key echo so cursor stays on the same line
@@ -91,13 +97,26 @@ function voice-listen -d "Toggle voice recording with Space, send transcription 
 
     while true
         # --- IDLE ---
-        printf "\e[2K\r"(set_color brblack)"READY"(set_color normal)
+        printf "\e[2K\r"(set_color brblack)"READY ($model)"(set_color normal)
         while true
             read -n 1 -P "" -l key
             if contains -- "$key" q \x03 \x04
                 printf "\e[2K\r"
                 stty echo
                 return 0
+            end
+            if test "$key" = m
+                if test "$model" = base
+                    set model medium
+                else
+                    set model base
+                end
+                set model_path $model_dir/ggml-$model.en.bin
+                stty echo
+                __voice_ensure_model
+                or return 1
+                stty -echo
+                printf "\e[A\e[2K\r"(set_color brblack)"READY ($model)"(set_color normal)
             end
             if test "$key" = " "
                 break
