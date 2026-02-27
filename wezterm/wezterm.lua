@@ -11,17 +11,26 @@ end
 config.max_fps = 120
 config.animation_fps = 120
 
+-- Default font config (override via wezterm.local.lua)
+local font_names = { "monospace" }
 local font_array = {
-	-- wezterm.font("Iosevka Nerd Font", { weight = "Regular", stretch = "Normal", style = "Normal" }),
-	wezterm.font("PragmataProMonoLiga Nerd Font", { weight = "Regular", stretch = "Normal", style = "Normal" }),
+	wezterm.font(font_names[1], { weight = "Regular", stretch = "Normal", style = "Normal" }),
 }
-config.font_size = 20.0
+config.font_size = 14.0
+config.line_height = 1.0
+
+-- Machine-specific overrides (gitignored)
+local nvim_font_size = nil
+local ok, local_config = pcall(dofile, wezterm.config_dir .. "/wezterm.local.lua")
+if ok and type(local_config) == "function" then
+	local overrides = local_config(config, wezterm) or {}
+	if overrides.font_names then font_names = overrides.font_names end
+	if overrides.font_array then font_array = overrides.font_array end
+	if overrides.nvim_font_size then nvim_font_size = overrides.nvim_font_size end
+end
 
 local font_index = 1
 config.font = font_array[font_index]
-
-config.max_fps = 120
-config.animation_fps = 120
 
 config.color_scheme = "tokyonight_night"
 -- local custom_theme, theme = pcall(require, "theme")
@@ -219,15 +228,12 @@ config.keys = {
 		key = "p",
 		mods = "CMD",
 		action = wezterm.action_callback(function(window, pane)
-			if font_index > #font_array then
-				font_index = 1
-			else
-				font_index = font_index + 1
-			end
+			font_index = font_index % #font_array + 1
 
 			local overrides = window:get_config_overrides() or {}
 			overrides.font = font_array[font_index]
 			window:set_config_overrides(overrides)
+			window:toast_notification("Wezterm", "Font: " .. font_names[font_index], nil, 4000)
 		end),
 	},
 	{ key = "Enter", mods = "SHIFT", action = wezterm.action({ SendString = "\x1b\r" }) },
@@ -249,24 +255,15 @@ config.use_fancy_tab_bar = false
 
 -- Create custom event for Neovim detection
 wezterm.on("user-var-changed", function(window, pane, name, value)
-	local overrides = window:get_config_overrides() or {}
-
-	if name == "IS_NVIM" then
+	if name == "IS_NVIM" and nvim_font_size then
+		local overrides = window:get_config_overrides() or {}
 		if value == "true" then
-			-- Set font size when Neovim is running
-			overrides.font_size = 20
+			overrides.font_size = nvim_font_size
 		else
-			-- Reset to default font size when Neovim is not running
 			overrides.font_size = config.font_size
 		end
 		window:set_config_overrides(overrides)
 	end
 end)
-
--- Machine-specific overrides (gitignored)
-local ok, local_config = pcall(dofile, wezterm.config_dir .. "/wezterm.local.lua")
-if ok and type(local_config) == "function" then
-	local_config(config, wezterm)
-end
 
 return config
