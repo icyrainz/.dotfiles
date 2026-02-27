@@ -77,23 +77,17 @@ function voice-listen -d "Toggle voice recording with Space, send transcription 
         end
     end
 
-    echo "Voice listener active"
-    echo "  Target: $target"
-    echo "  Model:  $model.en"
-    echo ""
-    echo "  [Space] = start/stop recording"
-    echo "  [q/Esc] = quit"
+    echo (set_color cyan)"Voice Input"(set_color normal)" -> $target ($model.en)"
+    echo (set_color brblack)"Space: record/stop/send | r: retry | q: quit"(set_color normal)
     echo ""
 
     while true
-        # Wait for Space to start recording
-        echo -n (set_color brblack)"Press Space to record..."(set_color normal)
+        # --- IDLE: wait for Space to start ---
+        printf \r(set_color brblack)"  READY  "(set_color normal)" Press [Space] to record"
         while true
             read -n 1 -P "" -l key
-            # Quit on q, Esc (\e), Ctrl+C (\x03), Ctrl+D (\x04)
-            if contains -- "$key" q \e \x03 \x04
+            if contains -- "$key" q \x03 \x04
                 echo ""
-                echo "Stopped."
                 return 0
             end
             if test "$key" = " "
@@ -103,21 +97,18 @@ function voice-listen -d "Toggle voice recording with Space, send transcription 
 
         set -l tmpfile (mktemp /tmp/voice-XXXXXX).wav
 
-        # Start recording in background
+        # --- RECORDING ---
         rec -q $tmpfile rate 16k channels 1 2>/dev/null &
         set -l rec_pid $last_pid
-        echo -e \r(set_color red)"Recording... Space to stop."(set_color normal)"   "
+        printf \r(set_color red --bold)"  REC    "(set_color normal)" Press [Space] to stop  "
 
-        # Wait for Space to stop recording
         while true
             read -n 1 -P "" -l key
-            # Quit while recording: stop rec first, then exit
-            if contains -- "$key" q \e \x03 \x04
+            if contains -- "$key" q \x03 \x04
                 kill $rec_pid 2>/dev/null
                 wait $rec_pid 2>/dev/null
                 rm -f $tmpfile
                 echo ""
-                echo "Stopped."
                 return 0
             end
             if test "$key" = " "
@@ -130,26 +121,39 @@ function voice-listen -d "Toggle voice recording with Space, send transcription 
 
         if not test -s $tmpfile
             rm -f $tmpfile
-            echo (set_color yellow)"No audio captured."(set_color normal)
+            printf \r(set_color yellow)"  ----   "(set_color normal)" No audio captured\n"
             continue
         end
 
-        echo (set_color brblack)"Transcribing..."(set_color normal)
+        # --- TRANSCRIBING ---
+        printf \r(set_color brblack)"  ....   "(set_color normal)" Transcribing...        "
 
-        # Transcribe
         set -l raw (whisper-cli --no-prints -m $model_path -f $tmpfile --no-timestamps -l en 2>/dev/null)
         rm -f $tmpfile
 
-        # Clean up whisper output
         set -l text (printf '%s\n' $raw | string trim | string match -rv '^\[.*\]$' | string join ' ' | string trim)
 
         if test -z "$text"
-            echo (set_color yellow)"No speech detected."(set_color normal)
+            printf \r(set_color yellow)"  ----   "(set_color normal)" No speech detected\n"
             continue
         end
 
-        echo (set_color green)">> $text"(set_color normal)
-        tmux send-keys -t $target -l -- "$text"
-        tmux send-keys -t $target Enter
+        # --- CONFIRM ---
+        printf \r"  >>      "(set_color white --bold)"%s"(set_color normal)"\n" "$text"
+        while true
+            read -n 1 -P "" -l key
+            if test "$key" = " "
+                printf \r(set_color green)"  SENT   "(set_color white --bold)"%s"(set_color normal)"\n" "$text"
+                tmux send-keys -t $target -l -- "$text"
+                tmux send-keys -t $target Enter
+                break
+            else if test "$key" = r
+                printf \r(set_color red)"  RETRY  "(set_color normal)" Cancelled\n"
+                break
+            else if contains -- "$key" q \x03 \x04
+                echo ""
+                return 0
+            end
+        end
     end
 end
