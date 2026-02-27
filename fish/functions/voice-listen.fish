@@ -1,6 +1,6 @@
 function voice-listen -d "Toggle voice recording with Space, send transcription to tmux pane"
     set -l target ""
-    set -l model "medium"
+    set -l model "base"
     set -l model_dir ~/.local/share/whisper
 
     # Parse args

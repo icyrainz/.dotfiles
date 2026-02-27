@@ -1,5 +1,5 @@
 function voice -d "Record voice and transcribe locally with whisper.cpp"
-    set -l model_path ~/.local/share/whisper/ggml-medium.en.bin
+    set -l model_path ~/.local/share/whisper/ggml-base.en.bin
 
     # Check dependencies
     if not command -q rec

@@ -32,3 +32,7 @@ if status is-interactive
     # fnm — fast node manager with auto-switching
     fnm env --use-on-cd --shell fish | source
 end
+
+# bun
+set --export BUN_INSTALL "$HOME/.bun"
+set --export PATH $BUN_INSTALL/bin $PATH
