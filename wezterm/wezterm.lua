@@ -11,16 +11,11 @@ end
 config.max_fps = 120
 config.animation_fps = 120
 
--- Default font config (override via wezterm.local.lua)
-local font_names = { "monospace" }
-local font_array = {
-	wezterm.font(font_names[1], { weight = "Regular", stretch = "Normal", style = "Normal" }),
-}
-config.font_size = 14.0
-config.line_height = 1.0
-
--- Machine-specific overrides (gitignored)
+-- Font config: defaults to wezterm built-in, override via wezterm.local.lua
+local font_names = {}
+local font_array = {}
 local nvim_font_size = nil
+
 local ok, local_config = pcall(dofile, wezterm.config_dir .. "/wezterm.local.lua")
 if ok and type(local_config) == "function" then
 	local overrides = local_config(config, wezterm) or {}
@@ -30,7 +25,9 @@ if ok and type(local_config) == "function" then
 end
 
 local font_index = 1
-config.font = font_array[font_index]
+if #font_array > 0 then
+	config.font = font_array[font_index]
+end
 
 config.color_scheme = "tokyonight_night"
 -- local custom_theme, theme = pcall(require, "theme")
@@ -228,6 +225,7 @@ config.keys = {
 		key = "p",
 		mods = "CMD",
 		action = wezterm.action_callback(function(window, pane)
+			if #font_array < 2 then return end
 			font_index = font_index % #font_array + 1
 
 			local overrides = window:get_config_overrides() or {}
