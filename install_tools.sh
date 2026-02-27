@@ -98,14 +98,14 @@ pkg fish         brew=fish       pacman=fish       apt=fish
 pkg fnm          brew=fnm        script="curl -fsSL https://fnm.vercel.app/install | bash"
 pkg fortune      brew=fortune    pacman=fortune-mod apt=fortune-mod
 pkg fzf          brew=fzf        pacman=fzf        script="bash $SCRIPT_DIR/fzf/install.sh"
-pkg gh           brew=gh         pacman=github-cli  manual="https://github.com/cli/cli/blob/trunk/docs/install_linux.md"
+pkg gh           brew=gh         pacman=github-cli  script="bash $SCRIPT_DIR/gh/install.sh"
 pkg git          brew=git        pacman=git        apt=git
 pkg htop         brew=htop       pacman=htop       apt=htop
 pkg jq           brew=jq         pacman=jq         apt=jq
-pkg lazygit      brew=lazygit    pacman=lazygit    manual="https://github.com/jesseduffield/lazygit#installation"
+pkg lazygit      brew=lazygit    pacman=lazygit    script="bash $SCRIPT_DIR/lazygit/install.sh"
 pkg lsd          brew=lsd        pacman=lsd        script="cargo install lsd"
 
-pkg neovim       brew=neovim     pacman=neovim     manual="https://github.com/neovim/neovim/releases/latest"
+pkg neovim       brew=neovim     pacman=neovim     script="bash $SCRIPT_DIR/neovim/install.sh"
 
 pkg ripgrep      brew=ripgrep    pacman=ripgrep    apt=ripgrep
 pkg sox          brew=sox
@@ -116,7 +116,7 @@ pkg tree         brew=tree       pacman=tree       apt=tree
 pkg wget         brew=wget       pacman=wget       apt=wget
 pkg whisper-cpp  brew=whisper-cpp
 pkg worktrunk    brew=worktrunk  script="cargo install worktrunk"
-pkg yazi         brew=yazi       pacman=yazi       manual="https://github.com/sxyazi/yazi/releases/latest"
+pkg yazi         brew=yazi       pacman=yazi       script="bash $SCRIPT_DIR/yazi/install.sh"
 pkg zoxide       brew=zoxide     pacman=zoxide     apt=zoxide
 pkg zsh          brew=zsh        pacman=zsh        apt=zsh
 
