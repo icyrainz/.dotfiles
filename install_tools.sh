@@ -122,7 +122,7 @@ pkg zsh          brew=zsh        pacman=zsh        apt=zsh
 
 # --- Fonts ---
 if [ "$PKG_MGR" = "brew" ]; then
-  brew install font-jetbrains-mono-nerd-font
+  brew install font-jetbrains-mono-nerd-font font-iosevka-nerd-font
 else
   manual_installs+=("nerd-font -> https://www.nerdfonts.com/font-downloads")
 fi
