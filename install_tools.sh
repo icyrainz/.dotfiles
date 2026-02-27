@@ -107,7 +107,7 @@ pkg lsd          brew=lsd        pacman=lsd        script="cargo install lsd"
 pkg neovim       brew=neovim     pacman=neovim     script="echo 'Install neovim: https://github.com/neovim/neovim/releases/latest'"
 
 pkg ripgrep      brew=ripgrep    pacman=ripgrep    apt=ripgrep
-pkg sox          brew=sox        pacman=sox        apt=sox
+pkg sox          brew=sox
 pkg sccache      brew=sccache    script="cargo install sccache"
 pkg sesh         brew=sesh       script="bash $SCRIPT_DIR/sesh/install.sh"
 pkg tmux         brew=tmux       pacman=tmux       apt=tmux
