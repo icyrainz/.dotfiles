@@ -40,11 +40,11 @@ if [ -n "$used" ]; then
   for i in 1 2 3 4 5 6 7 8 9 10; do
     if [ "$i" -le "$filled" ]; then bar="${bar}█"; else bar="${bar}░"; fi
   done
-  if [ "$u" -ge 72 ]; then
-    BAR_COLOR=$'\033[0;31m'      # red
-  elif [ "$u" -ge 56 ]; then
+  if [ "$filled" -ge 10 ]; then
+    BAR_COLOR=$'\033[0;31m'      # red — last bar
+  elif [ "$filled" -ge 8 ]; then
     BAR_COLOR=$'\033[38;5;208m'  # orange
-  elif [ "$u" -ge 42 ]; then
+  elif [ "$filled" -ge 6 ]; then
     BAR_COLOR=$'\033[0;33m'      # yellow
   else
     BAR_COLOR=""
