@@ -48,7 +48,7 @@ if [ -n "$used" ]; then
   for i in 1 2 3 4 5 6 7 8 9 10; do
     if [ "$i" -le "$filled" ]; then bar="${bar}█"; else bar="${bar}░"; fi
   done
-  if [ "$u" -ge 68 ]; then
+  if [ "$u" -ge 72 ]; then
     BAR_COLOR=$'\033[0;31m'      # red   — autocompact imminent
   elif [ "$u" -ge 56 ]; then
     BAR_COLOR=$'\033[38;5;208m'  # orange — getting close
