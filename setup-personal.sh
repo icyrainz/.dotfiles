@@ -32,8 +32,8 @@ fi
 # --- Install mc (MinIO client) ---
 # Binary name varies: mc on macOS/apt, mcli on Arch
 find_mc() {
-  for cmd in mc mcli; do
-    if command -v "$cmd" &>/dev/null && "$cmd" --version 2>/dev/null | grep -q "mc version"; then
+  for cmd in mcli mc; do
+    if command -v "$cmd" &>/dev/null && "$cmd" --version 2>&1 | grep -qi "RELEASE"; then
       echo "$cmd"; return
     fi
   done
@@ -50,6 +50,11 @@ if [ -z "$MC" ]; then
   MC=$(find_mc)
 else
   echo "mc already installed ($MC)"
+fi
+
+if [ -z "$MC" ]; then
+  echo "Error: MinIO client not found after install. Check manually."
+  exit 1
 fi
 
 # --- Create personal machine marker ---
