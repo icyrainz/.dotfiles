@@ -48,13 +48,7 @@ if [ -n "$used" ]; then
     BAR_COLOR=""
   fi
   RST=$'\033[0m'
-  hint=""
-  if [ "$filled" -ge 8 ]; then
-    remaining=$(( CEIL - u ))
-    [ "$remaining" -lt 0 ] && remaining=0
-    hint=" ${remaining}%"
-  fi
-  ctx_part=" | ${BAR_COLOR}${bar}${hint}${RST}"
+  ctx_part=" | ${BAR_COLOR}${bar}${RST}"
 else
   ctx_part=""
 fi
