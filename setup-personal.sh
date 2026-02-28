@@ -1,14 +1,47 @@
 #!/usr/bin/env bash
 # Setup script for personal machines.
 # Run after cloning the dotfiles repo and before ./install.
-#
-# Prerequisites:
-#   - git-crypt installed (brew install git-crypt)
-#   - mc (MinIO client) installed (brew install minio/stable/mc)
-#   - RUSTFS_ACCESS_KEY and RUSTFS_SECRET_KEY set in environment
+# Installs dependencies, prompts for RustFS credentials, and unlocks git-crypt.
 set -euo pipefail
 
-# Create personal machine marker
+# --- OS-aware package manager detection ---
+OS=$(uname -s)
+if [ "$OS" = "Darwin" ]; then
+  PKG_MGR="brew"
+elif command -v pacman &>/dev/null; then
+  PKG_MGR="pacman"
+elif command -v apt-get &>/dev/null; then
+  PKG_MGR="apt"
+else
+  echo "Error: No supported package manager found (brew, pacman, apt)"
+  exit 1
+fi
+
+# --- Install git-crypt ---
+if ! command -v git-crypt &>/dev/null; then
+  echo "Installing git-crypt..."
+  case "$PKG_MGR" in
+    brew)   brew install git-crypt ;;
+    pacman) sudo pacman -S --needed --noconfirm git-crypt ;;
+    apt)    sudo apt-get update -qq && sudo apt-get install -y git-crypt ;;
+  esac
+else
+  echo "git-crypt already installed"
+fi
+
+# --- Install mc (MinIO client) ---
+if ! command -v mc &>/dev/null; then
+  echo "Installing mc (MinIO client)..."
+  case "$PKG_MGR" in
+    brew)   brew install minio/stable/mc ;;
+    pacman) sudo pacman -S --needed --noconfirm minio-client ;;
+    apt)    curl -fsSL https://dl.min.io/client/mc/release/linux-amd64/mc -o /usr/local/bin/mc && chmod +x /usr/local/bin/mc ;;
+  esac
+else
+  echo "mc already installed"
+fi
+
+# --- Create personal machine marker ---
 if [ ! -f ~/.akio-personal ]; then
   touch ~/.akio-personal
   echo "Created ~/.akio-personal marker"
@@ -16,21 +49,25 @@ else
   echo "~/.akio-personal already exists"
 fi
 
-# Set up mc alias for RustFS
+# --- Set up mc alias for RustFS ---
 if ! mc alias list rustfs &>/dev/null 2>&1; then
-  if [ -z "${RUSTFS_ACCESS_KEY:-}" ] || [ -z "${RUSTFS_SECRET_KEY:-}" ]; then
-    echo "Error: RUSTFS_ACCESS_KEY and RUSTFS_SECRET_KEY must be set"
-    exit 1
-  fi
+  echo ""
+  echo "Enter RustFS credentials (from Bitwarden):"
+  read -rp "  Access Key: " RUSTFS_ACCESS_KEY
+  read -rsp "  Secret Key: " RUSTFS_SECRET_KEY
+  echo ""
   mc alias set rustfs http://rustfs.lan "$RUSTFS_ACCESS_KEY" "$RUSTFS_SECRET_KEY"
   echo "Configured mc alias for rustfs"
+else
+  echo "mc alias for rustfs already configured"
 fi
 
-# Download git-crypt key and unlock
+# --- Download git-crypt key and unlock ---
 KEY=$(mktemp)
 trap 'rm -f "$KEY"' EXIT
 mc cp rustfs/git-crypt/dotfiles.key "$KEY"
 git-crypt unlock "$KEY"
 echo "Repository unlocked with git-crypt"
 
+echo ""
 echo "Done. Run ./install to apply symlinks."
