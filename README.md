@@ -75,6 +75,8 @@ Dotbot's `if` directive handles platform-specific links:
 
 Handled by `install_tools.sh` which supports brew (macOS), pacman (Arch), and apt (Debian/Ubuntu). Only commonly useful tools — no niche or language-runtime packages (use asdf/fnm for those).
 
+**Convention:** When installing a new CLI tool, always consider adding it to `install_tools.sh` for cross-platform availability.
+
 ## Tmux Keybindings
 
 Prefix is `C-Space`.

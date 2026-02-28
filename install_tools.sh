@@ -104,6 +104,7 @@ pkg htop         brew=htop       pacman=htop       apt=htop
 pkg jq           brew=jq         pacman=jq         apt=jq
 pkg lazygit      brew=lazygit    pacman=lazygit    script="bash $SCRIPT_DIR/lazygit/install.sh"
 pkg lsd          brew=lsd        pacman=lsd        script="cargo install lsd"
+pkg mc           brew=minio/stable/mc  pacman=minio-client  script="curl -fsSL https://dl.min.io/client/mc/release/linux-amd64/mc -o /usr/local/bin/mc && chmod +x /usr/local/bin/mc"
 
 pkg neovim       brew=neovim     pacman=neovim     script="bash $SCRIPT_DIR/neovim/install.sh"
 
