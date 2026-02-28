@@ -27,10 +27,8 @@ fi
 # --- Model ---
 model=$(echo "$input" | jq -r '.model.display_name')
 
-# --- Context bar (10 blocks) scaled to 85% ceiling ---
-# Autocompact fires at ~85%, so the bar tops out there instead of 100%.
-# Gradual color: default → yellow → orange → red as it approaches 85%.
-CEIL=77
+# --- Context bar (10 blocks) scaled to autocompact ceiling ---
+CEIL=80
 used=$(echo "$input" | jq -r '.context_window.used_percentage // empty')
 bar=""
 if [ -n "$used" ]; then
@@ -50,7 +48,13 @@ if [ -n "$used" ]; then
     BAR_COLOR=""
   fi
   RST=$'\033[0m'
-  ctx_part=" | ${BAR_COLOR}${bar}${RST}"
+  hint=""
+  if [ "$filled" -ge 8 ]; then
+    remaining=$(( CEIL - u ))
+    [ "$remaining" -lt 0 ] && remaining=0
+    hint=" ${remaining}%"
+  fi
+  ctx_part=" | ${BAR_COLOR}${bar}${hint}${RST}"
 else
   ctx_part=""
 fi
