@@ -72,9 +72,6 @@ ssh-tmux() {
     ssh -t "$@" "tmux attach || tmux new"
 }
 
-# Quick SSH shortcuts
-alias ssh-lab='ssh -t root@akio-lab "tmux attach || tmux new"'
-
 # --- Docker Aliases ---
 alias d='docker'
 alias dc='docker compose'

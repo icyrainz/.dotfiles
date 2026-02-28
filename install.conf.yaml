@@ -41,10 +41,18 @@
       path: bash/.bash_custom
     ~/.config/opencode/opencode.json:
       path: opencode/opencode.json
+      if: '[ -f ~/.akio-personal ]'
     ~/.claude/settings.json:
       path: claude/settings.json
     ~/.claude/statusline-command.sh:
       path: claude/statusline-command.sh
+    ~/.claude/skills/:
+      path: claude/skills/*
+      glob: true
+    ~/.claude/skills/:
+      path: claude/skills-personal/*
+      glob: true
+      if: '[ -f ~/.akio-personal ]'
     ~/.claude/hooks/peon-ping/config.json:
       path: peon-ping/config.json
     ~/.openpeon/config.json:

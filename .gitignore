@@ -21,7 +21,6 @@ tmux/harpoon-sessions
 fish/include/ignore/*
 
 # Zsh
-zsh/extra.zsh
 zsh/zsh_plugins.zsh
 
 # Nvim

@@ -6,17 +6,74 @@ Personal dotfiles managed with [dotbot](https://github.com/anishathalye/dotbot).
 
 | Config | Description |
 |--------|-------------|
-| zsh | Shell config with aliases, zoxide, fzf |
+| fish | Fish shell config (primary shell) |
+| zsh | Zsh config with aliases, zoxide, fzf |
 | bash | Bash config with fzf integration |
 | nvim | Neovim with LazyVim |
-| wezterm | Terminal emulator |
 | tmux | Terminal multiplexer |
-| fish | Fish shell config |
-| karabiner | macOS keyboard remapping |
+| ghostty | Terminal emulator |
+| wezterm | Terminal emulator |
+| lazygit | Git TUI |
+| sesh | Tmux session manager |
+| fzf | Fuzzy finder config |
+| git | Git hooks |
+| gh | GitHub CLI config |
+| yazi | Terminal file manager |
+| helix | Helix editor config |
 | hammerspoon | macOS automation |
 | doom | Doom Emacs config |
 | ideavim | JetBrains IdeaVim config |
-| sway | Window manager (Arch Linux only) |
+| claude | Claude Code settings, skills, statusline |
+| opencode | OpenCode config |
+| peon-ping | Sound notification config |
+| lxc-bootstrap | LXC container provisioning scripts |
+| patched-fonts | Custom patched Nerd Fonts |
+| ytdl-sub | yt-dlp subscription config |
+
+## Install
+
+```bash
+git clone https://github.com/icyrainz/.dotfiles.git ~/Github/.dotfiles
+cd ~/Github/.dotfiles
+./install
+```
+
+Dotbot creates symlinks for all configs and runs shell provisioners for tools, plugins, etc.
+
+### Personal machines
+
+Personal machines get additional configs (homelab skills, opencode endpoints). Set up the marker file and decrypt:
+
+```bash
+touch ~/.akio-personal
+git-crypt unlock /path/to/git-crypt-dotfiles.key
+./install
+```
+
+### What the marker controls
+
+| Gated by `~/.akio-personal` | What |
+|------------------------------|------|
+| `claude/skills-personal/*` | Homelab, HAOS, Homepage skills |
+| `opencode/opencode.json` | OpenCode config with personal endpoints |
+
+### What git-crypt encrypts
+
+| Encrypted | Why |
+|-----------|-----|
+| `claude/skills-personal/**` | Contains personal infrastructure details |
+
+Export the key for new machines: `git-crypt export-key ~/git-crypt-dotfiles.key`
+
+## OS-Conditional Configs
+
+Dotbot's `if` directive handles platform-specific links:
+
+- `hammerspoon` — macOS only
+
+## Required CLI Tools
+
+Handled by `install_tools.sh` which supports brew (macOS), pacman (Arch), and apt (Debian/Ubuntu). Only commonly useful tools — no niche or language-runtime packages (use asdf/fnm for those).
 
 ## Tmux Keybindings
 
@@ -58,77 +115,3 @@ Prefix is `C-Space`.
 | `prefix + S` | Save session (resurrect) |
 | `prefix + L` | Restore session (resurrect) |
 | `prefix + l` | Clear scrollback |
-
-## Required CLI Tools
-
-```bash
-# Ubuntu/Pop!_OS
-sudo apt install -y zsh neovim fzf ripgrep bat lsd cowsay fortune-mod
-
-# zoxide
-curl -sS https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | bash
-
-# lazygit
-LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | grep -Po '"tag_name": "v\K[^"]*')
-curl -Lo lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/latest/download/lazygit_${LAZYGIT_VERSION}_Linux_x86_64.tar.gz"
-tar xf lazygit.tar.gz lazygit
-sudo install lazygit /usr/local/bin
-rm lazygit lazygit.tar.gz
-
-# Fix bat alias (Ubuntu names it batcat)
-sudo ln -sf /usr/bin/batcat /usr/local/bin/bat
-```
-
-```bash
-# Arch Linux
-pacman -S zsh neovim fzf ripgrep bat lsd zoxide lazygit cowsay fortune-mod
-```
-
-```bash
-# macOS
-brew install zsh neovim fzf ripgrep bat lsd zoxide lazygit cowsay fortune
-```
-
-## Install
-
-```bash
-git clone https://github.com/icyrainz/.dotfiles.git ~/repo/.dotfiles
-cd ~/repo/.dotfiles
-./install
-```
-
-Dotbot will create symlinks for all configs. To set zsh as default shell:
-
-```bash
-chsh -s $(which zsh)
-```
-
-## Machine-Specific Configs
-
-The `master` branch contains shared configs that work on any machine. Machine-specific
-tweaks live on branches named after the hostname (e.g., `akio-macbook`).
-
-### Setup on a new/existing machine
-
-```bash
-# After cloning and running ./install with the shared base:
-git checkout -b $(hostname | tr '[:upper:]' '[:lower:]' | sed 's/\.local$//')
-# Make machine-specific changes, commit to this branch
-```
-
-### Day-to-day workflow
-
-- **Shared change** (new tool, plugin config everyone needs): commit on `master`, then rebase machine branches.
-- **Machine-specific change** (paths, SSH hosts, macOS-only tweaks): commit on the machine branch.
-
-```bash
-# After committing shared changes on master:
-git checkout akio-macbook
-git rebase master
-```
-
-### Existing machine branches
-
-| Branch | Machine |
-|--------|---------|
-| `akio-macbook` | MacBook (macOS) |
