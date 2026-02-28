@@ -10,6 +10,7 @@
 
 # Claude Code
 claude/settings.machine.json
+docs/plans/
 
 # Tmux
 tmux/plugins
