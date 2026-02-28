@@ -33,7 +33,7 @@ fi
 # Binary name varies: mc on macOS/apt, mcli on Arch
 find_mc() {
   for cmd in mcli mc; do
-    if command -v "$cmd" &>/dev/null && "$cmd" -v 2>&1 | grep -qi "RELEASE"; then
+    if command -v "$cmd" &>/dev/null && "$cmd" --version 2>&1 | grep -qi "RELEASE"; then
       echo "$cmd"; return
     fi
   done
