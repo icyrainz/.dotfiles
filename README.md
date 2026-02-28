@@ -19,7 +19,6 @@ Personal dotfiles managed with [dotbot](https://github.com/anishathalye/dotbot).
 | git | Git hooks |
 | gh | GitHub CLI config |
 | yazi | Terminal file manager |
-| helix | Helix editor config |
 | hammerspoon | macOS automation |
 | doom | Doom Emacs config |
 | ideavim | JetBrains IdeaVim config |
