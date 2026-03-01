@@ -11,6 +11,7 @@
 # Claude Code
 claude/settings.machine.json
 docs/plans/
+.playwright-mcp/
 
 # Tmux
 tmux/plugins
