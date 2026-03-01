@@ -59,8 +59,12 @@
       path: peon-ping/config.json
     ~/.config/opencode/peon-ping/config.json:
       path: peon-ping/config.json
+    ~/.config/kitty/kitty.conf:
+      path: kitty/kitty.conf
+      if: command -v kitty > /dev/null
     ~/.config/ghostty/config:
       path: ghostty/config
+      if: command -v ghostty > /dev/null
     ~/.config/sesh/sesh.toml:
       path: sesh/sesh.toml
     ~/.config/lazygit/config.yml:
