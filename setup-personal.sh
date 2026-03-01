@@ -45,7 +45,7 @@ if [ -z "$MC" ]; then
   case "$PKG_MGR" in
     brew)   brew install minio/stable/mc ;;
     pacman) sudo pacman -S --needed --noconfirm minio-client ;;
-    apt)    curl -fsSL https://dl.min.io/client/mc/release/linux-amd64/mc -o /usr/local/bin/mc && chmod +x /usr/local/bin/mc ;;
+    apt)    sudo curl -fsSL https://dl.min.io/client/mc/release/linux-amd64/mc -o /usr/local/bin/mc && sudo chmod +x /usr/local/bin/mc ;;
   esac
   MC=$(find_mc)
 else
