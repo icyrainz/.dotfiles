@@ -50,6 +50,8 @@ function __claude_session_pick
     for f in (ls -t "$sessions_dir"/*.jsonl 2>/dev/null | head -30)
         set -l sid (basename "$f" .jsonl)
         string match -qr '^[0-9a-f]{8}-' "$sid"; or continue
+        # Skip empty sessions (no user messages)
+        grep -q '"type":"user"' "$f" 2>/dev/null; or continue
 
         set -l name ""
         set -l renamed (grep '"local_command"' "$f" 2>/dev/null | grep -o 'Session renamed to: [^<"\\]*' | tail -1 | sed 's/Session renamed to: //')

@@ -36,6 +36,7 @@ abbr zd 'z dotfiles'
 abbr rsync 'rsync -avzhr --progress'
 
 abbr cl claude
+abbr cr 'claude -r'
 abbr oc opencode
 
 # Navigation
