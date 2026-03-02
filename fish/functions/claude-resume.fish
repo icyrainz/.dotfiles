@@ -1,41 +1,17 @@
-function claude --wraps claude
-    # If --resume or -r passed without a session ID, launch fzf picker
-    set -l needs_picker 0
-    set -l flag_idx 0
-    for i in (seq (count $argv))
-        switch "$argv[$i]"
-            case --resume -r --continue -c
-                set flag_idx $i
-                set -l next_idx (math $i + 1)
-                if test $next_idx -gt (count $argv); or string match -qr '^-' "$argv[$next_idx]"
-                    set needs_picker 1
-                end
-        end
+function claude-resume
+    set -l pick_line (__claude_session_pick)
+    if test -z "$pick_line"
+        return 1
+    end
+    set -l session_id (string split \t $pick_line)[1]
+    set -l session_name (string split \t $pick_line)[2]
+
+    # Rename tmux window to match the resumed session
+    if set -q TMUX; and test -n "$session_name"
+        tmux rename-window "$session_name"
     end
 
-    if test $needs_picker = 1
-        set -l pick_line (__claude_session_pick)
-        if test -z "$pick_line"
-            return 1
-        end
-        set -l pick (string split \t $pick_line)[1]
-        set -l session_name (string split \t $pick_line)[2]
-        # Insert the picked session ID after the flag
-        set -l new_argv
-        for i in (seq (count $argv))
-            set -a new_argv $argv[$i]
-            if test $i = $flag_idx
-                set -a new_argv $pick
-            end
-        end
-        set argv $new_argv
-        # Rename tmux window to match the resumed session
-        if set -q TMUX; and test -n "$session_name"
-            tmux rename-window "$session_name"
-        end
-    end
-
-    command claude $argv
+    command claude --resume $session_id $argv
 end
 
 function __claude_session_pick
@@ -63,7 +39,12 @@ function __claude_session_pick
         test -z "$name"; and set name (string sub -l 8 "$sid")
 
         set -l ts (stat -f "%Sm" -t "%m/%d %H:%M" "$f" 2>/dev/null)
-        set -a lines (printf '%s\t%s  %s\t%s' "$sid" "$ts" "$name" "$name")
+        set -l bytes (stat -f "%z" "$f" 2>/dev/null)
+        set -l size ""
+        if test -n "$bytes"
+            set size (math --scale=0 "$bytes / 1024")" KB"
+        end
+        set -a lines (printf '%s\t%s %8s  %s\t%s' "$sid" "$ts" "$size" "$name" "$name")
     end
 
     printf '%s\n' $lines | fzf --no-sort --with-nth=2 --delimiter='\t' \
