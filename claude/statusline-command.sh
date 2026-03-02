@@ -4,6 +4,9 @@
 
 input=$(cat)
 
+# --- Session name (from /rename) ---
+session_name=$(echo "$input" | jq -r '.session_name // empty')
+
 # --- Directory (git root basename, fallback to tilde-shortened cwd) ---
 cwd=$(echo "$input" | jq -r '.workspace.current_dir // .cwd')
 home="$HOME"
@@ -56,7 +59,14 @@ fi
 # ANSI colours (dimmed-friendly)
 CYAN='\033[0;36m'
 YELLOW='\033[0;33m'
+MAGENTA='\033[0;35m'
 RESET='\033[0m'
 
-printf "${CYAN}%s${RESET}${YELLOW}%s${RESET} | %s%s\n" \
-  "$short_cwd" "$branch" "$model" "$ctx_part"
+# Output with or without session name
+if [ -n "$session_name" ]; then
+  printf "${MAGENTA}%s${RESET} | ${CYAN}%s${RESET}${YELLOW}%s${RESET} | %s%s\n" \
+    "$session_name" "$short_cwd" "$branch" "$model" "$ctx_part"
+else
+  printf "${CYAN}%s${RESET}${YELLOW}%s${RESET} | %s%s\n" \
+    "$short_cwd" "$branch" "$model" "$ctx_part"
+fi
