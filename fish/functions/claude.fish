@@ -14,10 +14,12 @@ function claude --wraps claude
     end
 
     if test $needs_picker = 1
-        set -l pick (__claude_session_pick)
-        if test -z "$pick"
+        set -l pick_line (__claude_session_pick)
+        if test -z "$pick_line"
             return 1
         end
+        set -l pick (string split \t $pick_line)[1]
+        set -l session_name (string split \t $pick_line)[2]
         # Insert the picked session ID after the flag
         set -l new_argv
         for i in (seq (count $argv))
@@ -27,6 +29,10 @@ function claude --wraps claude
             end
         end
         set argv $new_argv
+        # Rename tmux window to match the resumed session
+        if set -q TMUX; and test -n "$session_name"
+            tmux rename-window "$session_name"
+        end
     end
 
     command claude $argv
@@ -55,10 +61,10 @@ function __claude_session_pick
         test -z "$name"; and set name (string sub -l 8 "$sid")
 
         set -l ts (stat -f "%Sm" -t "%m/%d %H:%M" "$f" 2>/dev/null)
-        set -a lines (printf '%s\t%s  %s' "$sid" "$ts" "$name")
+        set -a lines (printf '%s\t%s  %s\t%s' "$sid" "$ts" "$name" "$name")
     end
 
-    printf '%s\n' $lines | fzf --no-sort --with-nth=2.. --delimiter='\t' \
+    printf '%s\n' $lines | fzf --no-sort --with-nth=2 --delimiter='\t' \
         --header='Select session to resume' \
         --preview="grep '\"type\":\"user\"' '$sessions_dir'/{1}.jsonl 2>/dev/null | tail -20 | python3 -c \"
 import sys,json,re
@@ -89,5 +95,5 @@ for l in sys.stdin:
     except: pass
 for c in lines[-8:]: print(DIM+'>'+R+' '+c)
 \"" \
-        --preview-window=down:8:wrap | cut -f1
+        --preview-window=down:8:wrap | cut -f1,3
 end
