@@ -3,6 +3,13 @@ function claude-resume
     if test -z "$pick_line"
         return 1
     end
+
+    # ctrl-n: start new session
+    if test "$pick_line" = __new__
+        command claude $argv
+        return
+    end
+
     set -l session_id (string split \t $pick_line)[1]
     set -l session_name (string split \t $pick_line)[2]
 
@@ -48,35 +55,29 @@ function __claude_session_pick
     end
 
     printf '%s\n' $lines | fzf --no-sort --with-nth=2 --delimiter='\t' \
-        --header='Select session to resume' \
-        --preview="grep '\"type\":\"user\"' '$sessions_dir'/{1}.jsonl 2>/dev/null | tail -20 | python3 -c \"
+        --header='Select session to resume | ctrl+o new' \
+        --bind='ctrl-o:become(echo __new__)' \
+        --bind='ctrl-d:preview-half-page-down,ctrl-u:preview-half-page-up' \
+        --preview="grep '\"type\":\"user\"' '$sessions_dir'/{1}.jsonl 2>/dev/null | python3 -c \"
 import sys,json,re
-DIM=chr(27)+'[2m'
-CYAN=chr(27)+'[36m'
-RED=chr(27)+'[2;31m'
-R=chr(27)+'[0m'
-lines=[]
+msgs=[]
 for l in sys.stdin:
     try:
         d=json.loads(l)
         c=d.get('message',{}).get('content','')
         if isinstance(c,list): c=c[0].get('text','') if c else ''
-        # extract /commands
         cmd=re.search(r'<command-name>(/\w+)</command-name>',c)
         args=re.search(r'<command-args>([^<]*)</command-args>',c)
         if cmd:
-            txt=CYAN+cmd.group(1)+((' '+args.group(1)) if args else '')+R
-            lines.append(txt)
+            msgs.append('\033[36m' + cmd.group(1)+((' '+args.group(1)) if args else '') + '\033[0m')
             continue
-        # strip noise tags, keep text
         c=re.sub(r'<(local-command|system-reminder)[^>]*>.*?</\\1>','',c,flags=re.S)
         c=re.sub(r'<[^>]+>','',c).strip()
-        c=c.split(chr(10))[0][:120]
-        if c:
-            c=re.sub(r'(\[[^\]]+\])',RED+r'\\1'+R,c)
-            lines.append(c)
+        if c: msgs.append(re.sub(r'(\[[^\]]+\])','\033[2;31m'+r'\1'+'\033[0m',c))
     except: pass
-for c in lines[-8:]: print(DIM+'>'+R+' '+c)
-\"" \
-        --preview-window=down:8:wrap | cut -f1,3
+for c in msgs:
+    print('---')
+    print(c)
+\" | bat --style=plain --color=always -l md" \
+        --preview-window=down:60%:wrap:follow | cut -f1,3
 end
