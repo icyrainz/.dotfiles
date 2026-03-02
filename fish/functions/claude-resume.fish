@@ -30,7 +30,11 @@ function __claude_session_pick
     test -d "$sessions_dir"; or return
 
     set -l lines
-    for f in (ls -t "$sessions_dir"/*.jsonl 2>/dev/null | head -30)
+    set -l jsonl_files (find "$sessions_dir" -maxdepth 1 -name '*.jsonl' -print 2>/dev/null | head -100)
+    if test (count $jsonl_files) -eq 0
+        return
+    end
+    for f in (ls -t $jsonl_files 2>/dev/null | head -30)
         set -l sid (basename "$f" .jsonl)
         string match -qr '^[0-9a-f]{8}-' "$sid"; or continue
         # Skip empty sessions (no user messages)
