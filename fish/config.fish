@@ -18,6 +18,9 @@ end
 fish_add_path "$HOME/.cargo/bin"
 fish_add_path "$HOME/.local/share/nvim/mason/bin"
 fish_add_path "$HOME/.local/bin"
+fish_add_path "$HOME/.bun/bin"
+
+set -gx BUN_INSTALL "$HOME/.bun"
 
 # Source all .fish files in include folder
 for file in $FISH_PATH/include/**/*.fish
@@ -32,7 +35,3 @@ if status is-interactive
     # fnm — fast node manager with auto-switching
     fnm env --use-on-cd --shell fish | source
 end
-
-# bun
-set --export BUN_INSTALL "$HOME/.bun"
-set --export PATH $BUN_INSTALL/bin $PATH

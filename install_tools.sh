@@ -86,7 +86,7 @@ pkg bat          brew=bat        pacman=bat        apt=bat
 apt_symlink batcat bat
 
 pkg btop         brew=btop       pacman=btop       apt=btop
-pkg bun          script="command -v bun &>/dev/null || curl -fsSL https://bun.sh/install | bash"
+pkg bun          script="[ -x \"\$HOME/.bun/bin/bun\" ] || curl -fsSL https://bun.sh/install | bash"
 pkg cowsay       brew=cowsay     pacman=cowsay     apt=cowsay
 pkg curl         brew=curl       pacman=curl       apt=curl
 pkg dust         brew=dust       pacman=dust       script="cargo install du-dust"
