@@ -10,6 +10,12 @@
 
 NOTIFY_FILE="/tmp/claude-notify-focus"
 
+# Background panes always write (priority). Focused pane only writes as
+# fallback when no notification exists — prevents overwriting background
+# notifications while still recording if nothing else is pending.
+is_focused=$(tmux display-message -t "$TMUX_PANE" -p '#{window_active}#{pane_active}' 2>/dev/null)
+[ "$is_focused" = "11" ] && [ -s "$NOTIFY_FILE" ] && exit 0
+
 # Resolve pane ID → session:window.pane
 target=$(tmux display-message -t "$TMUX_PANE" -p '#{session_name}:#{window_index}.#{pane_index}' 2>/dev/null) || exit 0
 window_name=$(tmux display-message -t "$TMUX_PANE" -p '#{window_name}' 2>/dev/null)
@@ -17,8 +23,8 @@ pane_id="$TMUX_PANE"
 
 # Write as simple key=value for easy sourcing
 cat > "$NOTIFY_FILE" <<EOF
-TARGET=$target
-PANE_ID=$pane_id
-WINDOW_NAME=$window_name
-TIMESTAMP=$(date +%s)
+TARGET="$target"
+PANE_ID="$pane_id"
+WINDOW_NAME="$window_name"
+TIMESTAMP="$(date +%s)"
 EOF
