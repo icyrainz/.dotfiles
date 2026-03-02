@@ -12,13 +12,33 @@ cd "${BASEDIR}"
 git -C "${DOTBOT_DIR}" submodule sync --quiet --recursive
 git submodule update --init --recursive "${DOTBOT_DIR}"
 
-if [ "$1" = "--force" ] || [ "$1" = "-f" ]; then
-    shift
+TMPFILES=()
+cleanup() { rm -f "${TMPFILES[@]}"; }
+trap cleanup EXIT
+
+QUICK=false
+FORCE=false
+for arg in "$@"; do
+    case "$arg" in
+        --quick|-q) QUICK=true; shift ;;
+        --force|-f) FORCE=true; shift ;;
+    esac
+done
+
+if [ "$FORCE" = true ]; then
     FORCE_CONFIG=$(mktemp)
-    trap 'rm -f "$FORCE_CONFIG"' EXIT
+    TMPFILES+=("$FORCE_CONFIG")
     sed 's/relink: true/relink: true\n      force: true/' "${CONFIG}" > "$FORCE_CONFIG"
     CONFIG="$FORCE_CONFIG"
     echo "Force mode: existing files will be replaced with symlinks"
+fi
+
+if [ "$QUICK" = true ]; then
+    QUICK_CONFIG=$(mktemp)
+    TMPFILES+=("$QUICK_CONFIG")
+    sed '/^- shell:/,$d' "$CONFIG" > "$QUICK_CONFIG"
+    CONFIG="$QUICK_CONFIG"
+    echo "Quick mode: skipping tool installation"
 fi
 
 "${BASEDIR}/${DOTBOT_DIR}/${DOTBOT_BIN}" -d "${BASEDIR}" -c "${CONFIG}" "${@}"

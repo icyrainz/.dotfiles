@@ -29,4 +29,20 @@ done
 echo "Updating marketplaces…"
 claude plugin marketplace update || true
 
+# --- Symlink shared skills ---
+# Dotbot can't handle two glob entries for the same target dir (YAML duplicate keys),
+# so we link claude/skills/* here instead.
+SKILLS_DIR="$HOME/.claude/skills"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+mkdir -p "$SKILLS_DIR"
+for skill in "$SCRIPT_DIR"/skills/*/; do
+  name="$(basename "$skill")"
+  target="$SKILLS_DIR/$name"
+  if [ -L "$target" ] || [ -e "$target" ]; then
+    continue
+  fi
+  ln -s "$skill" "$target"
+  echo "Linked skill: $name"
+done
+
 echo "Done. Plugins declared in settings.json will activate on next session."

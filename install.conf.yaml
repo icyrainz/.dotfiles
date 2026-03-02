@@ -47,9 +47,6 @@
     ~/.claude/statusline-command.sh:
       path: claude/statusline-command.sh
     ~/.claude/skills/:
-      path: claude/skills/*
-      glob: true
-    ~/.claude/skills/:
       path: claude/skills-personal/*
       glob: true
       if: '[ -f ~/.akio-personal ]'
