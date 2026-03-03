@@ -28,10 +28,20 @@ for file in $FISH_PATH/include/**/*.fish
 end
 
 if status is-interactive
-    # Commands to run in interactive sessions can go here
-    fzf --fish | source
-    zoxide init fish | source
+    set -l cache_dir ~/.config/fish/.init-cache
+    test -d $cache_dir; or mkdir -p $cache_dir
 
-    # fnm — fast node manager with auto-switching
-    fnm env --use-on-cd --shell fish | source
+    # Cache shell init scripts — regenerates when binary is updated
+    for pair in "fzf:fzf --fish" "zoxide:zoxide init fish" "fnm:fnm env --use-on-cd --shell fish"
+        set -l name (string split : $pair)[1]
+        set -l cmd (string split -m1 : $pair)[2]
+        set -l cache $cache_dir/$name.fish
+        set -l bin (command -s $name 2>/dev/null)
+        if test -n "$bin"
+            if not test -f $cache; or test $bin -nt $cache
+                eval $cmd > $cache
+            end
+            source $cache
+        end
+    end
 end

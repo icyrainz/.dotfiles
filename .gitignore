@@ -20,6 +20,7 @@ tmux/harpoon-sessions
 
 # Fish
 fish/include/ignore/*
+fish/.init-cache/
 
 # Zsh
 zsh/zsh_plugins.zsh
