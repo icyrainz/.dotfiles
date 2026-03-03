@@ -18,8 +18,8 @@ fi
 branch=""
 if git -C "$cwd" rev-parse --git-dir >/dev/null 2>&1; then
   branch=$(git -C "$cwd" --no-optional-locks symbolic-ref --short HEAD 2>/dev/null)
-  if [ -n "$branch" ] && [ ${#branch} -gt 10 ]; then
-    branch="…${branch: -10}"
+  if [ -n "$branch" ] && [ ${#branch} -gt 30 ]; then
+    branch="…${branch: -30}"
   fi
   [ -n "$branch" ] && branch=" ($branch)"
 fi
