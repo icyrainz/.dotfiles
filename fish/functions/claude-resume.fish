@@ -49,8 +49,15 @@ function __claude_session_pick
         end
         test -z "$name"; and set name (string sub -l 8 "$sid")
 
-        set -l ts (stat -f "%Sm" -t "%m/%d %H:%M" "$f" 2>/dev/null)
-        set -l bytes (stat -f "%z" "$f" 2>/dev/null)
+        set -l ts ""
+        set -l bytes ""
+        if test (uname) = Darwin
+            set ts (stat -f "%Sm" -t "%m/%d %H:%M" "$f" 2>/dev/null)
+            set bytes (stat -f "%z" "$f" 2>/dev/null)
+        else
+            set ts (date -r "$f" "+%m/%d %H:%M" 2>/dev/null)
+            set bytes (stat -c "%s" "$f" 2>/dev/null)
+        end
         set -l size ""
         if test -n "$bytes"
             set size (math --scale=0 "$bytes / 1024")" KB"
