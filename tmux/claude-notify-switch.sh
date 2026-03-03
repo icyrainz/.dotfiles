@@ -13,7 +13,7 @@ _msg() {
   fi
 }
 
-if [ ! -f "$NOTIFY_FILE" ] || [ -z "$(cat "$NOTIFY_FILE")" ]; then
+if [ ! -f "$NOTIFY_FILE" ]; then
   _msg "No Claude notification to jump to"
   exit 0
 fi
@@ -22,6 +22,15 @@ fi
 
 if [ -z "$PANE_ID" ] || [ -z "$TARGET" ]; then
   _msg "No Claude notification to jump to"
+  rm -f "$NOTIFY_FILE"
+  exit 0
+fi
+
+# Ignore stale entries older than 5 minutes
+NOW=$(date +%s)
+if [ -n "$TIMESTAMP" ] && [ $((NOW - TIMESTAMP)) -gt 300 ]; then
+  _msg "Notification expired ($(( (NOW - TIMESTAMP) / 60 ))m ago)"
+  rm -f "$NOTIFY_FILE"
   exit 0
 fi
 
@@ -55,7 +64,5 @@ else
 fi
 tmux select-pane -t "$PANE_ID" 2>/dev/null
 
-# Downgrade priority after jumping so new events can replace this entry
-if [ "$PRIORITY" = "high" ]; then
-  sed -i '' 's/PRIORITY="high"/PRIORITY="low"/' "$NOTIFY_FILE"
-fi
+# Clear after jump — notification is consumed
+rm -f "$NOTIFY_FILE"
