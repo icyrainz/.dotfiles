@@ -55,5 +55,7 @@ else
 fi
 tmux select-pane -t "$PANE_ID" 2>/dev/null
 
-# Clear after jumping
-: > "$NOTIFY_FILE"
+# Downgrade priority after jumping so new events can replace this entry
+if [ "$PRIORITY" = "high" ]; then
+  sed -i '' 's/PRIORITY="high"/PRIORITY="low"/' "$NOTIFY_FILE"
+fi

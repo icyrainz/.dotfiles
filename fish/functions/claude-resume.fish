@@ -30,7 +30,7 @@ function __claude_session_pick
     test -d "$sessions_dir"; or return
 
     set -l lines
-    set -l jsonl_files (find "$sessions_dir" -maxdepth 1 -name '*.jsonl' -print 2>/dev/null | head -100)
+    set -l jsonl_files (fd -e jsonl --max-depth 1 -t f . "$sessions_dir" 2>/dev/null)
     if test (count $jsonl_files) -eq 0
         return
     end

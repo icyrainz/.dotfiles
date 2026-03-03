@@ -23,6 +23,7 @@ fish/include/ignore/*
 
 # Zsh
 zsh/zsh_plugins.zsh
+zsh/extra.zsh
 
 # Nvim
 nvim/plugin/*_compiled.lua

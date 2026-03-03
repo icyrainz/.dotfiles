@@ -1,6 +1,6 @@
 function qq --description "Generate shell commands with LLM"
     set -l cwd (pwd)
-    set -l files (ls -1 2>/dev/null | head -30 | string join ", ")
+    set -l files (fd --max-depth 1 2>/dev/null | head -30 | string join ", ")
     set -l context "CWD: $cwd
 Contents: $files
 Task: $argv"
