@@ -1,0 +1,1 @@
+../_shared/sync-name-tmux.sh
