@@ -8,6 +8,9 @@ set -gx ERL_AFLAGS "-kernel shell_history enabled"
 
 set -gx BAT_THEME 1337
 
+# Import env vars from .profile (single source of truth for all shells)
+bass source ~/.profile
+
 # macOS (Homebrew)
 if test -d /opt/homebrew
     fish_add_path /opt/homebrew/bin
