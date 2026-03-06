@@ -26,5 +26,6 @@ tmp=$(mktemp -d)
 trap 'rm -rf "$tmp"' EXIT
 curl -fsSL "$url" -o "$tmp/gh.tar.gz"
 tar xzf "$tmp/gh.tar.gz" -C "$tmp"
-sudo install -m 755 "$tmp/gh_${version}_linux_${gh_arch}/bin/gh" /usr/local/bin/
+source "$(dirname "$0")/../lib/sudo.sh"
+$SUDO install -m 755 "$tmp/gh_${version}_linux_${gh_arch}/bin/gh" /usr/local/bin/
 echo "gh ${version} installed to /usr/local/bin/"

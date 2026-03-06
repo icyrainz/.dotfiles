@@ -26,5 +26,6 @@ tmp=$(mktemp -d)
 trap 'rm -rf "$tmp"' EXIT
 curl -fsSL "$url" -o "$tmp/lazygit.tar.gz"
 tar xzf "$tmp/lazygit.tar.gz" -C "$tmp"
-sudo install -m 755 "$tmp/lazygit" /usr/local/bin/
+source "$(dirname "$0")/../lib/sudo.sh"
+$SUDO install -m 755 "$tmp/lazygit" /usr/local/bin/
 echo "lazygit ${version} installed to /usr/local/bin/"

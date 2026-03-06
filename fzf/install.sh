@@ -26,5 +26,6 @@ tmp=$(mktemp -d)
 trap 'rm -rf "$tmp"' EXIT
 curl -fsSL "$url" -o "$tmp/fzf.tar.gz"
 tar xzf "$tmp/fzf.tar.gz" -C "$tmp"
-sudo install -m 755 "$tmp/fzf" /usr/local/bin/
+source "$(dirname "$0")/../lib/sudo.sh"
+$SUDO install -m 755 "$tmp/fzf" /usr/local/bin/
 echo "fzf installed to /usr/local/bin/"

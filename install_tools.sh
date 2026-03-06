@@ -15,8 +15,10 @@ else
   PKG_MGR=""
 fi
 
+source "$SCRIPT_DIR/lib/sudo.sh"
+
 # Prompt for sudo upfront (while we still have a TTY)
-if [ "$PKG_MGR" = "pacman" ] || [ "$PKG_MGR" = "apt" ]; then
+if [ -n "$SUDO" ] && { [ "$PKG_MGR" = "pacman" ] || [ "$PKG_MGR" = "apt" ]; }; then
   sudo -v || { echo "!! sudo required for $PKG_MGR installs"; exit 1; }
 fi
 
@@ -48,17 +50,21 @@ pkg() {
   esac
 
   if [ -n "$pkg_name" ]; then
+    local rc=0
     case "$PKG_MGR" in
-      brew)   brew install "$pkg_name" ;;
-      pacman) sudo pacman -S --needed --noconfirm "$pkg_name" ;;
+      brew)   brew install "$pkg_name" || rc=$? ;;
+      pacman) $SUDO pacman -S --needed --noconfirm "$pkg_name" || rc=$? ;;
       apt)
         if [ "$apt_updated" = false ]; then
-          sudo apt-get update -qq
+          $SUDO apt-get update -qq
           apt_updated=true
         fi
-        sudo apt-get install -y "$pkg_name"
+        $SUDO apt-get install -y "$pkg_name" || rc=$?
         ;;
     esac
+    if [ "$rc" -ne 0 ]; then
+      echo "!! $name: $PKG_MGR install failed" >&2
+    fi
   elif [ -n "$script" ]; then
     if ! eval "$script"; then
       echo "!! $name: script install failed" >&2
@@ -74,7 +80,7 @@ pkg() {
 apt_symlink() {
   local from="$1" to="$2"
   if [ "$PKG_MGR" = "apt" ] && command -v "$from" &>/dev/null && ! command -v "$to" &>/dev/null; then
-    sudo ln -sf "$(command -v "$from")" "/usr/local/bin/$to"
+    $SUDO ln -sf "$(command -v "$from")" "/usr/local/bin/$to"
   fi
 }
 
@@ -89,7 +95,6 @@ pkg btop         brew=btop       pacman=btop       apt=btop
 pkg bun          script="[ -x \"\$HOME/.bun/bin/bun\" ] || curl -fsSL https://bun.sh/install | bash"
 pkg cowsay       brew=cowsay     pacman=cowsay     apt=cowsay
 pkg curl         brew=curl       pacman=curl       apt=curl
-pkg dust         brew=dust       pacman=dust       script="cargo install du-dust"
 
 pkg fd           brew=fd         pacman=fd         apt=fd-find
 apt_symlink fdfind fd
@@ -103,20 +108,19 @@ pkg git          brew=git        pacman=git        apt=git
 pkg htop         brew=htop       pacman=htop       apt=htop
 pkg jq           brew=jq         pacman=jq         apt=jq
 pkg lazygit      brew=lazygit    pacman=lazygit    script="bash $SCRIPT_DIR/lazygit/install.sh"
-pkg lsd          brew=lsd        pacman=lsd        script="cargo install lsd"
+pkg lsd          brew=lsd        pacman=lsd        apt=lsd
 pkg mc           brew=minio/stable/mc  pacman=minio-client  script="curl -fsSL https://dl.min.io/client/mc/release/linux-amd64/mc -o /usr/local/bin/mc && chmod +x /usr/local/bin/mc"
 
 pkg neovim       brew=neovim     pacman=neovim     script="bash $SCRIPT_DIR/neovim/install.sh"
 
 pkg ripgrep      brew=ripgrep    pacman=ripgrep    apt=ripgrep
 pkg sox          brew=sox
-pkg sccache      brew=sccache    script="cargo install sccache"
+pkg sccache      brew=sccache    apt=sccache
 pkg sesh         brew=sesh       script="bash $SCRIPT_DIR/sesh/install.sh"
 pkg tmux         brew=tmux       pacman=tmux       apt=tmux
 pkg tree         brew=tree       pacman=tree       apt=tree
 pkg wget         brew=wget       pacman=wget       apt=wget
 pkg whisper-cpp  brew=whisper-cpp
-pkg worktrunk    brew=worktrunk  script="cargo install worktrunk"
 pkg yazi         brew=yazi       pacman=yazi       script="bash $SCRIPT_DIR/yazi/install.sh"
 pkg zoxide       brew=zoxide     pacman=zoxide     apt=zoxide
 pkg zsh          brew=zsh        pacman=zsh        apt=zsh

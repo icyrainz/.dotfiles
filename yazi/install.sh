@@ -26,6 +26,7 @@ tmp=$(mktemp -d)
 trap 'rm -rf "$tmp"' EXIT
 curl -fsSL "$url" -o "$tmp/yazi.zip"
 unzip -q "$tmp/yazi.zip" -d "$tmp"
-sudo install -m 755 "$tmp/yazi-${target}/yazi" /usr/local/bin/
-sudo install -m 755 "$tmp/yazi-${target}/ya" /usr/local/bin/
+source "$(dirname "$0")/../lib/sudo.sh"
+$SUDO install -m 755 "$tmp/yazi-${target}/yazi" /usr/local/bin/
+$SUDO install -m 755 "$tmp/yazi-${target}/ya" /usr/local/bin/
 echo "yazi ${version} installed to /usr/local/bin/"

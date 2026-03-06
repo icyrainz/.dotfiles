@@ -18,5 +18,6 @@ tmp=$(mktemp -d)
 trap 'rm -rf "$tmp"' EXIT
 curl -fsSL "$url" -o "$tmp/$asset"
 tar xzf "$tmp/$asset" -C "$tmp"
-sudo cp -r "$tmp/nvim-linux-${nvim_arch}"/* /usr/local/
+source "$(dirname "$0")/../lib/sudo.sh"
+$SUDO cp -r "$tmp/nvim-linux-${nvim_arch}"/* /usr/local/
 echo "neovim installed to /usr/local/bin/nvim"

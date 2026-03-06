@@ -26,5 +26,6 @@ tmp=$(mktemp -d)
 trap 'rm -rf "$tmp"' EXIT
 curl -fsSL "$url" -o "$tmp/sesh.tar.gz"
 tar xzf "$tmp/sesh.tar.gz" -C "$tmp"
-sudo install -m 755 "$tmp/sesh" /usr/local/bin/
+source "$(dirname "$0")/../lib/sudo.sh"
+$SUDO install -m 755 "$tmp/sesh" /usr/local/bin/
 echo "sesh installed to /usr/local/bin/"
