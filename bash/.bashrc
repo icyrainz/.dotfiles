@@ -12,6 +12,9 @@ if [ -d "$FNM_PATH" ]; then
   eval "$(fnm env --use-on-cd)"
 fi
 
+# zoxide integration (smarter cd)
+command -v zoxide &>/dev/null && eval "$(zoxide init bash)"
+
 # bun
 if [ -d "$HOME/.bun" ]; then
   export BUN_INSTALL="$HOME/.bun"
