@@ -8,4 +8,4 @@ When installing a new CLI tool, read `README.md` for the `install_tools.sh` conv
 
 "Fish extra" refers to `~/.config/fish/include/ignore/extra.fish` — a git-ignored file containing personal secrets, credentials, and machine-specific config (e.g., NPM API creds, API keys).
 
-`claude/HUMAN.md` contains personal context about the user. Read it on-demand when context about the user's background, preferences, or history would help — don't load it by default.
+`claude/HUMAN.md` contains personal context about the user. Use the `/human` skill for reading, updating, and syncing it.
