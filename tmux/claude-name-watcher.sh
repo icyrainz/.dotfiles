@@ -25,6 +25,8 @@ trap cleanup EXIT
 done) &
 
 prev_name=""
+has_explicit_rename=false
+slug_set=false
 
 tail -n +1 -f "$TRANSCRIPT" 2>/dev/null | while IFS= read -r line; do
   # Skip assistant messages — they may quote rename/slug patterns from code
@@ -36,14 +38,19 @@ tail -n +1 -f "$TRANSCRIPT" 2>/dev/null | while IFS= read -r line; do
   case "$line" in
     *'Session renamed to: '*)
       name=$(echo "$line" | sed -n 's/.*Session renamed to: \([^<"\\]*\).*/\1/p')
+      if [ -n "$name" ]; then
+        has_explicit_rename=true
+      fi
       ;;
   esac
 
-  # Fall back to slug (appears in system messages)
-  if [ -z "$name" ]; then
+  # Fall back to slug only if no explicit /rename has been seen yet
+  # and we haven't set the slug already (it repeats on every line)
+  if [ -z "$name" ] && [ "$has_explicit_rename" = false ] && [ "$slug_set" = false ]; then
     case "$line" in
       *'"slug":"'*)
         name=$(echo "$line" | sed -n 's/.*"slug":"\([^"]*\)".*/\1/p')
+        [ -n "$name" ] && slug_set=true
         ;;
     esac
   fi
