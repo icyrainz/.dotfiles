@@ -13,6 +13,9 @@ ps -t "$pane_tty" -o comm= 2>/dev/null | grep -qx claude || exit 0
 new_name=$(tmux display-message -p '#{window_name}')
 [ -z "$new_name" ] && exit 0
 
+# Update cache so the watcher doesn't loop back
+echo "$new_name" > "/tmp/.claude-tmux-name-${PANE_ID}"
+
 # Send /rename to the Claude pane (literal text + Enter separately for TUI compatibility)
 tmux send-keys -t "$PANE_ID" -l "/rename $new_name"
 tmux send-keys -t "$PANE_ID" Enter

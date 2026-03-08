@@ -13,11 +13,6 @@ function claude-resume
     set -l session_id (string split \t $pick_line)[1]
     set -l session_name (string split \t $pick_line)[2]
 
-    # Rename tmux window to match the resumed session
-    if set -q TMUX; and test -n "$session_name"
-        tmux rename-window "$session_name"
-    end
-
     command claude --resume $session_id $argv
 end
 
@@ -45,7 +40,7 @@ function __claude_session_pick
         if test -n "$renamed"
             set name "$renamed"
         else
-            set name (head -20 "$f" 2>/dev/null | grep -o '"slug":"[^"]*"' | head -1 | cut -d'"' -f4)
+            set name (grep -o '"slug":"[^"]*"' "$f" 2>/dev/null | head -1 | cut -d'"' -f4)
         end
         test -z "$name"; and set name (string sub -l 8 "$sid")
 

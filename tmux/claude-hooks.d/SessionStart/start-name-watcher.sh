@@ -1,0 +1,1 @@
+../_shared/start-name-watcher.sh
