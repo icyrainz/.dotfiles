@@ -45,4 +45,20 @@ for skill in "$SCRIPT_DIR"/skills/*/; do
   echo "Linked skill: $name"
 done
 
+# --- Symlink homelab skills (gated by marker) ---
+if [ -f "$HOME/.akio-homelab" ]; then
+  for skill in "$SCRIPT_DIR"/skills-homelab/*/; do
+    [ -d "$skill" ] || continue
+    name="$(basename "$skill")"
+    target="$SKILLS_DIR/$name"
+    if [ -L "$target" ] || [ -e "$target" ]; then
+      continue
+    fi
+    ln -s "$skill" "$target"
+    echo "Linked homelab skill: $name"
+  done
+else
+  echo "Skipping homelab skills (~/.akio-homelab not found)"
+fi
+
 echo "Done. Plugins declared in settings.json will activate on next session."
