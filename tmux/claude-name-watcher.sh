@@ -12,11 +12,15 @@ PIDFILE="/tmp/.claude-name-watcher-${PANE_ID}.pid"
 
 [ -n "$TRANSCRIPT" ] && [ -n "$PANE_ID" ] && [ -f "$TRANSCRIPT" ] || exit 0
 
+# Skip subagent sessions — they never get slugs
+head -1 "$TRANSCRIPT" | grep -q '"parentToolUseID"' && exit 0
+
 # Kill existing watcher for this pane
 [ -f "$PIDFILE" ] && kill "$(cat "$PIDFILE")" 2>/dev/null
 echo $$ > "$PIDFILE"
 
-cleanup() { rm -f "$PIDFILE"; kill 0 2>/dev/null; }
+# Only remove pidfile if it still belongs to us (avoids race with new watcher)
+cleanup() { [ -f "$PIDFILE" ] && [ "$(cat "$PIDFILE" 2>/dev/null)" = "$$" ] && rm -f "$PIDFILE"; kill 0 2>/dev/null; }
 trap cleanup EXIT
 
 # Self-destruct when pane disappears (check every 15s)
@@ -34,9 +38,10 @@ tail -n +1 -f "$TRANSCRIPT" 2>/dev/null | while IFS= read -r line; do
 
   name=""
 
-  # Prefer explicit /rename (appears in user messages via local-command-stdout)
+  # Prefer explicit /rename (appears in local_command subtype lines only)
+  # Guard against false positives from tool results containing source code
   case "$line" in
-    *'Session renamed to: '*)
+    *'"subtype":"local_command"'*'Session renamed to: '*)
       name=$(echo "$line" | sed -n 's/.*Session renamed to: \([^<"\\]*\).*/\1/p')
       if [ -n "$name" ]; then
         has_explicit_rename=true
