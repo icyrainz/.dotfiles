@@ -12,8 +12,9 @@ PIDFILE="/tmp/.claude-name-watcher-${PANE_ID}.pid"
 
 [ -n "$TRANSCRIPT" ] && [ -n "$PANE_ID" ] && [ -f "$TRANSCRIPT" ] || exit 0
 
-# Skip subagent sessions — they never get slugs
-head -1 "$TRANSCRIPT" | grep -q '"parentToolUseID"' && exit 0
+# Skip subagent sessions — they never get slugs and would linger as idle watchers.
+# Check isSidechain field (parentToolUseID exists in ALL sessions, not just subagents).
+head -1 "$TRANSCRIPT" | python3 -c "import json,sys; d=json.loads(sys.stdin.readline()); exit(0 if d.get('isSidechain') else 1)" 2>/dev/null && exit 0
 
 # Kill existing watcher for this pane
 [ -f "$PIDFILE" ] && kill "$(cat "$PIDFILE")" 2>/dev/null
@@ -24,8 +25,9 @@ cleanup() { [ -f "$PIDFILE" ] && [ "$(cat "$PIDFILE" 2>/dev/null)" = "$$" ] && r
 trap cleanup EXIT
 
 # Self-destruct when pane disappears (check every 15s)
+# Note: display-message -p always exits 0, so use list-panes instead
 (while sleep 15; do
-  tmux display-message -t "$PANE_ID" -p '' 2>/dev/null || kill $$ 2>/dev/null
+  tmux list-panes -t "$PANE_ID" >/dev/null 2>&1 || kill $$ 2>/dev/null
 done) &
 
 prev_name=""
@@ -66,7 +68,8 @@ tail -n +1 -f "$TRANSCRIPT" 2>/dev/null | while IFS= read -r line; do
   # Also check cache (may have been set by claude-rename.sh)
   [ -f "$CACHE" ] && [ "$(cat "$CACHE" 2>/dev/null)" = "$name" ] && { prev_name="$name"; continue; }
 
-  window_id=$(tmux display-message -t "$PANE_ID" -p '#{window_id}' 2>/dev/null) || break
+  tmux list-panes -t "$PANE_ID" >/dev/null 2>&1 || break
+  window_id=$(tmux display-message -t "$PANE_ID" -p '#{window_id}' 2>/dev/null)
   tmux rename-window -t "$window_id" "$name"
   echo "$name" > "$CACHE"
   prev_name="$name"
