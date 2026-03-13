@@ -9,6 +9,7 @@ TRANSCRIPT="$1"
 PANE_ID="$2"
 CACHE="/tmp/.claude-tmux-name-${PANE_ID}"
 PIDFILE="/tmp/.claude-name-watcher-${PANE_ID}.pid"
+TRANSCRIPT_TRACKER="/tmp/.claude-name-watcher-${PANE_ID}.transcript"
 
 [ -n "$TRANSCRIPT" ] && [ -n "$PANE_ID" ] && [ -f "$TRANSCRIPT" ] || exit 0
 
@@ -19,9 +20,25 @@ head -1 "$TRANSCRIPT" | python3 -c "import json,sys; d=json.loads(sys.stdin.read
 # Kill existing watcher for this pane
 [ -f "$PIDFILE" ] && kill "$(cat "$PIDFILE")" 2>/dev/null
 echo $$ > "$PIDFILE"
+echo "$TRANSCRIPT" > "$TRANSCRIPT_TRACKER"
+
+# Immediately disable automatic-rename to prevent tmux from overriding the name
+# with the Claude process title (version string like "2.1.72").
+window_id=$(tmux display-message -t "$PANE_ID" -p '#{window_id}' 2>/dev/null)
+if [ -n "$window_id" ]; then
+  tmux set-option -wt "$window_id" automatic-rename off 2>/dev/null
+  # Set fallback name from project cwd until slug arrives
+  fallback=$(head -1 "$TRANSCRIPT" | python3 -c "import json,sys,os; print(os.path.basename(json.loads(sys.stdin.readline()).get('cwd','')))" 2>/dev/null)
+  [ -n "$fallback" ] && tmux rename-window -t "$window_id" "$fallback"
+fi
 
 # Only remove pidfile if it still belongs to us (avoids race with new watcher)
-cleanup() { [ -f "$PIDFILE" ] && [ "$(cat "$PIDFILE" 2>/dev/null)" = "$$" ] && rm -f "$PIDFILE"; kill 0 2>/dev/null; }
+cleanup() {
+  if [ -f "$PIDFILE" ] && [ "$(cat "$PIDFILE" 2>/dev/null)" = "$$" ]; then
+    rm -f "$PIDFILE" "$TRANSCRIPT_TRACKER"
+  fi
+  kill 0 2>/dev/null
+}
 trap cleanup EXIT
 
 # Self-destruct when pane disappears (check every 15s)
