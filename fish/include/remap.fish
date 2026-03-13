@@ -12,7 +12,6 @@ else
     abbr la 'ls -A'
 end
 
-abbr t 'tmux attach || tmux new-session'
 abbr ta 'tmux attach -t'
 abbr td 'tmux detach'
 abbr ts 'tmux new-session -s'

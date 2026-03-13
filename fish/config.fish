@@ -7,6 +7,7 @@ set -gx FISH_PATH ~/.config/fish
 set -gx ERL_AFLAGS "-kernel shell_history enabled"
 
 set -gx BAT_THEME 1337
+set -gx SUDO_ASKPASS "$HOME/askpass.sh"
 
 # Import env vars from .profile (single source of truth for all shells)
 bass source ~/.profile
