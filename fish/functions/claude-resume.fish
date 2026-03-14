@@ -57,7 +57,8 @@ function __claude_session_pick
         if test -n "$bytes"
             set size (math --scale=0 "$bytes / 1024")" KB"
         end
-        set -a lines (printf '%s\t%s %8s  %s\t%s' "$sid" "$ts" "$size" "$name" "$name")
+        set -l short_id (string sub -l 8 "$sid")
+        set -a lines (printf '%s\t%s %8s  %s  %s\t%s' "$sid" "$ts" "$size" "$short_id" "$name" "$name")
     end
 
     printf '%s\n' $lines | fzf --no-sort --with-nth=2 --delimiter='\t' \
