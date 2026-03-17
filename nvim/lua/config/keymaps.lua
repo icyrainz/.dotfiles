@@ -33,25 +33,6 @@ vim.keymap.set(
 vim.keymap.set({ "n", "x" }, "<leader>y", '"+y', { desc = "Copy to system clipboard" })
 vim.keymap.set("v", "p", [["_dP]], { desc = "Keep the yanked text when pasting in visual mode" })
 
--- Add empty lines before and after cursor line supporting dot-repeat
-MiniBasics = {}
-MiniBasics.put_empty_line = function(put_above)
-  -- This has a typical workflow for enabling dot-repeat:
-  -- - On first call it sets `operatorfunc`, caches data, and calls
-  --   `operatorfunc` on current cursor position.
-  -- - On second call it performs task: puts `v:count1` empty lines
-  --   above/below current line.
-  if type(put_above) == "boolean" then
-    vim.o.operatorfunc = "v:lua.MiniBasics.put_empty_line"
-    MiniBasics.cache_empty_line = { put_above = put_above }
-    return "g@l"
-  end
-
-  local target_line = vim.fn.line(".") - (MiniBasics.cache_empty_line.put_above and 1 or 0)
-  vim.fn.append(target_line, vim.fn["repeat"]({ "" }, vim.v.count1))
-end
-
--- vim.keymap.set("i", "jjj", "<Esc>", { desc = "Escape Insert mode" })
 
 vim.keymap.set({ "n" }, "H", "^", { desc = "Begin of line" })
 vim.keymap.set({ "n" }, "L", "$", { desc = "End of line" })
