@@ -48,6 +48,10 @@
       path: claude/settings.json
     ~/.claude/statusline-command.sh:
       path: claude/statusline-command.sh
+    ~/.claude/claude-hook.sh:
+      path: claude/claude-hook.sh
+    ~/.claude/hooks.d:
+      path: claude/hooks.d
     ~/.claude/hooks/peon-ping/config.json:
       path: peon-ping/config.json
     ~/.openpeon/config.json:
