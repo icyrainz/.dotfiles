@@ -31,3 +31,4 @@ zsh/extra.zsh
 nvim/plugin/*_compiled.lua
 nvim/lazy-lock.json
 fish/stuffs/extra.fish
+wezterm/fonts/

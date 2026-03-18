@@ -9,8 +9,15 @@ end
 
 config.max_fps = 120
 config.animation_fps = 120
-config.font_dirs = { "fonts" }
-config.font_locator = "ConfigDirsOnly"
+-- Use local fonts dir to skip slow system font scanning (9s → 0.1s)
+-- Run: ln -s ~/Library/Fonts/{Iosevka.ttc,SymbolsNerdFontMono-Regular.ttf} ~/.config/wezterm/fonts/
+local fonts_dir = wezterm.config_dir .. "/fonts"
+local f = io.open(fonts_dir, "r")
+if f then
+	f:close()
+	config.font_dirs = { "fonts" }
+	config.font_locator = "ConfigDirsOnly"
+end
 
 -- Machine-specific overrides via wezterm.local.lua
 local ok, local_config = pcall(dofile, wezterm.config_dir .. "/wezterm.local.lua")
