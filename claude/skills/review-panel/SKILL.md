@@ -1,7 +1,7 @@
 ---
 name: review-panel
-description: Use when the user wants opinionated multi-perspective code review, says /review-panel, or asks for a panel review, council, or multiple reviewers examining their changes simultaneously
-argument-hint: "[debate] [grug,carmack,ousterhout,beck,fowler] [files or focus]"
+description: Multi-perspective code review from multiple personas in parallel
+argument-hint: "[debate] [complexity,pragmatism,modules,tests,smells] [files or focus]"
 ---
 
 # Review Panel
@@ -22,7 +22,7 @@ Spawn 5 reviewer agents in parallel, each embodying a distinct software philosop
 
 Parse `$ARGUMENTS` for:
 1. **Debate mode**: If args contain `debate`, enable the debate round (Phase 2) after initial reviews
-2. **Reviewer filter**: If args contain comma-separated reviewer names (e.g., `grug,carmack`), only spawn those
+2. **Reviewer filter**: If args contain comma-separated lens names (e.g., `complexity,pragmatism`), only spawn those. Mapping: complexity=Grug, pragmatism=Carmack, modules=Ousterhout, tests=Beck, smells=Fowler
 3. **File/focus**: Remaining args are file paths or focus description
 4. **No args**: Run `git diff HEAD` + `git diff --cached`. If empty, `git diff HEAD~1`. If still empty, ask user
 
