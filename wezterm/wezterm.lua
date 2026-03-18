@@ -1,6 +1,5 @@
 local wezterm = require("wezterm")
 local act = wezterm.action
-local mux = wezterm.mux
 
 local config = {}
 
@@ -10,38 +9,16 @@ end
 
 config.max_fps = 120
 config.animation_fps = 120
+config.font_dirs = { "fonts" }
+config.font_locator = "ConfigDirsOnly"
 
--- Font config: defaults to wezterm built-in, override via wezterm.local.lua
-local font_names = {}
-local font_array = {}
-local nvim_font_size = nil
-
+-- Machine-specific overrides via wezterm.local.lua
 local ok, local_config = pcall(dofile, wezterm.config_dir .. "/wezterm.local.lua")
 if ok and type(local_config) == "function" then
-	local overrides = local_config(config, wezterm) or {}
-	if overrides.font_names then
-		font_names = overrides.font_names
-	end
-	if overrides.font_array then
-		font_array = overrides.font_array
-	end
-	if overrides.nvim_font_size then
-		nvim_font_size = overrides.nvim_font_size
-	end
-end
-
-local font_index = 1
-if #font_array > 0 then
-	config.font = font_array[font_index]
+	local_config(config, wezterm)
 end
 
 config.color_scheme = "tokyonight_night"
--- local custom_theme, theme = pcall(require, "theme")
--- if custom_theme then
--- 	for k, v in pairs(theme) do
--- 		config[k] = v
--- 	end
--- end
 
 config.hide_tab_bar_if_only_one_tab = true
 config.tab_bar_at_bottom = true
@@ -227,28 +204,8 @@ config.keys = {
 			window:set_config_overrides(overrides)
 		end),
 	},
-	{
-		key = "p",
-		mods = "CMD",
-		action = wezterm.action_callback(function(window, pane)
-			if #font_array < 2 then
-				return
-			end
-			font_index = font_index % #font_array + 1
-
-			local overrides = window:get_config_overrides() or {}
-			overrides.font = font_array[font_index]
-			window:set_config_overrides(overrides)
-			window:toast_notification("Wezterm", "Font: " .. font_names[font_index], nil, 4000)
-		end),
-	},
 	{ key = "Enter", mods = "SHIFT", action = wezterm.action({ SendString = "\x1b\r" }) },
 }
-
--- config.default_gui_startup_args = {
---   'connect',
---   'localhost'
--- }
 
 config.window_padding = {
 	bottom = 0,
@@ -256,20 +213,5 @@ config.window_padding = {
 	left = 0,
 	right = 0,
 }
-
-config.use_fancy_tab_bar = false
-
--- Create custom event for Neovim detection
-wezterm.on("user-var-changed", function(window, pane, name, value)
-	if name == "IS_NVIM" and nvim_font_size then
-		local overrides = window:get_config_overrides() or {}
-		if value == "true" then
-			overrides.font_size = nvim_font_size
-		else
-			overrides.font_size = config.font_size
-		end
-		window:set_config_overrides(overrides)
-	end
-end)
 
 return config
