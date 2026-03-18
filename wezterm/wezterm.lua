@@ -19,9 +19,15 @@ local nvim_font_size = nil
 local ok, local_config = pcall(dofile, wezterm.config_dir .. "/wezterm.local.lua")
 if ok and type(local_config) == "function" then
 	local overrides = local_config(config, wezterm) or {}
-	if overrides.font_names then font_names = overrides.font_names end
-	if overrides.font_array then font_array = overrides.font_array end
-	if overrides.nvim_font_size then nvim_font_size = overrides.nvim_font_size end
+	if overrides.font_names then
+		font_names = overrides.font_names
+	end
+	if overrides.font_array then
+		font_array = overrides.font_array
+	end
+	if overrides.nvim_font_size then
+		nvim_font_size = overrides.nvim_font_size
+	end
 end
 
 local font_index = 1
@@ -225,7 +231,9 @@ config.keys = {
 		key = "p",
 		mods = "CMD",
 		action = wezterm.action_callback(function(window, pane)
-			if #font_array < 2 then return end
+			if #font_array < 2 then
+				return
+			end
 			font_index = font_index % #font_array + 1
 
 			local overrides = window:get_config_overrides() or {}
