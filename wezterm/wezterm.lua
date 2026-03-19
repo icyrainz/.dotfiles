@@ -10,7 +10,7 @@ end
 config.max_fps = 120
 config.animation_fps = 120
 -- Use local fonts dir to skip slow system font scanning (9s → 0.1s)
--- Run: ln -s ~/Library/Fonts/{Iosevka.ttc,SymbolsNerdFontMono-Regular.ttf} ~/.config/wezterm/fonts/
+-- Run: setup-fonts.sh (reads from fonts.list)
 local fonts_dir = wezterm.config_dir .. "/fonts"
 local f = io.open(fonts_dir, "r")
 if f then

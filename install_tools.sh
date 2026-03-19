@@ -127,11 +127,7 @@ pkg zoxide       brew=zoxide     pacman=zoxide     apt=zoxide
 pkg zsh          brew=zsh        pacman=zsh        apt=zsh
 
 # --- Fonts ---
-if [ "$PKG_MGR" = "brew" ]; then
-  brew install font-iosevka font-symbols-only-nerd-font
-else
-  manual_installs+=("nerd-font -> https://www.nerdfonts.com/font-downloads")
-fi
+bash "$SCRIPT_DIR/fonts/install.sh"
 
 # --- Summary of tools needing manual install ---
 if [ ${#manual_installs[@]} -gt 0 ]; then
