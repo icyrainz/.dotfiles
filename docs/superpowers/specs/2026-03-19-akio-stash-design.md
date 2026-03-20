@@ -20,7 +20,7 @@ New LXC container on akio-lab running [Stash](https://stashapp.cc) — a self-ho
 | Node | akio-lab |
 | Template | Clone from 1000 (Docker template, full copy) |
 | Storage | `local-lvm-2` |
-| Disk | 8GB |
+| Disk | 16GB (Docker layers + SQLite DB + cache headroom) |
 | Memory | 2048 MB |
 | Swap | 1024 MB |
 | Cores | 4 |
@@ -67,8 +67,8 @@ services:
 
 | Path (container) | Host path | Storage | Purpose |
 |-------------------|-----------|---------|---------|
-| `/root/.stash` | `./config` | Local 8GB disk | SQLite DB, scrapers, plugins, config |
-| `/cache` | `./cache` | Local 8GB disk | Live transcode temp files |
+| `/root/.stash` | `./config` | Local 16GB disk | SQLite DB, scrapers, plugins, config |
+| `/cache` | `./cache` | Local 16GB disk | Live transcode temp files |
 | `/data` | `/mnt/pool-terra/stash/data` | pool-terra NFS (22TB) | Media collection |
 | `/metadata` | `/mnt/pool-terra/stash/metadata` | pool-terra NFS | Database metadata exports |
 | `/generated` | `/mnt/pool-terra/stash/generated` | pool-terra NFS | Previews, thumbnails, sprites, transcodes |
@@ -83,12 +83,26 @@ services:
 | Pi-hole DNS | `akio-stash` -> LXC IP |
 | DHCP | User reserves static lease on router for LXC MAC -> IP |
 
+## Pre-Setup
+
+Create NFS directories on pool-terra before first run (avoids root_squash issues):
+
+```bash
+mkdir -p /mnt/pool-terra/stash/{data,metadata,generated,blobs}
+```
+
 ## Post-Setup
 
 1. Access Stash at `stash.lan` to complete first-run setup wizard
 2. Configure media library path (`/data`) in Stash settings
-3. Run initial scan to index the collection
-4. Optionally enable preview/thumbnail generation (CPU-based, may take time for large libraries)
+3. Set blobs storage to filesystem with path `/blobs` (default stores blobs in SQLite DB, which would bloat the local disk):
+   - In Stash settings, or edit `/root/.stash/config.yml`:
+     ```yaml
+     blobs_path: /blobs
+     blobs_storage: FILESYSTEM
+     ```
+4. Run initial scan to index the collection
+5. Optionally enable preview/thumbnail generation (CPU-based, may take time for large libraries)
 
 ## Future Upgrades
 
