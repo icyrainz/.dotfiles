@@ -2,7 +2,7 @@
 name: use-commando
 enabled: true
 event: bash
-pattern: ssh\s+.*\b(akio-lab|akio-garage|akio-fractal)\b
+pattern: ^\s*ssh\s+.*\b(akio-lab|akio-garage|akio-fractal)\b
 action: block
 ---
 
