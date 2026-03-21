@@ -34,18 +34,26 @@
     "messages_half_page_down": "alt+d"
   },
   "mcp": {
-    "n8n-mcp": {
+    "deepwiki": {
+      "type": "remote",
+      "enabled": true,
+      "url": "https://mcp.deepwiki.com/mcp"
+    },
+    "lightpanda": {
       "type": "local",
-      "enabled": false,
+      "enabled": true,
       "command": [
-        "npx",
-        "-y",
-        "supergateway",
-        "--streamableHttp",
-        "http://n8n.lan/mcp-server/http",
-        "--header",
-        "authorization:Bearer {env:N8N_MCP_TOKEN}"
+        "/Users/tuephan/.local/bin/lightpanda",
+        "mcp"
       ]
+    },
+    "commando": {
+      "type": "remote",
+      "enabled": true,
+      "url": "http://commando.lan/mcp",
+      "headers": {
+        "Authorization": "Bearer {env:COMMANDO_API_KEY}"
+      }
     },
     "windmill-mcp": {
       "type": "remote",
