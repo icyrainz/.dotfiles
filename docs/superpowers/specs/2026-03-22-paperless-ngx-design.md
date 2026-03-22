@@ -8,28 +8,43 @@ Deploy Paperless-ngx as a personal document archive (bills, receipts, tax docs, 
 
 | Setting | Value |
 |---------|-------|
-| VMID | 136 |
+| VMID | 137 |
 | Hostname | `akio-paperless` |
 | Template | 1000 (akio-lxc-template) |
 | Memory | 4096 MB |
 | Swap | 512 MB |
 | Cores | 2 |
-| Root disk | 8 GB (default — OS + Docker only) |
+| Root disk | 16 GB (OS + Docker + search index) |
 | Bind mount | host `/mnt/pool-terra/paperless` → LXC `/mnt/pool-terra` |
 | Node | akio-lab |
 
-The template includes Docker, nesting, and AppArmor unconfined. No GPU passthrough or Tailscale needed.
+VMID 136 is reserved by akio-obs. The template includes Docker, nesting, and AppArmor unconfined. No GPU passthrough or Tailscale needed.
+
+## Pre-Setup
+
+Create NFS directories before starting containers (Docker bind mounts won't auto-create on NFS with `root_squash`):
+
+```bash
+mkdir -p /mnt/pool-terra/paperless/{consume,media,export}
+chown -R 1000:1000 /mnt/pool-terra/paperless
+```
 
 ## Docker Stack
 
-Three containers following the `~/docker-app/docker-compose.yml` convention:
+Three containers following the `~/docker-app/docker-compose.yml` convention. All services use `restart: unless-stopped`.
 
 ### paperless-ngx (webserver)
 
 - Image: `ghcr.io/paperless-ngx/paperless-ngx:latest`
 - Port: 8000
-- OCR: built-in Tesseract (English)
+- OCR: built-in Tesseract (`PAPERLESS_OCR_LANGUAGE=eng`)
 - No Tika/Gotenberg sidecars (not needed for basic personal docs)
+- Key environment variables:
+  - `PAPERLESS_URL=http://paperless.lan`
+  - `PAPERLESS_SECRET_KEY=<generated once, persisted>`
+  - `PAPERLESS_REDIS=redis://broker:6379`
+  - `PAPERLESS_DBHOST=db`
+  - `USERMAP_UID=1000` / `USERMAP_GID=1000`
 
 ### PostgreSQL
 
@@ -49,10 +64,12 @@ Three containers following the `~/docker-app/docker-compose.yml` convention:
 |---------------|-----------|---------|---------|
 | Postgres PGDATA | `./data/db` | Local LXC | Database |
 | Redis `/data` | `./data/redis` | Local LXC | Task broker AOF |
+| Paperless `/usr/src/paperless/data` | `./data/paperless` | Local LXC | Search index + classification model (NFS-unsafe due to file locking) |
 | `/usr/src/paperless/consume` | `/mnt/pool-terra/consume` | NFS (pool-terra) | Drop documents here for ingestion |
 | `/usr/src/paperless/media` | `/mnt/pool-terra/media` | NFS (pool-terra) | Archived originals + thumbnails |
-| `/usr/src/paperless/data` | `/mnt/pool-terra/data` | NFS (pool-terra) | Search index + classification model |
 | `/usr/src/paperless/export` | `/mnt/pool-terra/export` | NFS (pool-terra) | Backup exports |
+
+Search index is kept on local disk because it relies on file locking that NFS does not reliably support. The index is regenerable from the database and media files.
 
 ## Networking
 
@@ -71,5 +88,7 @@ Three containers following the `~/docker-app/docker-compose.yml` convention:
 - **Paperless-ngx over alternatives** (Papra, Papermerge, Docspell): best OCR, auto-tagging, community, and maturity for personal doc archiving
 - **pool-terra for documents**: consistent with other media services (pinchflat, stash) already using this NFS share
 - **No Tika/Gotenberg**: user's use case is personal documents (scanned PDFs, images), not Office files
-- **8 GB root disk**: only OS + Docker layers; all document data lives on pool-terra
+- **16 GB root disk**: accommodates OS, Docker layers, search index, and classification model (can grow to several hundred MB for large collections)
 - **postgres:16-alpine**: follows existing convention (nocodb, litellm use postgres:16/18-alpine)
+- **Search index on local disk**: NFS does not reliably support `fcntl`/`flock` locking needed by the search index; index is regenerable from DB + media
+- **Export on same NFS as media**: acceptable since pool-terra is SnapRAID-protected on akio-omv
