@@ -9,3 +9,5 @@ When installing a new CLI tool, read `README.md` for the `install_tools.sh` conv
 "Fish extra" refers to `~/.config/fish/include/ignore/extra.fish` — a git-ignored file containing personal secrets, credentials, and machine-specific config (e.g., NPM API creds, API keys).
 
 `claude/HUMAN.md` contains personal context about the user. Use the `/human` skill for reading, updating, and syncing it.
+
+When deep-researching a GitHub repo (reading multiple files, tracing code paths, understanding architecture), clone it to `/tmp` and explore locally instead of making repeated `gh api` calls. Local reads are faster, cheaper on tokens, and don't risk rate limits.

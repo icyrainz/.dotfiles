@@ -20,10 +20,12 @@
   ],
   "agent": {
     "explore": {
-      "disable": true
+      "mode": "subagent",
+      "description": "Explorer agent for analyzing code and writing documentation"
     },
     "general": {
-      "disable": true
+      "mode": "subagent",
+      "description": "General purpose subagent for various tasks"
     }
   },
   "keybinds": {
