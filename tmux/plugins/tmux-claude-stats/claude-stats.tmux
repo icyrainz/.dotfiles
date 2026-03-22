@@ -36,8 +36,10 @@ if [ "$start_daemon" = true ]; then
 fi
 
 # Register #{claude_stats} interpolation via string substitution
+# Escape % as %% so tmux's strftime pass doesn't eat our template variables
+escaped_format="${format//%/%%}"
 placeholder="\#{claude_stats}"
-replacement="#($CURRENT_DIR/scripts/status.sh '${format}' ${warn} ${crit})"
+replacement="#($CURRENT_DIR/scripts/status.sh '${escaped_format}' ${warn} ${crit})"
 
 for option in "status-left" "status-right"; do
     option_value=$(get_tmux_option "$option" "")
