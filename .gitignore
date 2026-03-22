@@ -14,8 +14,9 @@ claude/HUMAN.md
 docs/plans/
 .playwright-mcp/
 
-# Tmux
-tmux/plugins
+# Tmux — third-party plugins managed by TPM are gitignored; first-party plugins are tracked
+tmux/plugins/*
+!tmux/plugins/tmux-claude-stats
 tmux/resurrect
 tmux/harpoon-sessions
 
