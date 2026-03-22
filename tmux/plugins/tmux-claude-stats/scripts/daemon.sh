@@ -22,6 +22,9 @@ fetch_usage() {
         -H "User-Agent: claude-code/2.1" \
         "https://api.anthropic.com/api/oauth/usage" 2>/dev/null) || return 1
 
+    # Only update cache on successful API response (has five_hour field)
+    printf '%s' "$response" | jq -e '.five_hour' > /dev/null 2>&1 || return 1
+
     now=$(date +%s)
 
     printf '%s' "$response" | jq --argjson now "$now" '{
