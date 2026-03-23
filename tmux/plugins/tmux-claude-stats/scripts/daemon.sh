@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Claude Code rate limit daemon — fetches OAuth usage API and writes cache
 
-INTERVAL="${1:-60}"
+INTERVAL="${1:-300}"
 CACHE_FILE="/tmp/claude-stats.json"
 CACHE_TMP="/tmp/claude-stats.json.tmp"
 PIDFILE="/tmp/claude-stats.pid"

@@ -15,7 +15,7 @@ get_tmux_option() {
 
 # Read config
 format=$(get_tmux_option "@claude-stats-format" '%5h{60,90}✦')
-interval=$(get_tmux_option "@claude-stats-interval" "60")
+interval=$(get_tmux_option "@claude-stats-interval" "300")
 warn=$(get_tmux_option "@claude-stats-warn" "60")
 crit=$(get_tmux_option "@claude-stats-crit" "90")
 
