@@ -11,7 +11,14 @@ echo $$ > "$PIDFILE"
 fetch_usage() {
     local creds token response now
 
-    creds=$(security find-generic-password -s "Claude Code-credentials" -w 2>/dev/null) || return 1
+    # macOS: keychain; Linux: flat credentials file
+    if command -v security &>/dev/null; then
+        creds=$(security find-generic-password -s "Claude Code-credentials" -w 2>/dev/null) || return 1
+    elif [ -f "$HOME/.claude/.credentials.json" ]; then
+        creds=$(cat "$HOME/.claude/.credentials.json" 2>/dev/null) || return 1
+    else
+        return 1
+    fi
 
     token=$(printf '%s' "$creds" | jq -r '.claudeAiOauth.accessToken // empty' 2>/dev/null)
     [ -z "$token" ] && return 1
