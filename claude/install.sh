@@ -12,7 +12,6 @@ fi
 
 # --- Register third-party marketplaces ---
 MARKETPLACES=(
-  obra/superpowers-marketplace
 )
 
 for repo in "${MARKETPLACES[@]}"; do

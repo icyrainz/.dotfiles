@@ -44,6 +44,8 @@
     ~/.config/opencode/opencode.json:
       path: opencode/opencode.json
       if: '[ -f ~/.akio-personal ]'
+    ~/.claude/CLAUDE.md:
+      path: claude/CLAUDE.md
     ~/.claude/settings.json:
       path: claude/settings.json
     ~/.claude/statusline-command.sh:
