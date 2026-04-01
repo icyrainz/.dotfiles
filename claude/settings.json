@@ -154,9 +154,17 @@
     "claude-code-setup@claude-plugins-official": true,
     "code-review@claude-plugins-official": true,
     "pr-review-toolkit@claude-plugins-official": true,
-    "code-simplifier@claude-plugins-official": true
+    "code-simplifier@claude-plugins-official": true,
+    "context-mode@context-mode": true
   },
-  "extraKnownMarketplaces": {},
+  "extraKnownMarketplaces": {
+    "context-mode": {
+      "source": {
+        "source": "github",
+        "repo": "mksglu/context-mode"
+      }
+    }
+  },
   "alwaysThinkingEnabled": true,
   "effortLevel": "high",
   "skipDangerousModePermissionPrompt": true
