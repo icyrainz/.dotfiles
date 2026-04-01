@@ -109,7 +109,7 @@ pkg htop         brew=htop       pacman=htop       apt=htop
 pkg jq           brew=jq         pacman=jq         apt=jq
 pkg lazygit      brew=lazygit    pacman=lazygit    script="bash $SCRIPT_DIR/lazygit/install.sh"
 pkg lsd          brew=lsd        pacman=lsd        apt=lsd
-pkg mc           brew=minio/stable/mc  pacman=minio-client  script="curl -fsSL https://dl.min.io/client/mc/release/linux-amd64/mc -o /usr/local/bin/mc && chmod +x /usr/local/bin/mc"
+pkg mc           brew=minio/stable/mc  pacman=minio-client  script="bash $SCRIPT_DIR/minioclient/install.sh"
 
 pkg neovim       brew=neovim     pacman=neovim     script="bash $SCRIPT_DIR/neovim/install.sh"
 
@@ -121,7 +121,6 @@ pkg sesh         brew=sesh       script="bash $SCRIPT_DIR/sesh/install.sh"
 pkg tmux         brew=tmux       pacman=tmux       apt=tmux
 pkg tree         brew=tree       pacman=tree       apt=tree
 pkg wget         brew=wget       pacman=wget       apt=wget
-pkg whisper-cpp  brew=whisper-cpp
 pkg yazi         brew=yazi       pacman=yazi       script="bash $SCRIPT_DIR/yazi/install.sh"
 pkg zoxide       brew=zoxide     pacman=zoxide     apt=zoxide
 pkg zsh          brew=zsh        pacman=zsh        apt=zsh
