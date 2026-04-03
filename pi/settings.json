@@ -4,5 +4,6 @@
     "local/*"
   ],
   "defaultProvider": "litellm",
-  "defaultModel": "local/qwen3.5:27b"
+  "defaultModel": "local/qwen3.5:27b",
+  "defaultThinkingLevel": "medium"
 }

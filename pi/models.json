@@ -3,14 +3,26 @@
     "litellm": {
       "baseUrl": "http://litellm.lan/v1",
       "api": "openai-completions",
-      "apiKey": "${LITELLM_API_KEY}",
+      "apiKey": "LITELLM_API_KEY",
       "compat": {
         "supportsDeveloperRole": false,
-        "supportsReasoningEffort": false
+        "supportsReasoningEffort": false,
+        "thinkingFormat": "qwen"
       },
       "models": [
-        { "id": "local/qwen3.5:9b", "name": "Qwen 3.5 9B (Local)" },
-        { "id": "local/qwen3.5:27b", "name": "Qwen 3.5 27B (Local)" }
+        {
+          "id": "local/qwen3.5:9b",
+          "reasoning": true,
+          "contextWindow": 65536,
+          "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 }
+        },
+        {
+          "id": "local/qwen3.5:27b",
+          "reasoning": true,
+          "contextWindow": 131072,
+          "input": ["text", "image"],
+          "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 }
+        }
       ]
     }
   }
