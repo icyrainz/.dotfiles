@@ -1,0 +1,8 @@
+{
+  "lastChangelogVersion": "0.65.0",
+  "enabledModels": [
+    "local/*"
+  ],
+  "defaultProvider": "litellm",
+  "defaultModel": "local/qwen3.5:27b"
+}

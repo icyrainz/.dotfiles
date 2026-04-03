@@ -56,6 +56,10 @@
       path: claude/hooks.d
     ~/.claude/hooks/peon-ping/config.json:
       path: peon-ping/config.json
+    ~/.pi/agent/settings.json:
+      path: pi/settings.json
+    ~/.pi/agent/models.json:
+      path: pi/models.json
     ~/.openpeon/config.json:
       path: peon-ping/config.json
     ~/.config/opencode/peon-ping/config.json:

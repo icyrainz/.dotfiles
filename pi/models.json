@@ -1,0 +1,17 @@
+{
+  "providers": {
+    "litellm": {
+      "baseUrl": "http://litellm.lan/v1",
+      "api": "openai-completions",
+      "apiKey": "${LITELLM_API_KEY}",
+      "compat": {
+        "supportsDeveloperRole": false,
+        "supportsReasoningEffort": false
+      },
+      "models": [
+        { "id": "local/qwen3.5:9b", "name": "Qwen 3.5 9B (Local)" },
+        { "id": "local/qwen3.5:27b", "name": "Qwen 3.5 27B (Local)" }
+      ]
+    }
+  }
+}
