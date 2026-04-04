@@ -1,9 +1,12 @@
 {
   "lastChangelogVersion": "0.65.0",
-  "enabledModels": ["local/*"],
+  "enabledModels": [
+    "local/*"
+  ],
   "defaultProvider": "litellm",
   "defaultModel": "local/qwen3.5:27b",
   "defaultThinkingLevel": "medium",
-  "skills": ["~/.claude/skills"]
+  "skills": [
+    "~/.claude/skills"
+  ]
 }
-
