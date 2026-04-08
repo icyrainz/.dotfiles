@@ -29,22 +29,34 @@ Format: `04✦⣿` — utilization number, icon, countdown character.
 
 ### Block phase (< 30 min remaining, 5 min per step)
 
+Uses evenly spaced vertical blocks — positions 1, 2, 4, 6, 8, 9 from the full `█ ▇ ▆ ▅ ▄ ▃ ▂ ▁` set (removing 3rd, 5th, 7th for visual distinctness):
+
 | Time remaining | Char |
 |---|---|
 | 25m – 30m | `█` |
 | 20m – 25m | `▇` |
-| 15m – 20m | `▆` |
-| 10m – 15m | `▄` |
-| 5m – 10m | `▂` |
-| 0 – 5m | `▁` |
+| 15m – 20m | `▅` |
+| 10m – 15m | `▃` |
+| 5m – 10m | `▁` |
+| 0 – 5m | `⠀` (empty) |
 
 The character-type switch (braille → block) itself signals you're in the final 30 minutes.
+
+## Architecture: Daemon vs Renderer Responsibilities
+
+The daemon (`daemon.sh`) owns all API-to-cache transformation. The renderer (`status.sh`) owns all cache-to-display transformation. No mixing.
+
+- **Daemon:** fetches raw API response, transforms data (rounds floats to ints, converts ISO 8601 to epoch seconds), writes cache JSON
+- **Cache:** stores only transformed data values — never display characters or formatting
+- **Renderer:** reads cache, computes time-dependent values (remaining seconds), maps to display characters, applies tmux color formatting
+
+Performance impact of render-time character selection is negligible (~1-2ms of integer arithmetic on top of existing ~10ms).
 
 ## Changes Required
 
 ### 1. daemon.sh — Cache reset time
 
-Add `five_hour_resets_at` to the cached JSON. Extract from the API response field `five_hour.resets_at` (ISO 8601 timestamp). Convert to epoch seconds for easy comparison in the status script.
+Add `five_hour_resets_at` to the cached JSON. Extract from the API response field `five_hour.resets_at` (ISO 8601 timestamp). Convert to epoch seconds during caching (consistent with how utilization floats are rounded to ints).
 
 ```json
 {
@@ -55,12 +67,14 @@ Add `five_hour_resets_at` to the cached JSON. Extract from the API response fiel
 }
 ```
 
+All values in the cache are daemon-transformed to their most useful numeric form. The renderer never parses raw API formats.
+
 ### 2. status.sh — New `%5r` template variable
 
-- Read `five_hour_resets_at` from cache
+- Read `five_hour_resets_at` from cache (epoch seconds)
 - Compute `remaining = resets_at - now` (seconds)
-- Convert remaining seconds to the appropriate braille or block character using the mapping table
-- If `resets_at` is missing or in the past, show the empty braille `⠀`
+- Map remaining seconds to the appropriate braille or block character using the mapping tables above
+- If `resets_at` is missing or in the past, show empty braille `⠀`
 - Apply color based on the current `five_hour` utilization value against the warn/crit thresholds (same logic as `%5h`). Below warn: default fg. At warn: `#e5c07b`. At crit: `#e06c75`.
 
 Add `%5r` to the template parser alongside the existing variables. The `%5r` variable does not accept inline `{warn,crit}` thresholds — it reads the `five_hour` value and applies the default warn/crit thresholds from the plugin config.
