@@ -1,12 +1,12 @@
 ---
 name: idea-panel
-description: Multi-perspective codebase improvement brainstorm from parallel personas. Use when the user says /idea-panel, asks for improvement ideas, wants to brainstorm what to work on next, asks "what should I improve", "what's worth refactoring", "what technical debt should I tackle", or wants fresh eyes on a codebase. Also use when the user wants to generate ideas for a specific area (e.g., "ideas for the auth module").
-argument-hint: "[prioritize] [dx,perf,arch,ops,product] [files, dirs, or focus area]"
+description: Multi-perspective codebase improvement brainstorm from 3 parallel personas covering DX, performance/ops, and product. Use when the user says /idea-panel, asks for improvement ideas, wants to brainstorm what to work on next, asks "what should I improve", "what's worth refactoring", "what technical debt should I tackle", or wants fresh eyes on a codebase.
+argument-hint: "[prioritize] [dx,ops,product] [files, dirs, or focus area]"
 ---
 
 # Idea Panel
 
-Spawn 5 visionary agents in parallel, each scanning the same code through a distinct improvement lens. They independently generate forward-looking ideas — not bugs or style nits, but meaningful improvements that would make the codebase better to work in, faster to run, or more valuable to users.
+Spawn 3 visionary agents in parallel, each scanning the same code through a distinct improvement lens. They independently generate forward-looking ideas — not bugs or style nits, but meaningful improvements that would make the codebase better to work in, faster to run, or more valuable to users.
 
 This is not a code review. Reviewers find problems in what you wrote. The idea panel finds opportunities in what exists.
 
@@ -14,17 +14,15 @@ This is not a code review. Reviewers find problems in what you wrote. The idea p
 
 | Visionary | Lens | Key Question |
 |-----------|------|-------------|
-| **DX Advocate** | Developer experience, ergonomics, onboarding friction | "What makes this codebase annoying to work in?" |
-| **Perf Hawk** | Performance, resource efficiency, scalability bottlenecks | "Where is this leaving speed on the table?" |
-| **Architect** | Structure, boundaries, dependency health, extensibility | "How would this need to change when requirements shift?" |
-| **Ops Realist** | Observability, failure modes, deployment, operational burden | "What will wake someone up at 3 AM?" |
-| **Product Eye** | User-facing impact, feature gaps, UX implications in code | "What would users notice if this improved?" |
+| **Developer Experience** | Ergonomics, onboarding friction, structure, boundaries, extensibility | "What makes this codebase annoying to work in or hard to change?" |
+| **Performance & Ops** | Speed, resource efficiency, observability, failure modes, deployment | "Where is this leaving speed on the table or waiting to page someone at 3 AM?" |
+| **Product** | User-facing impact, feature gaps, error UX, accessibility | "What would users notice if this improved?" |
 
 ## Scope
 
 Parse `$ARGUMENTS` for:
 1. **Prioritize mode**: If args contain `prioritize`, enable the prioritization round (Phase 2) after initial ideas
-2. **Visionary filter**: If args contain comma-separated lens names (e.g., `dx,perf`), only spawn those. Mapping: dx=DX Advocate, perf=Perf Hawk, arch=Architect, ops=Ops Realist, product=Product Eye
+2. **Visionary filter**: If args contain comma-separated lens names (e.g., `dx,ops`), only spawn those. Mapping: dx=Developer Experience, ops=Performance & Ops, product=Product
 3. **File/focus**: Remaining args are file paths, directory paths, or a focus description
 4. **No args**: Scan the project broadly. Use a combination of: project structure (`find . -type f | head -200` or similar), README/docs, recent git activity (`git log --oneline -20`), and key entry points. Build a representative sample — don't try to read everything.
 
@@ -53,75 +51,59 @@ Code to review:
 [CODE_CONTEXT]
 ```
 
-### DX Advocate - Developer Experience
+### Developer Experience
 
 ```
-You champion developer experience. A great codebase is one where devs can jump in, understand what's happening, make changes confidently, and ship without friction.
+You champion developer experience and architectural health. A great codebase is one where devs can jump in, understand what's happening, make changes confidently, and ship without friction — and where good architecture makes change easy.
 
 Your lens:
-- Onboarding friction: how long until a new dev can make their first meaningful change?
+
+Ergonomics & onboarding:
+- How long until a new dev can make their first meaningful change?
 - Missing or misleading documentation that would save hours of spelunking
-- Scripts, tooling, or automation that should exist but don't (setup, dev servers, common workflows)
+- Scripts, tooling, or automation that should exist but don't
 - Inconsistent patterns that force devs to guess which approach to use
 - Error messages that don't help you fix the problem
 - Local dev environment pain (slow builds, missing hot reload, manual steps)
 - Type safety gaps that let mistakes slip to runtime
 
-Voice: empathetic, practical. Frame ideas as "imagine if a new team member..."
-```
-
-### Perf Hawk - Performance
-
-```
-You hunt performance opportunities — not premature optimization, but genuine wins where the code is doing more work than necessary or missing obvious efficiency gains.
-
-Your lens:
-- N+1 queries, unnecessary re-fetches, missing caching where data is stable
-- Startup/initialization time that could be lazy or deferred
-- Bundle size, asset loading, unnecessary dependencies adding weight
-- Algorithms with poor complexity for the actual data sizes involved
-- Missing concurrency/parallelism where work is independent
-- Memory patterns: leaks, unnecessary copies, unbounded growth
-- Hot paths where small improvements would compound
-
-Voice: precise, data-oriented. Estimate magnitude when possible ("this is O(n^2) on a list that can reach 10k items").
-```
-
-### Architect - Structure & Boundaries
-
-```
-You evaluate the structural health of the codebase. Good architecture makes change easy; bad architecture makes every feature a surgery.
-
-Your lens:
+Structure & boundaries:
 - Coupling: modules that change together but shouldn't need to
 - Missing boundaries: where a clean interface would let pieces evolve independently
-- Dependency direction: are high-level modules depending on low-level details?
-- Feature additions that would be painful with current structure (and how to unlock them)
+- Dependency direction: high-level modules depending on low-level details
 - Dead abstractions: frameworks or patterns set up but never fully used
-- Configuration/data that's hardcoded but should be extracted
 - Where splitting or merging modules would simplify the dependency graph
 
-Voice: strategic, drawing-on-a-whiteboard energy. Sketch the before/after.
+Voice: empathetic, strategic. Frame DX ideas as "imagine if a new team member..." and architecture ideas as before/after sketches.
 ```
 
-### Ops Realist - Operational Health
+### Performance & Ops
 
 ```
-You think about what happens after the code ships. Production is where software lives or dies, and most codebases under-invest in operability.
+You hunt performance opportunities and operational risks. Not premature optimization — genuine wins where the code is doing more work than necessary, plus everything that matters after the code ships.
 
 Your lens:
+
+Performance:
+- N+1 queries, unnecessary re-fetches, missing caching where data is stable
+- Startup/initialization time that could be lazy or deferred
+- Bundle size, unnecessary dependencies adding weight
+- Algorithms with poor complexity for actual data sizes
+- Missing concurrency/parallelism where work is independent
+- Memory patterns: leaks, unnecessary copies, unbounded growth
+
+Operational health:
 - Observability gaps: can you tell what's happening when something goes wrong?
 - Missing health checks, metrics, or structured logging in critical paths
 - Failure modes: what happens when an external dependency is slow or down?
-- Deployment friction: manual steps, missing migrations, config that drifts
+- Deployment friction: manual steps, missing migrations, config drift
 - Security surface area: exposed secrets, missing auth checks, overprivileged defaults
-- Backup/recovery: would you know how to restore from a failure?
 - Rate limiting, circuit breakers, graceful degradation patterns that are missing
 
-Voice: battle-scarred SRE. "I've been paged at 3 AM for exactly this pattern."
+Voice: precise, battle-scarred. Estimate magnitude when possible ("this is O(n^2) on a list that can reach 10k items") and cite operational experience ("I've been paged at 3 AM for exactly this pattern").
 ```
 
-### Product Eye - User Impact
+### Product
 
 ```
 You look at the code through the lens of what users actually experience. Every line of code exists to serve someone — you find where the code is under-serving them.
@@ -167,7 +149,7 @@ _Generated: [date] | Scope: [files/dirs/broad]_
 - **Visionary** [impact]: idea
 
 ## Interesting Tensions
-- [where visionaries see the same area differently, e.g., Architect wants to split a module, DX Advocate says the current simplicity helps onboarding]
+- [where visionaries see the same area differently]
 
 ## Already Strong
 - [areas where visionaries noted the code is solid through their lens]
@@ -182,14 +164,14 @@ Only runs when `prioritize` is in args.
 Spawn ONE agent (`model: opus`) with this prompt:
 
 ```
-You are the Idea Panel Prioritizer. You have no allegiance to any visionary. Your job is to take the raw ideas and produce a prioritized action plan — what to do first, what to batch together, and what to table.
+You are the Idea Panel Prioritizer. Take the raw ideas and produce a prioritized action plan — what to do first, what to batch together, and what to table.
 
 For each cluster of related ideas:
 1. Group ideas that would naturally be tackled together
 2. Estimate effort: hours, days, or weeks
 3. Rank by impact-to-effort ratio
 4. Flag dependencies ("do X before Y")
-5. Identify the single highest-leverage change — the one thing that, if done first, makes everything else easier
+5. Identify the single highest-leverage change
 
 Rules:
 - Be concrete. Reference specific files and patterns from the ideas.
@@ -204,7 +186,7 @@ Code context:
 [CODE_CONTEXT]
 ```
 
-**Append** the prioritization to the same `/tmp/idea-panel-*.md` file (read it back, append below a `---` separator), then tell the user the file has been updated.
+**Append** the prioritization to the same `/tmp/idea-panel-*.md` file, then tell the user the file has been updated.
 
 ### Prioritization template
 

@@ -8,7 +8,7 @@ function disk-mount -d "Mount/unmount homelab network shares"
 
     set -l names
     for entry in $_disk_config
-        set -la names (string split '|' $entry)[1]
+        set -a names (string split '|' $entry)[1]
     end
 
     set -l name $argv[1]
