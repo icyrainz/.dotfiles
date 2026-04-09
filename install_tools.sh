@@ -114,7 +114,6 @@ pkg mc           brew=minio/stable/mc  pacman=minio-client  script="bash $SCRIPT
 pkg neovim       brew=neovim     pacman=neovim     script="bash $SCRIPT_DIR/neovim/install.sh"
 
 pkg ripgrep      brew=ripgrep    pacman=ripgrep    apt=ripgrep
-pkg rtk          brew=rtk        script="curl -fsSL https://raw.githubusercontent.com/rtk-ai/rtk/refs/heads/master/install.sh | sh"
 pkg sox          brew=sox
 pkg sccache      brew=sccache    apt=sccache
 pkg sesh         brew=sesh       script="bash $SCRIPT_DIR/sesh/install.sh"

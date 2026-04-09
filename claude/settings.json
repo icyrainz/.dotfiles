@@ -1,7 +1,7 @@
 {
   "permissions": {
     "allow": [],
-    "defaultMode": "bypassPermissions"
+    "defaultMode": "auto"
   },
   "hooks": {
     "SessionStart": [
@@ -121,51 +121,32 @@
         ]
       }
     ],
-    "PreToolUse": [
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "$HOME/.claude/hooks/rtk-rewrite.sh"
-          }
-        ]
-      }
-    ]
+    "PreToolUse": []
   },
   "statusLine": {
     "type": "command",
     "command": "bash $HOME/.claude/statusline-command.sh"
   },
   "enabledPlugins": {
-    "rust-analyzer-lsp@claude-plugins-official": true,
-    "pyright-lsp@claude-plugins-official": true,
-    "superpowers@claude-plugins-official": true,
-    "ralph-loop@claude-plugins-official": true,
-    "context7@claude-plugins-official": true,
-    "lua-lsp@claude-plugins-official": true,
-    "frontend-design@claude-plugins-official": true,
-    "typescript-lsp@claude-plugins-official": true,
-    "playwright@claude-plugins-official": false,
-    "hookify@claude-plugins-official": true,
-    "skill-creator@claude-plugins-official": true,
-    "claude-md-management@claude-plugins-official": true,
-    "claude-code-setup@claude-plugins-official": true,
-    "code-review@claude-plugins-official": true,
-    "pr-review-toolkit@claude-plugins-official": true,
-    "code-simplifier@claude-plugins-official": true,
-    "swift-lsp@claude-plugins-official": true,
-    "codex@openai-codex": true
+    "hi-git-conventions@captain401-claude": true,
+    "hi-pen-tools@captain401-claude": true,
+    "hi-registry-search@captain401-claude": true,
+    "hi-socratic@captain401-claude": true,
+    "hi-code-review@captain401-claude": true,
+    "hi-datadog-session-analyzer@captain401-claude": true,
+    "hi-debug-framework@captain401-claude": true,
+    "hi-pressure-test@captain401-claude": true
   },
   "extraKnownMarketplaces": {
-    "openai-codex": {
+    "captain401-claude": {
       "source": {
         "source": "github",
-        "repo": "openai/codex-plugin-cc"
+        "repo": "captain401/claude"
       }
     }
   },
   "alwaysThinkingEnabled": true,
   "effortLevel": "high",
-  "skipDangerousModePermissionPrompt": true
+  "skipDangerousModePermissionPrompt": true,
+  "skipAutoPermissionPrompt": true
 }
