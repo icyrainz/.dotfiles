@@ -27,7 +27,7 @@ abbr nv neovide
 abbr lg lazygit
 abbr lgit lazygit
 
-abbr c clear
+abbr c 'clear; and tmux clear-history 2>/dev/null'
 abbr src 'source ~/.config/fish/config.fish'
 
 abbr zd 'z dotfiles'

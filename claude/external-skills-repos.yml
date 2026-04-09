@@ -1,0 +1,16 @@
+- name: superpowers
+  url: https://github.com/obra/superpowers
+  skills:
+    - brainstorming
+    - systematic-debugging
+    - writing-plans
+    - verification-before-completion
+    - test-driven-development
+    - receiving-code-review
+    - requesting-code-review
+    - dispatching-parallel-agents
+    - executing-plans
+    - subagent-driven-development
+
+- name: revspec-py
+  url: https://github.com/icyrainz/revspec-py
