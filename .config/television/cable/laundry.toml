@@ -1,0 +1,34 @@
+[metadata]
+name = "laundry"
+description = "Task list — jump to Claude workspaces"
+
+[source]
+command = "laundry list --format tv"
+no_sort = true
+
+[preview]
+command = "laundry show {0}"
+
+[keybindings]
+enter = "confirm_selection"
+ctrl-x = "toggle_action_picker"
+
+[actions.open]
+description = "Open / jump to task"
+command = "laundry open {0}"
+mode = "fork"
+
+[actions.pause]
+description = "Pause task"
+command = "laundry pause {0}"
+mode = "fork"
+
+[actions.done]
+description = "Mark complete"
+command = "laundry done {0}"
+mode = "fork"
+
+[actions.cancel]
+description = "Cancel task"
+command = "laundry cancel {0}"
+mode = "fork"

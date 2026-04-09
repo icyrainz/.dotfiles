@@ -72,6 +72,12 @@
     ~/.config/ghostty/config:
       path: ghostty/config
       if: command -v ghostty > /dev/null
+    ~/.local/bin/laundry:
+      path: laundry/laundry.py
+    ~/.config/tmux/laundry-new.sh:
+      path: laundry/laundry-new.sh
+    ~/.config/television/cable/laundry.toml:
+      path: .config/television/cable/laundry.toml
     ~/.config/sesh/sesh.toml:
       path: sesh/sesh.toml
     ~/.config/lazygit/config.yml:
