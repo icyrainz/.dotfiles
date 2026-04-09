@@ -117,7 +117,7 @@ cancelled   → pending      laundry reopen <id>   preserves session ID + notes 
 
 ## CLI Interface
 
-Single Python file, no pip dependencies (stdlib only: `json`, `argparse`, `subprocess`, `pathlib`, `datetime`, `fcntl`).
+Single Python file, no pip dependencies (stdlib only: `json`, `argparse`, `subprocess`, `pathlib`, `datetime`, `fcntl`, `uuid`).
 
 ```bash
 # Create (programmatic — used by Claude for subtasks)
@@ -202,32 +202,31 @@ Claude instances create subtasks via `laundry add "subtask title" --parent <id>`
 
 If task is already `active` and `tmux_window_id` is valid: just switch to it (`tmux switch-client -t <window_id>`). No state change.
 
-If task is `pending` with no `claude_session_id` (brand new):
-1. Write task to JSON first (set `status: active`) — ensures the SessionStart hook can find it
-2. Determine tmux session from project path. Convention: session name = basename of project dir (matching existing sesh behavior). If session doesn't exist, create it via `tmux new-session -d -s <name> -c <project>`.
-3. Create a new window via `tmux new-window -t <session> -c <project> -n "L<id>" "laundry launch <id>"` — the `laundry launch` subcommand handles Claude invocation directly in Python (no `tmux send-keys`, no escaping issues)
-4. Capture the new window's `@id` via `tmux display-message -p '#{window_id}'` and update the task
-5. Switch to the window
-
-If task is `pending` with a `claude_session_id` (reopened) or `paused`:
-- Same as above but `laundry launch <id>` detects the existing session ID and uses `claude --resume <session_id>` instead.
+If task is `pending` or `paused`:
+1. Generate a `claude_session_id` (UUID4) if not already set, and write it to the task JSON
+2. Set `status: active` in JSON
+3. Determine tmux session from project path. Convention: session name = basename of project dir (matching existing sesh behavior). If session doesn't exist, create it via `tmux new-session -d -s <name> -c <project>`.
+4. Create a new window via `tmux new-window -t <session> -c <project> -n "L<id>" "laundry launch <id>"` — the `laundry launch` subcommand handles Claude invocation directly in Python (no `tmux send-keys`, no escaping issues)
+5. Capture the new window's `@id` via `tmux display-message -p '#{window_id}'` and update the task
+6. Switch to the window
 
 ### `laundry launch <id>` (internal subcommand)
 
 Executed as the tmux window command — runs inside the window, not via send-keys. This avoids all escaping issues since Python handles argument construction directly.
 
-1. Read task from JSON
+1. Read task from JSON (has `claude_session_id` already set by `laundry open`)
 2. Build the system prompt string (see Claude Integration below)
-3. If no `claude_session_id`: `os.execvp("claude", ["claude", "--append-system-prompt", system_prompt, "-n", f"L{task_id}", initial_prompt])`
-4. If has `claude_session_id`: `os.execvp("claude", ["claude", "--resume", session_id, "--append-system-prompt", system_prompt])`
+3. If fresh task (no prior conversation): `os.execvp("claude", ["claude", "--session-id", session_id, "--append-system-prompt", system_prompt, "-n", f"L{task_id}", initial_prompt])`
+4. If resuming (has prior conversation): `os.execvp("claude", ["claude", "--resume", session_id, "--append-system-prompt", system_prompt])`
+
+The `--session-id` flag lets us control the UUID — we generate it in Python and persist it in the task JSON before Claude starts. No hooks needed to capture it.
 
 Uses `os.execvp` to replace the Python process with Claude — clean process tree, no wrapper overhead.
 
 ### `laundry pause <id>`
 
 1. Read `tmux_window_id` from task
-2. Capture `claude_session_id` if not already stored (via SessionStart hook — see below)
-3. Kill the tmux window: `tmux kill-window -t <window_id>`
+2. Kill the tmux window: `tmux kill-window -t <window_id>`
 4. Clear `tmux_window_id` from task
 5. Status → `paused`
 
@@ -283,16 +282,9 @@ This is always passed — both for fresh launches and resumes. On resume, conver
 
 When Claude runs `laundry add "subtask" --parent <id>`, the new task is added with `parent_id` and status `pending`. It appears in the task list immediately. The user (or Claude) can `laundry open` it later, which spawns a separate tmux window + Claude instance.
 
-### Session ID capture
+### Session ID management
 
-A `SessionStart` hook captures the Claude session ID:
-1. Hook reads `TMUX_PANE` env var to get the current pane ID
-2. Derives the window ID from the pane: `tmux display-message -t $TMUX_PANE -p '#{window_id}'`
-3. Looks up the task by matching `tmux_window_id` in `tasks.json`
-4. If found, writes the session ID back: `laundry update <id> --claude-session <session_id>`
-5. If no match (non-laundry Claude instance): hook exits silently
-
-The session ID is available in the hook's stdin JSON payload (`session_id` field). The task's `tmux_window_id` is already written to JSON before Claude starts (step 1 of `laundry open`), so no race condition.
+The `claude_session_id` is a UUID4 generated by `laundry open` and stored in the task JSON *before* Claude launches. It is passed to Claude via `--session-id <uuid>` (fresh) or `--resume <uuid>` (resume). No hooks are needed — laundry owns the session ID end-to-end.
 
 ## Television Channel
 
@@ -372,11 +364,8 @@ When selecting a task with `enter`:
 ~/.dotfiles/
 ├── laundry/
 │   ├── laundry.py                  # the CLI (symlinked to ~/.local/bin/laundry)
-│   ├── laundry-new.sh              # interactive quick-add script (for prefix+F)
-│   └── laundry-session-hook.sh     # SessionStart hook for capturing session ID
-├── claude/hooks.d/SessionStart/
-│   └── laundry-session.sh          # symlink to above
-└── install.conf.yaml               # updated: symlink laundry.py, hook, tv channel
+│   └── laundry-new.sh              # interactive quick-add script (for prefix+F)
+└── install.conf.yaml               # updated: symlink laundry.py, tv channel
 ```
 
 The `laundry` command is symlinked to `~/.local/bin/laundry` via dotbot.
