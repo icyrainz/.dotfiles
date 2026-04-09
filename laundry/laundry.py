@@ -201,7 +201,7 @@ def cmd_list(args):
 
     if args.format == "tv":
         if not tasks:
-            print("-\t \tNo tasks yet — press prefix+A to add one\t\t")
+            print("No tasks yet")
             return
 
         DIM = "\033[2m"
