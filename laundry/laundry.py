@@ -200,16 +200,6 @@ def cmd_list(args):
         tasks = [t for t in tasks if t.get("parent_id") == args.parent]
 
     if args.format == "tv":
-        # For tv: also include today's completed/cancelled (dimmed at bottom)
-        today = datetime.now().strftime("%Y%m%d")
-        if not args.all and not args.status:
-            done_today = [
-                t for t in data["tasks"]
-                if t["status"] in ("completed", "cancelled")
-                and t.get("updated_at", "")[:10].replace("-", "").startswith(today)
-            ]
-            tasks = tasks + done_today
-
         if not tasks:
             print("-\t \tNo tasks yet — press prefix+A to add one\t\t")
             return

@@ -11,10 +11,7 @@ no_sort = true
 ansi = true
 
 [preview]
-command = [
-  "laundry show '{split:\t:0}'",                                             # task detail
-  "cat ~/.local/share/laundry/notes/$(laundry show '{split:\t:0}' --notes-file 2>/dev/null)",  # raw notes
-]
+command = "laundry show '{split:\t:0}'"
 
 [keybindings]
 enter = "actions:1-open"
