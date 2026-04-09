@@ -34,8 +34,8 @@ STATUS_ICONS = {
     "pending": "○",
     "active": "▶",
     "paused": "⏸",
-    "completed": "✓",
-    "cancelled": "✗",
+    "completed": "◉",
+    "cancelled": "◌",
 }
 
 
