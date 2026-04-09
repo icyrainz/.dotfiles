@@ -336,11 +336,12 @@ def cmd_open(args):
 
         # Determine tmux session
         project_path = Path(task["project"])
-        session_name = project_path.name
+        session_name = project_path.name.lstrip(".")  # tmux dislikes leading dots
         if not _tmux_session_exists(session_name):
-            subprocess.run([
-                "tmux", "new-session", "-d", "-s", session_name, "-c", str(project_path),
-            ])
+            subprocess.run(
+                ["tmux", "new-session", "-d", "-s", session_name, "-c", str(project_path)],
+                capture_output=True,
+            )
 
         # Create window with laundry launch as the command
         laundry_bin = Path(__file__).resolve()
