@@ -336,7 +336,7 @@ def cmd_open(args):
 
         # Determine tmux session
         project_path = Path(task["project"])
-        session_name = project_path.name.lstrip(".")  # tmux dislikes leading dots
+        session_name = project_path.name.replace(".", "_")  # tmux maps dots to underscores
         if not _tmux_session_exists(session_name):
             subprocess.run(
                 ["tmux", "new-session", "-d", "-s", session_name, "-c", str(project_path)],
