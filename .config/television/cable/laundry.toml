@@ -10,7 +10,7 @@ no_sort = true
 command = "laundry show '{split:\t:0}'"
 
 [keybindings]
-enter = "run:open"
+enter = "toggle_action_picker"
 ctrl-x = "toggle_action_picker"
 
 [actions.open]
