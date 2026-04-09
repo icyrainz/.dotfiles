@@ -3,14 +3,21 @@ name = "laundry"
 description = "Task list — jump to Claude workspaces"
 
 [source]
-command = "laundry list --format tv"
+command = [
+  "laundry list --format tv",          # active/pending/paused (default)
+  "laundry list --all --format tv",    # all tasks including completed/cancelled
+]
 no_sort = true
+ansi = true
 
 [preview]
-command = "laundry show '{split:\t:0}'"
+command = [
+  "laundry show '{split:\t:0}'",                                             # task detail
+  "cat ~/.local/share/laundry/notes/$(laundry show '{split:\t:0}' --notes-file 2>/dev/null)",  # raw notes
+]
 
 [keybindings]
-enter = "toggle_action_picker"
+enter = "actions:1-open"
 ctrl-x = "toggle_action_picker"
 
 [actions.1-open]

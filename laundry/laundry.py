@@ -214,6 +214,8 @@ def cmd_list(args):
             print("-\t \tNo tasks yet — press prefix+A to add one\t\t")
             return
 
+        DIM = "\033[2m"
+        RESET = "\033[0m"
         TITLE_WIDTH = 40
         for t in tasks:
             icon = STATUS_ICONS.get(t["status"], "?")
@@ -221,7 +223,10 @@ def cmd_list(args):
             title = title[:TITLE_WIDTH].ljust(TITLE_WIDTH)
             project = Path(t["project"]).name if t["project"] else ""
             jira = " ".join(t.get("links", {}).get("jira", []))
-            print(f"{t['id']}\t{icon}\t{title}\t{project}\t{jira}")
+            if t["status"] in ("completed", "cancelled"):
+                print(f"{t['id']}\t{DIM}{icon}\t{title}\t{project}\t{jira}{RESET}")
+            else:
+                print(f"{t['id']}\t{icon}\t{title}\t{project}\t{jira}")
     else:
         for t in tasks:
             icon = STATUS_ICONS.get(t["status"], "?")
@@ -237,6 +242,10 @@ def cmd_show(args):
     if not task:
         print(f"Task {args.id} not found", file=sys.stderr)
         sys.exit(1)
+
+    if args.notes_file:
+        print(NOTES_DIR / task["notes_file"])
+        return
 
     icon = STATUS_ICONS.get(task["status"], "?")
     title = task["title"] or "(untitled)"
@@ -570,6 +579,7 @@ def main():
     # show
     p_show = sub.add_parser("show", help="Show task detail")
     p_show.add_argument("id", help="Task ID")
+    p_show.add_argument("--notes-file", action="store_true", help="Print notes file path only")
 
     # update
     p_update = sub.add_parser("update", help="Update task metadata")
