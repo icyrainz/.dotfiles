@@ -1,18 +1,10 @@
 {
   "lastChangelogVersion": "0.66.0",
-  "enabledModels": [
-    "local/*",
-    "gpt-5.4",
-    "gpt-5.4-mini",
-    "gpt-5.3-codex"
-  ],
+  "enabledModels": ["local/*", "gpt-5.4", "gpt-5.4-mini", "gpt-5.3-codex"],
   "defaultProvider": "openai-codex",
   "defaultModel": "gpt-5.4",
   "defaultThinkingLevel": "high",
-  "skills": [
-    "~/.claude/skills"
-  ],
-  "packages": [
-    "npm:pi-interactive-shell"
-  ]
+  "skills": ["~/.claude/skills"],
+  "packages": ["npm:pi-interactive-shell"]
 }
+
