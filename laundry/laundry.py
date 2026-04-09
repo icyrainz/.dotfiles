@@ -200,15 +200,31 @@ def cmd_list(args):
         tasks = [t for t in tasks if t.get("parent_id") == args.parent]
 
     if args.format == "tv":
+        # For tv: also include today's completed/cancelled (dimmed at bottom)
+        today = datetime.now().strftime("%Y%m%d")
+        if not args.all and not args.status:
+            done_today = [
+                t for t in data["tasks"]
+                if t["status"] in ("completed", "cancelled")
+                and t.get("updated_at", "")[:10].replace("-", "").startswith(today)
+            ]
+            tasks = tasks + done_today
+
         if not tasks:
-            print("-\t \tNo tasks yet — press prefix+F to add one\t\t")
+            print("-\t \tNo tasks yet — press prefix+A to add one\t\t")
             return
+
+        DIM = "\033[2m"
+        RESET = "\033[0m"
         for t in tasks:
             icon = STATUS_ICONS.get(t["status"], "?")
             title = t["title"] or t.get("initial_prompt", "")[:60] or "(untitled)"
             project = Path(t["project"]).name if t["project"] else ""
             jira = " ".join(t.get("links", {}).get("jira", []))
-            print(f"{t['id']}\t{icon}\t{title}\t{project}\t{jira}")
+            if t["status"] in ("completed", "cancelled"):
+                print(f"{t['id']}\t{DIM}{icon}\t{title}\t{project}\t{jira}{RESET}")
+            else:
+                print(f"{t['id']}\t{icon}\t{title}\t{project}\t{jira}")
     else:
         for t in tasks:
             icon = STATUS_ICONS.get(t["status"], "?")
