@@ -206,17 +206,16 @@ def cmd_list(args):
 
         DIM = "\033[2m"
         RESET = "\033[0m"
-        TITLE_WIDTH = 40
+        PROJECT_WIDTH = 20
         for t in tasks:
             icon = STATUS_ICONS.get(t["status"], "?")
-            title = t["title"] or t.get("initial_prompt", "")[:60] or "(untitled)"
-            title = title[:TITLE_WIDTH].ljust(TITLE_WIDTH)
             project = Path(t["project"]).name if t["project"] else ""
-            jira = " ".join(t.get("links", {}).get("jira", []))
+            project = project[:PROJECT_WIDTH].ljust(PROJECT_WIDTH)
+            prompt = t["title"] or t.get("initial_prompt", "")[:80] or "(untitled)"
             if t["status"] in ("completed", "cancelled"):
-                print(f"{t['id']}\t{DIM}{icon}\t{title}\t{project}\t{jira}{RESET}")
+                print(f"{t['id']}\t{DIM}{icon}\t{project}\t{prompt}{RESET}")
             else:
-                print(f"{t['id']}\t{icon}\t{title}\t{project}\t{jira}")
+                print(f"{t['id']}\t{icon}\t{project}\t{prompt}")
     else:
         for t in tasks:
             icon = STATUS_ICONS.get(t["status"], "?")
