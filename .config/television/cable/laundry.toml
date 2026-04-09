@@ -11,7 +11,10 @@ no_sort = true
 ansi = true
 
 [preview]
-command = "laundry show '{split:\t:0}'"
+command = [
+  "laundry show '{split:\t:0}'",
+  "laundry pane '{split:\t:0}'",
+]
 
 [keybindings]
 enter = "actions:1-open"

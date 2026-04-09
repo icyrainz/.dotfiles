@@ -542,6 +542,28 @@ def cmd_gc(args):
             print("No orphaned tasks found")
 
 
+def cmd_pane(args):
+    """Capture the tmux pane content for a task's window."""
+    _ensure_dirs()
+    data = _load()
+    task = _find_task(data, args.id)
+    if not task:
+        print(f"Task {args.id} not found", file=sys.stderr)
+        sys.exit(1)
+
+    wid = task.get("tmux_window_id")
+    if not wid or not _tmux_window_exists(wid):
+        print(f"No active window for task {args.id}")
+        return
+
+    result = subprocess.run(
+        ["tmux", "capture-pane", "-t", wid, "-p", "-S", "-50"],
+        capture_output=True, text=True,
+    )
+    if result.stdout:
+        print(result.stdout, end="")
+
+
 # --- main ---
 
 
@@ -616,6 +638,10 @@ def main():
     # gc
     sub.add_parser("gc", help="Reconcile: pause tasks with missing tmux windows")
 
+    # pane
+    p_pane = sub.add_parser("pane", help="Capture tmux pane content for a task")
+    p_pane.add_argument("id", help="Task ID")
+
     # reset
     sub.add_parser("reset", help="Wipe all tasks and notes")
 
@@ -638,6 +664,7 @@ def main():
         "cancel": cmd_cancel,
         "reopen": cmd_reopen,
         "gc": cmd_gc,
+        "pane": cmd_pane,
         "reset": cmd_reset,
     }
     commands[args.command](args)
