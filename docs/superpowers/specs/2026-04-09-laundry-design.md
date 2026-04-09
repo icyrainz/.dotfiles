@@ -18,10 +18,10 @@ Tasks start vague, get refined through conversation with Claude, and can be brok
 
 ```
 ~/.local/share/laundry/
-├── tasks.json                          # structured index, sole source of truth
+├── tasks.json                                          # structured index, sole source of truth
 └── notes/
-    ├── 003-fix-auth-token-expiry.md    # freeform task log (mini PROGRESS.md)
-    └── 004-handle-refresh-tokens.md
+    ├── 20260409-143000-fix-auth-token-expiry.md        # freeform task log (mini PROGRESS.md)
+    └── 20260409-144500-handle-refresh-tokens.md
 ```
 
 ### Task schema (`tasks.json`)
@@ -29,34 +29,40 @@ Tasks start vague, get refined through conversation with Claude, and can be brok
 ```json
 {
   "version": 1,
-  "next_id": 4,
   "tasks": [
     {
-      "id": 3,
+      "id": "20260409-143000",
       "title": "Fix auth token expiry in provider-service",
-      "description": "Refresh tokens aren't being rotated when the upstream provider returns a 401. Investigate token_cache.py and the retry middleware.",
+      "description": "Refresh tokens aren't being rotated when the upstream provider returns a 401.",
       "status": "active",
       "parent_id": null,
       "project": "/Users/tue.phan/Code/provider-service",
+      "initial_prompt": "the token expiry is broken, look into it",
       "tmux_window_id": "@42",
       "claude_session_id": "abc-123-def",
       "links": {
         "prs": ["org/repo#42", "org/repo#45"],
         "jira": ["PROJ-123"]
       },
-      "notes_file": "003-fix-auth-token-expiry.md",
-      "created_at": "2026-04-09T10:00:00Z",
+      "notes_file": "20260409-143000-fix-auth-token-expiry.md",
+      "created_at": "2026-04-09T14:30:00Z",
       "updated_at": "2026-04-09T14:30:00Z"
     }
   ]
 }
 ```
 
+Key design decisions:
+- **ID is a datetime slug** (`YYYYMMDD-HHMMSS`) — no auto-increment counter to track. Unique at second resolution.
+- **title and description** are initially empty or auto-generated. The Claude instance managing the task updates them as it understands the work better.
+- **initial_prompt** stores the user's original task idea (provided during interactive creation). Used as the first user message when spawning Claude.
+- **links** contain only PRs and Jira tickets (structured, queryable). All other context goes in the notes file.
+
 Non-project tasks default to `~/.dotfiles` as project and land in the `dotfiles` tmux session.
 
 ### Notes file
 
-Freeform markdown per task. Claude writes findings, decisions, and progress here. The `laundry note` command appends timestamped entries. The file also serves as the tv preview content.
+Freeform markdown per task. Claude reads and writes this directly (like PROGRESS.md) — no CLI command needed to manipulate notes. The `--append-system-prompt` tells Claude where the file is. The file also serves as the tv preview content.
 
 ```markdown
 # Fix auth token expiry
@@ -79,55 +85,63 @@ completed   done. Window killed, session ended.
 cancelled   abandoned. Same cleanup as completed.
 ```
 
+### State-to-field mapping
+
+| State     | tmux_window_id | claude_session_id |
+|-----------|----------------|-------------------|
+| pending   | null           | null              |
+| active    | @42            | abc-123           |
+| paused    | null           | abc-123 (preserved for resume) |
+| completed | null           | abc-123 (preserved for reopen) |
+| cancelled | null           | abc-123 (preserved for reopen) |
+
 ### State transitions
 
 ```
-pending   → active       laundry open <id>     creates window + launches Claude
-pending   → cancelled    laundry cancel <id>
+pending     → active       laundry open <id>     creates window + launches Claude
+pending     → cancelled    laundry cancel <id>
 
-active    → paused       laundry pause <id>    kills window, saves session ID
-active    → completed    laundry done <id>     kills window
-active    → cancelled    laundry cancel <id>   kills window
+active      → paused       laundry pause <id>    kills window, saves session ID
+active      → completed    laundry done <id>     kills window
+active      → cancelled    laundry cancel <id>   kills window
 
-paused    → active       laundry open <id>     creates window + claude --resume
-paused    → cancelled    laundry cancel <id>
+paused      → active       laundry open <id>     creates window + claude --resume
+paused      → cancelled    laundry cancel <id>
+
+completed   → pending      laundry reopen <id>   preserves session ID + notes for resume
+cancelled   → pending      laundry reopen <id>   preserves session ID + notes for resume
 ```
-
-No backwards transitions. To reopen completed work, create a new task.
 
 ## CLI Interface
 
 Single Python file, no pip dependencies (stdlib only: `json`, `argparse`, `subprocess`, `pathlib`, `datetime`).
 
 ```bash
-# Create
-laundry add "Fix auth expiry" --project ~/Code/provider-service
-laundry add "Handle refresh tokens" --parent 3 --project ~/Code/provider-service
+# Create (programmatic — used by Claude for subtasks)
+laundry add "Handle refresh tokens" --parent 20260409-143000 --project ~/Code/provider-service
 
 # Lifecycle (triggers tmux/Claude actions)
-laundry open 3                      # pending/paused → active
-laundry pause 3                     # active → paused
-laundry done 3                      # active → completed
-laundry cancel 3                    # → cancelled
+laundry open 20260409-143000          # pending/paused → active (or jump if already active)
+laundry pause 20260409-143000         # active → paused
+laundry done 20260409-143000          # active → completed
+laundry cancel 20260409-143000        # → cancelled
+laundry reopen 20260409-143000        # completed/cancelled → pending
 
-# Update metadata (no state change)
-laundry update 3 --title "New title"
-laundry update 3 --description "More detail"
-laundry link 3 --pr org/repo#42
-laundry link 3 --jira PROJ-123
-laundry unlink 3 --pr org/repo#42
-
-# Notes
-laundry note 3 "Found root cause"   # appends timestamped line to notes md
-laundry note 3 --edit                # opens notes file in $EDITOR
+# Update metadata (no state change — used by Claude to refine task info)
+laundry update 20260409-143000 --title "New title"
+laundry update 20260409-143000 --description "More detail"
+laundry update 20260409-143000 --claude-session abc-123-def
+laundry link 20260409-143000 --pr org/repo#42
+laundry link 20260409-143000 --jira PROJ-123
+laundry unlink 20260409-143000 --pr org/repo#42
 
 # Query
-laundry list                         # pending + active (default)
-laundry list --all                   # everything including completed/cancelled
+laundry list                          # pending + active (default)
+laundry list --all                    # everything including completed/cancelled
 laundry list --status active
-laundry list --parent 3              # subtasks of task 3
-laundry list --format tv             # television source format
-laundry show 3                       # full detail (for tv preview)
+laundry list --parent 20260409-143000 # subtasks of a task
+laundry list --format tv              # television source format
+laundry show 20260409-143000          # full detail (for tv preview)
 ```
 
 ### Atomic writes
@@ -138,28 +152,51 @@ All mutations go through a single `_save()` function: write to `tasks.json.tmp`,
 
 Notes files use `<id>-<slugified-title>.md`. The slug is generated once at task creation (lowercase, hyphens, truncated to 50 chars). Stored in `notes_file` — title renames don't affect the filename.
 
+## Task Creation Flow
+
+### Interactive creation (`prefix+F`)
+
+`prefix+F` (capital F) opens an interactive quick-add flow in a tmux popup:
+
+1. **Prompt for initial task idea** — freeform text input (becomes the first Claude prompt)
+2. **Prompt for working directory** — fzf/tv picker from common dirs (sourced from zoxide `z --list` or sesh config). Default: current project dir.
+3. Task is created immediately with:
+   - `id`: current datetime slug
+   - `initial_prompt`: the user's text from step 1
+   - `title`: empty (Claude will set this)
+   - `project`: selected directory
+   - `status`: pending
+4. `laundry open <id>` is called automatically — spawns tmux window + Claude
+
+This is implemented as a small bash script (`laundry-new.sh`) that the tmux keybinding calls.
+
+### Programmatic creation (by Claude)
+
+Claude instances create subtasks via `laundry add "subtask title" --parent <id>`. These are added as `pending` and appear in the task list immediately.
+
 ## tmux Integration
 
 ### `laundry open <id>`
 
-If task is already `active` and `tmux_window_id` exists and is valid: just switch to it (`tmux switch-client -t <window_id>`). No state change.
+If task is already `active` and `tmux_window_id` is valid: just switch to it (`tmux switch-client -t <window_id>`). No state change.
 
-If task is `pending`:
+If task is `pending` with no `claude_session_id` (brand new):
 1. Determine tmux session from project path. Convention: session name = basename of project dir (matching existing sesh behavior). If session doesn't exist, create it via `tmux new-session -d -s <name> -c <project>`.
 2. Create a new window in that session: `tmux new-window -t <session> -c <project> -n "L<id>"`
 3. Capture the new window's `@id` via `tmux display-message -p '#{window_id}'`
 4. Store `tmux_window_id` in the task
-5. Build the initial Claude prompt, write to a temp file `/tmp/laundry-prompt-<id>.txt`
-6. Send `claude -n "L<id>" "$(cat /tmp/laundry-prompt-<id>.txt)" && rm /tmp/laundry-prompt-<id>.txt` to the window via `tmux send-keys`. The `-n` flag sets the session name for later resume.
+5. Write the system prompt to a temp file `/tmp/laundry-sysprompt-<id>.txt`
+6. Send `claude --append-system-prompt-file /tmp/laundry-sysprompt-<id>.txt -n "L<id>" "<initial_prompt>"` to the window via `tmux send-keys`
 7. Switch to the window
 8. Status → `active`
 
-If task is `paused`: same as above but step 6 uses `claude --resume <session_id>` instead of a fresh instance with initial prompt.
+If task is `pending` with a `claude_session_id` (reopened) or `paused`:
+- Same as above but step 6 uses `claude --resume <session_id> --append-system-prompt-file /tmp/laundry-sysprompt-<id>.txt` — no initial prompt, Claude resumes with full conversation history.
 
 ### `laundry pause <id>`
 
 1. Read `tmux_window_id` from task
-2. Capture `claude_session_id` if not already stored (parse from Claude's transcript path in `~/.claude/projects/`)
+2. Capture `claude_session_id` if not already stored (via SessionStart hook — see below)
 3. Kill the tmux window: `tmux kill-window -t <window_id>`
 4. Clear `tmux_window_id` from task
 5. Status → `paused`
@@ -167,39 +204,43 @@ If task is `paused`: same as above but step 6 uses `claude --resume <session_id>
 ### `laundry done <id>` / `laundry cancel <id>`
 
 1. Kill tmux window if it exists
-2. Clear `tmux_window_id` and `claude_session_id`
+2. Clear `tmux_window_id` (preserve `claude_session_id` for potential reopen)
 3. Status → `completed` / `cancelled`
+
+### `laundry reopen <id>`
+
+1. Status → `pending` (preserves `claude_session_id` and `notes_file`)
+2. Optionally auto-call `laundry open <id>` to immediately activate
 
 ### Window naming
 
-The tmux window name is set to `L<id>: <title>` (e.g., `L3: fix-auth-expiry`). The existing claude-name-watcher hook may override this — that's fine, it reflects what Claude is actually doing.
+The tmux window name is set to `L<id>` initially. The existing claude-name-watcher hook may override this as Claude works — that's fine, it reflects what Claude is actually doing.
 
 ## Claude Integration
 
-### Initial prompt
+### System prompt (via `--append-system-prompt`)
 
-When `laundry open` spawns Claude, it sends this as the initial prompt via `tmux send-keys`:
+When `laundry open` spawns Claude, it injects laundry context via `--append-system-prompt-file`:
 
 ```
-You are working on laundry task #<id>: "<title>"
-
-<description>
-
-<contents of notes file if it exists>
+You are working on laundry task #<id>.
+Notes file: ~/.local/share/laundry/notes/<notes_file>
+Read and update the notes file directly to track your progress.
 
 Manage this task with the `laundry` CLI:
-- `laundry note <id> "..."` — log progress to notes file
+- `laundry update <id> --title "..."` — set/update task title
+- `laundry update <id> --description "..."` — set/update task description
 - `laundry link <id> --pr owner/repo#N` — link a PR
 - `laundry link <id> --jira PROJ-N` — link a Jira ticket
 - `laundry add "subtask title" --parent <id>` — break work into subtasks
 - `laundry done <id>` — mark complete when finished
 ```
 
-The prompt is built by the Python CLI and properly escaped for tmux send-keys.
+This persists across the session in the system prompt, so Claude always knows its task context.
 
 ### Subtask creation
 
-When Claude runs `laundry add "subtask" --parent 3`, the new task is added with `parent_id: 3` and status `pending`. It appears in the task list immediately. The user (or Claude) can `laundry open` it later, which spawns a separate tmux window + Claude instance.
+When Claude runs `laundry add "subtask" --parent <id>`, the new task is added with `parent_id` and status `pending`. It appears in the task list immediately. The user (or Claude) can `laundry open` it later, which spawns a separate tmux window + Claude instance.
 
 ### Session ID capture
 
@@ -260,19 +301,20 @@ Status icons: `○` pending, `▶` active, `⏸` paused, `✓` completed, `✗` 
 
 Example:
 ```
-3	▶	Fix auth token expiry	provider-service	PROJ-123
-4	○	Handle refresh tokens	provider-service
-7	⏸	Update billing docs	dotfiles
+20260409-143000	▶	Fix auth token expiry	provider-service	PROJ-123
+20260409-144500	○	Handle refresh tokens	provider-service
+20260409-150000	⏸	Update billing docs	dotfiles
 ```
 
-### tmux keybinding
+### tmux keybindings
 
 ```bash
-# In keybind.conf — replaces current prefix+f (claude-picker)
-bind f display-popup -E -w 80% -h 80% "tv laundry"
+# In keybind.conf
+bind f display-popup -E -w 80% -h 80% "tv laundry"           # browse/jump to tasks
+bind F display-popup -E -w 60% -h 40% "laundry-new.sh"       # quick-add new task
 ```
 
-The current claude-picker (`prefix+f`) is replaced. If you still want pane-level Claude discovery, it can move to a different binding.
+`prefix+f` replaces the current claude-picker. `prefix+F` opens the interactive new-task flow.
 
 ### Jump behavior
 
@@ -286,14 +328,15 @@ When selecting a task with `enter`:
 ```
 ~/.dotfiles/
 ├── laundry/
-│   ├── laundry.py                  # the CLI (symlinked to PATH)
+│   ├── laundry.py                  # the CLI (symlinked to ~/.local/bin/laundry)
+│   ├── laundry-new.sh              # interactive quick-add script (for prefix+F)
 │   └── laundry-session-hook.sh     # SessionStart hook for capturing session ID
 ├── claude/hooks.d/SessionStart/
 │   └── laundry-session.sh          # symlink to above
 └── install.conf.yaml               # updated: symlink laundry.py, hook, tv channel
 ```
 
-The `laundry` command is symlinked to somewhere on PATH (e.g., `~/.local/bin/laundry`) via dotbot.
+The `laundry` command is symlinked to `~/.local/bin/laundry` via dotbot.
 
 ## Future Extensions (not in scope now)
 
