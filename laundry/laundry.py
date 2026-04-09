@@ -485,6 +485,27 @@ def cmd_reopen(args):
     print(f"Reopened {args.id}")
 
 
+def cmd_reset(args):
+    import shutil
+    _ensure_dirs()
+    with open(LOCK_FILE, "w") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        data = _load()
+
+        # Kill all active tmux windows
+        for task in data["tasks"]:
+            if task["status"] == "active":
+                _kill_task_window(task)
+
+        # Wipe everything
+        _save({"version": 1, "tasks": []})
+
+    # Remove all notes
+    shutil.rmtree(NOTES_DIR, ignore_errors=True)
+    NOTES_DIR.mkdir(parents=True, exist_ok=True)
+    print("All tasks wiped")
+
+
 def cmd_gc(args):
     _ensure_dirs()
     with open(LOCK_FILE, "w") as lock:
@@ -580,6 +601,9 @@ def main():
     # gc
     sub.add_parser("gc", help="Reconcile: pause tasks with missing tmux windows")
 
+    # reset
+    sub.add_parser("reset", help="Wipe all tasks and notes")
+
     args = parser.parse_args()
     if args.command is None:
         parser.print_help()
@@ -599,6 +623,7 @@ def main():
         "cancel": cmd_cancel,
         "reopen": cmd_reopen,
         "gc": cmd_gc,
+        "reset": cmd_reset,
     }
     commands[args.command](args)
 
