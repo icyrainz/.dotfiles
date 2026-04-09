@@ -214,9 +214,11 @@ def cmd_list(args):
             print("-\t \tNo tasks yet — press prefix+A to add one\t\t")
             return
 
+        TITLE_WIDTH = 40
         for t in tasks:
             icon = STATUS_ICONS.get(t["status"], "?")
             title = t["title"] or t.get("initial_prompt", "")[:60] or "(untitled)"
+            title = title[:TITLE_WIDTH].ljust(TITLE_WIDTH)
             project = Path(t["project"]).name if t["project"] else ""
             jira = " ".join(t.get("links", {}).get("jira", []))
             print(f"{t['id']}\t{icon}\t{title}\t{project}\t{jira}")
