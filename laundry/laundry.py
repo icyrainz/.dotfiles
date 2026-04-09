@@ -200,6 +200,9 @@ def cmd_list(args):
         tasks = [t for t in tasks if t.get("parent_id") == args.parent]
 
     if args.format == "tv":
+        if not tasks:
+            print("-\t \tNo tasks yet — press prefix+F to add one\t\t")
+            return
         for t in tasks:
             icon = STATUS_ICONS.get(t["status"], "?")
             title = t["title"] or t.get("initial_prompt", "")[:60] or "(untitled)"
