@@ -13,22 +13,22 @@ command = "laundry show '{split:\t:0}'"
 enter = "toggle_action_picker"
 ctrl-x = "toggle_action_picker"
 
-[actions.a-open]
+[actions.1-open]
 description = "Open / jump to task"
 command = "laundry open '{split:\t:0}'"
-mode = "fork"
+mode = "exit"
 
-[actions.b-pause]
+[actions.2-pause]
 description = "Pause task"
 command = "laundry pause '{split:\t:0}'"
-mode = "fork"
+mode = "exit"
 
-[actions.c-done]
+[actions.3-done]
 description = "Mark complete"
 command = "laundry done '{split:\t:0}'"
-mode = "fork"
+mode = "exit"
 
-[actions.d-cancel]
+[actions.4-cancel]
 description = "Cancel task"
 command = "laundry cancel '{split:\t:0}'"
-mode = "fork"
+mode = "exit"
