@@ -43,6 +43,7 @@ Non-laundry Claude instances still work via `prefix+c` — laundry is an opt-in 
       "initial_prompt": "the token expiry is broken, look into it",
       "tmux_window_id": "@42",
       "claude_session_id": "abc-123-def",
+      "launched": true,
       "links": {
         "prs": ["org/repo#42", "org/repo#45"],
         "jira": ["PROJ-123"]
@@ -59,6 +60,7 @@ Key design decisions:
 - **ID is a datetime slug** (`YYYYMMDD-HHMMSS`) — no auto-increment counter to track. On collision (two tasks in same second), retry with incremented second.
 - **title and description** are initially empty or auto-generated. The Claude instance managing the task updates them as it understands the work better.
 - **initial_prompt** stores the user's original task idea (provided during interactive creation). Used as the first user message when spawning Claude.
+- **launched** tracks whether Claude has been started for this task. `false` → use `--session-id` (fresh). `true` → use `--resume` (returning).
 - **links** contain only PRs and Jira tickets (structured, queryable). All other context goes in the notes file.
 
 Non-project tasks default to `~/.dotfiles` as project and land in the `dotfiles` tmux session.
