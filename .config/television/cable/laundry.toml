@@ -16,19 +16,19 @@ ctrl-x = "toggle_action_picker"
 [actions.1-open]
 description = "Open / jump to task"
 command = "laundry open '{split:\t:0}'"
-mode = "exit"
+mode = "execute"
 
 [actions.2-pause]
 description = "Pause task"
 command = "laundry pause '{split:\t:0}'"
-mode = "exit"
+mode = "execute"
 
 [actions.3-done]
 description = "Mark complete"
 command = "laundry done '{split:\t:0}'"
-mode = "exit"
+mode = "execute"
 
 [actions.4-cancel]
 description = "Cancel task"
 command = "laundry cancel '{split:\t:0}'"
-mode = "exit"
+mode = "execute"
