@@ -214,17 +214,12 @@ def cmd_list(args):
             print("-\t \tNo tasks yet — press prefix+A to add one\t\t")
             return
 
-        DIM = "\033[2m"
-        RESET = "\033[0m"
         for t in tasks:
             icon = STATUS_ICONS.get(t["status"], "?")
             title = t["title"] or t.get("initial_prompt", "")[:60] or "(untitled)"
             project = Path(t["project"]).name if t["project"] else ""
             jira = " ".join(t.get("links", {}).get("jira", []))
-            if t["status"] in ("completed", "cancelled"):
-                print(f"{t['id']}\t{DIM}{icon}\t{title}\t{project}\t{jira}{RESET}")
-            else:
-                print(f"{t['id']}\t{icon}\t{title}\t{project}\t{jira}")
+            print(f"{t['id']}\t{icon}\t{title}\t{project}\t{jira}")
     else:
         for t in tasks:
             icon = STATUS_ICONS.get(t["status"], "?")
