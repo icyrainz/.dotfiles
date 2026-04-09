@@ -60,6 +60,8 @@
       path: pi/settings.json
     ~/.pi/agent/models.json:
       path: pi/models.json
+    ~/.pi/agent/extensions:
+      path: pi/extensions
     ~/.openpeon/config.json:
       path: peon-ping/config.json
     ~/.config/opencode/peon-ping/config.json:
