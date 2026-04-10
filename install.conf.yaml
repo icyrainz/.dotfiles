@@ -77,7 +77,7 @@
     ~/.config/tmux/laundry-new.sh:
       path: laundry/laundry-new.sh
     ~/.config/television:
-      path: .config/television
+      path: television
     ~/.config/sesh/sesh.toml:
       path: sesh/sesh.toml
     ~/.config/lazygit/config.yml:
