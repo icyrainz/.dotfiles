@@ -1178,14 +1178,9 @@ def cmd_wall(args):
         has_color = False
         if curses.has_colors():
             curses.start_color()
-            try:
-                curses.use_default_colors()
-                bg = -1
-            except curses.error:
-                bg = curses.COLOR_BLACK
-            curses.init_pair(1, curses.COLOR_BLUE, bg)
-            curses.init_pair(2, curses.COLOR_WHITE, bg)
-            curses.init_pair(3, curses.COLOR_WHITE, bg)
+            curses.init_pair(1, curses.COLOR_BLUE, curses.COLOR_BLACK)
+            curses.init_pair(2, curses.COLOR_WHITE, curses.COLOR_BLACK)
+            curses.init_pair(3, curses.COLOR_WHITE, curses.COLOR_BLACK)
             has_color = True
 
         while True:
