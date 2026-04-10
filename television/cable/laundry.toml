@@ -11,7 +11,7 @@ no_sort = true
 ansi = true
 
 [preview]
-command = ["laundry show '{split:\t:0}'", "laundry pane '{split:\t:0}'"]
+command = ["laundry show '{split: :0}'", "laundry pane '{split: :0}'"]
 
 [keybindings]
 enter = "actions:1-open"
@@ -19,20 +19,17 @@ ctrl-x = "toggle_action_picker"
 
 [actions.1-open]
 description = "Open / jump to task"
-command = "laundry open '{split:\t:0}'"
+command = "laundry open '{split: :0}'"
 mode = "execute"
 
 [actions.2-pause]
 description = "Pause task"
-command = "laundry pause '{split:\t:0}'"
-mode = "execute"
+command = "laundry pause '{split: :0}'"
 
 [actions.3-done]
 description = "Mark complete"
-command = "laundry done '{split:\t:0}'"
-mode = "execute"
+command = "laundry done '{split: :0}'"
 
 [actions.4-cancel]
 description = "Cancel task"
-command = "laundry cancel '{split:\t:0}'"
-mode = "execute"
+command = "laundry cancel '{split: :0}'"

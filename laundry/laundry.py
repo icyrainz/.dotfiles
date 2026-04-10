@@ -80,6 +80,39 @@ def _generate_id(data):
     raise RuntimeError("Could not generate unique task ID")
 
 
+def _relative_time(iso_str):
+    """Convert ISO timestamp to relative time string like '2m ago', '3h ago'."""
+    try:
+        dt = datetime.strptime(iso_str, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
+        delta = datetime.now(timezone.utc) - dt
+        secs = int(delta.total_seconds())
+        if secs < 0:
+            return "just now"
+        if secs < 60:
+            return f"{secs}s ago"
+        mins = secs // 60
+        if mins < 60:
+            return f"{mins}m ago"
+        hours = mins // 60
+        if hours < 24:
+            return f"{hours}h ago"
+        days = hours // 24
+        if days < 30:
+            return f"{days}d ago"
+        months = days // 30
+        return f"{months}mo ago"
+    except (ValueError, TypeError):
+        return ""
+
+
+def _home_path(path_str):
+    """Replace $HOME prefix with ~ for display."""
+    home = str(Path.home())
+    if path_str and path_str.startswith(home):
+        return "~" + path_str[len(home):]
+    return path_str
+
+
 def _slugify(text, max_len=50):
     text = text.lower().strip()
     text = re.sub(r"[^a-z0-9\s-]", "", text)
@@ -121,6 +154,23 @@ def _tmux_all_window_ids():
         return set(result.stdout.splitlines())
     except FileNotFoundError:
         return set()
+
+
+def _tmux_window_names():
+    """Get a dict of window_id → window_name for all tmux windows."""
+    try:
+        result = subprocess.run(
+            ["tmux", "list-windows", "-a", "-F", "#{window_id}\t#{window_name}"],
+            capture_output=True, text=True,
+        )
+        names = {}
+        for line in result.stdout.splitlines():
+            parts = line.split("\t", 1)
+            if len(parts) == 2:
+                names[parts[0]] = parts[1]
+        return names
+    except FileNotFoundError:
+        return {}
 
 
 def _tmux_switch(window_id):
@@ -214,16 +264,14 @@ def _format_list(data, status_filter=None, show_all=False, parent=None, fmt=None
 
         DIM = "\033[2m"
         RESET = "\033[0m"
-        PROJECT_WIDTH = 20
         for t in tasks:
             icon = STATUS_ICONS.get(t["status"], "?")
-            project = Path(t["project"]).name if t["project"] else ""
-            project = project[:PROJECT_WIDTH].ljust(PROJECT_WIDTH)
-            prompt = t["title"] or t.get("initial_prompt", "")[:80] or "(untitled)"
+            project = (Path(t["project"]).name[:15] if t["project"] else "").ljust(15)
+            title = t["title"] or t.get("initial_prompt", "")[:40] or "(untitled)"
             if t["status"] in ("completed", "cancelled"):
-                out.write(f"{t['id']}\t{DIM}{icon}\t{project}\t{prompt}{RESET}\n")
+                out.write(f"{t['id']} {DIM}{icon} {project} {title}{RESET}\n")
             else:
-                out.write(f"{t['id']}\t{icon}\t{project}\t{prompt}\n")
+                out.write(f"{t['id']} {icon} {project} {title}\n")
     else:
         for t in tasks:
             icon = STATUS_ICONS.get(t["status"], "?")
@@ -245,9 +293,9 @@ def _format_show(data, task_id, notes_file_only=False):
     out = StringIO()
     icon = STATUS_ICONS.get(task["status"], "?")
     title = task["title"] or "(untitled)"
-    out.write(f"{icon} {task['id']}: {title}\n")
+    out.write(f"{icon} {title}\n")
     out.write(f"  Status:  {task['status']}\n")
-    out.write(f"  Project: {task['project']}\n")
+    out.write(f"  Project: {_home_path(task['project'])}\n")
     if task.get("parent_id"):
         out.write(f"  Parent:  {task['parent_id']}\n")
     if task.get("description"):
@@ -264,8 +312,10 @@ def _format_show(data, task_id, notes_file_only=False):
         out.write(f"  Session: {task['claude_session_id']}\n")
     if task.get("tmux_window_id"):
         out.write(f"  Window:  {task['tmux_window_id']}\n")
-    out.write(f"  Created: {task['created_at']}\n")
-    out.write(f"  Updated: {task['updated_at']}\n")
+    created_rel = _relative_time(task['created_at'])
+    updated_rel = _relative_time(task['updated_at'])
+    out.write(f"  Created: {task['created_at']} ({created_rel})\n")
+    out.write(f"  Updated: {task['updated_at']} ({updated_rel})\n")
 
     notes_path = NOTES_DIR / task["notes_file"]
     if notes_path.exists():
@@ -334,14 +384,24 @@ class LaundryDaemon:
                 return
 
             live_windows = _tmux_all_window_ids()
+            window_names = _tmux_window_names()
             for task in self.data["tasks"]:
-                if (task["status"] == "active"
-                        and task.get("tmux_window_id")
-                        and task["tmux_window_id"] not in live_windows):
+                if task["status"] != "active" or not task.get("tmux_window_id"):
+                    continue
+                wid = task["tmux_window_id"]
+                if wid not in live_windows:
                     task["tmux_window_id"] = None
                     task["status"] = "paused"
                     task["updated_at"] = _now_iso()
                     changed = True
+                elif wid in window_names:
+                    # Sync tmux window name → laundry title (3-way sync)
+                    wname = window_names[wid]
+                    # Skip the default L{task_id} name
+                    if wname and wname != f"L{task['id']}" and wname != task.get("title"):
+                        task["title"] = wname
+                        task["updated_at"] = _now_iso()
+                        changed = True
             if changed:
                 with open(LOCK_FILE, "w") as lock:
                     fcntl.flock(lock, fcntl.LOCK_EX)
@@ -487,7 +547,7 @@ def cmd_add(args):
 
     notes_path = NOTES_DIR / notes_filename
     if not notes_path.exists():
-        notes_path.write_text(f"# {title or 'New task'}\n")
+        notes_path.touch()
 
     _notify_daemon()
     print(task_id)
@@ -644,21 +704,29 @@ def cmd_open(args):
     # tmux operations outside lock
     project_path = Path(task["project"])
     session_name = project_path.name.replace(".", "_")  # tmux maps dots to underscores
-    if not _tmux_session_exists(session_name):
-        subprocess.run(
-            ["tmux", "new-session", "-d", "-s", session_name, "-c", str(project_path)],
-            capture_output=True,
-        )
-
     laundry_bin = Path(__file__).resolve()
-    result = subprocess.run(
-        [
-            "tmux", "new-window", "-t", session_name, "-c", str(project_path),
-            "-n", f"L{task['id']}", "-P", "-F", "#{window_id}",
-            "python3", str(laundry_bin), "launch", task["id"],
-        ],
-        capture_output=True, text=True,
-    )
+
+    new_window_cmd = [
+        "tmux", "new-window", "-t", session_name, "-c", str(project_path),
+        "-n", f"L{task['id']}", "-P", "-F", "#{window_id}",
+        "python3", str(laundry_bin), "launch", task["id"],
+    ]
+
+    if not _tmux_session_exists(session_name):
+        # Create session with the task as the initial window (no orphan shell)
+        result = subprocess.run(
+            [
+                "tmux", "new-session", "-d", "-s", session_name, "-c", str(project_path),
+                "-n", f"L{task['id']}", "-P", "-F", "#{window_id}",
+                "python3", str(laundry_bin), "launch", task["id"],
+            ],
+            capture_output=True, text=True,
+        )
+        # Race: another process created the session first — fall back to new-window
+        if result.returncode != 0:
+            result = subprocess.run(new_window_cmd, capture_output=True, text=True)
+    else:
+        result = subprocess.run(new_window_cmd, capture_output=True, text=True)
     window_id = result.stdout.strip()
 
     # Store window ID
@@ -697,11 +765,22 @@ def cmd_launch(args):
     _notify_daemon()
 
     if is_resume:
-        os.execvp("claude", [
-            "claude",
-            "--resume", session_id,
-            "--append-system-prompt", system_prompt,
-        ])
+        # Try resume; only fall back to fresh start if session not found
+        result = subprocess.run(
+            ["claude", "--resume", session_id, "--append-system-prompt", system_prompt],
+            capture_output=False, text=True, stderr=subprocess.PIPE,
+        )
+        if result.returncode != 0 and "No conversation found" in (result.stderr or ""):
+            # Session doesn't exist — start fresh with the same session ID
+            cmd = [
+                "claude",
+                "--session-id", session_id,
+                "--append-system-prompt", system_prompt,
+                "-n", f"L{task['id']}",
+            ]
+            if task.get("initial_prompt"):
+                cmd.append(task["initial_prompt"])
+            os.execvp("claude", cmd)
     else:
         cmd = [
             "claude",
