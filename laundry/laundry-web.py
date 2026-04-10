@@ -363,6 +363,21 @@ def send_to_pane(task_id, text):
     return False
 
 
+ALLOWED_ACTIONS = {"pause", "done", "cancel", "delete"}
+
+
+def run_task_action(task_id, action):
+    """Run a laundry CLI action on a task."""
+    if action not in ALLOWED_ACTIONS:
+        return False
+    laundry_bin = Path(__file__).resolve().parent / "laundry.py"
+    result = subprocess.run(
+        [sys.executable, str(laundry_bin), action, task_id],
+        capture_output=True, text=True,
+    )
+    return result.returncode == 0
+
+
 class Handler(BaseHTTPRequestHandler):
     def log_message(self, format, *args):
         pass  # silence request logs
@@ -392,16 +407,23 @@ class Handler(BaseHTTPRequestHandler):
             self.send_error(404)
 
     def do_POST(self):
+        length = int(self.headers.get("Content-Length", 0))
+        body = json.loads(self.rfile.read(length))
+
         if self.path == "/send":
-            length = int(self.headers.get("Content-Length", 0))
-            body = json.loads(self.rfile.read(length))
             ok = send_to_pane(body["task_id"], body["text"])
-            self.send_response(200 if ok else 404)
-            self.send_header("Content-Type", "application/json")
-            self.end_headers()
-            self.wfile.write(json.dumps({"ok": ok}).encode())
+            self._json_response(200 if ok else 404, {"ok": ok})
+        elif self.path == "/action":
+            ok = run_task_action(body["task_id"], body["action"])
+            self._json_response(200 if ok else 400, {"ok": ok})
         else:
             self.send_error(404)
+
+    def _json_response(self, code, data):
+        self.send_response(code)
+        self.send_header("Content-Type", "application/json")
+        self.end_headers()
+        self.wfile.write(json.dumps(data).encode())
 
 
 def main():

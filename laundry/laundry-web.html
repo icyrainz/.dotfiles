@@ -66,6 +66,29 @@
     cursor: pointer; border-radius: 3px; font-family: inherit; font-size: 12px;
   }
   .tile-input button:hover { background: #343b58; }
+  .tile-menu { position: relative; flex-shrink: 0; }
+  .tile-menu-btn {
+    background: none; border: none; color: #565f89; cursor: pointer;
+    font-size: 16px; padding: 2px 4px; line-height: 1; border-radius: 3px;
+  }
+  .tile-menu-btn:hover { color: #c0caf5; background: #292e42; }
+  .tile-dropdown {
+    display: none; position: absolute; right: 0; top: 100%; z-index: 10;
+    background: #24283b; border: 1px solid #292e42; border-radius: 6px;
+    padding: 4px 0; min-width: 140px; box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  }
+  .tile-dropdown.open { display: block; }
+  .tile-dropdown button {
+    display: block; width: 100%; text-align: left; background: none;
+    border: none; color: #c0caf5; padding: 6px 12px; cursor: pointer;
+    font-family: inherit; font-size: 12px;
+  }
+  .tile-dropdown button:hover { background: #292e42; }
+  .tile-dropdown button.danger { color: #f7768e; }
+  .tile-dropdown button.danger:hover { background: #3b2030; }
+  .tile-dropdown hr {
+    border: none; border-top: 1px solid #292e42; margin: 4px 0;
+  }
   #empty {
     display: flex; align-items: center; justify-content: center;
     height: 100vh; color: #565f89; font-size: 16px;
@@ -125,6 +148,16 @@ function updateGrid(tasks) {
         <div class="tile-header">
           <span class="title-left"><span class="project">${esc(t.project)}</span>${esc(t.title)}</span>
           <span class="links">${renderLinks(t.links)}</span>
+          <span class="tile-menu">
+            <button class="tile-menu-btn" onclick="toggleMenu(this)">⋮</button>
+            <div class="tile-dropdown">
+              <button onclick="taskAction('${t.id}','pause',this)">⏸ Pause</button>
+              <button onclick="taskAction('${t.id}','done',this)">✓ Done</button>
+              <button onclick="taskAction('${t.id}','cancel',this)">✕ Cancel</button>
+              <hr>
+              <button class="danger" onclick="taskAction('${t.id}','delete',this)">Delete</button>
+            </div>
+          </span>
         </div>
         <div class="tile-content" id="content-${t.id}"></div>
         <div class="tile-input">
@@ -208,6 +241,31 @@ function sendInput(taskId, text, input) {
     else input.style.background = '';
   }).catch(() => { input.style.background = '#3b2030'; });
   input.value = '';
+}
+
+function toggleMenu(btn) {
+  const dropdown = btn.nextElementSibling;
+  const wasOpen = dropdown.classList.contains('open');
+  // Close all dropdowns first
+  document.querySelectorAll('.tile-dropdown.open').forEach(d => d.classList.remove('open'));
+  if (!wasOpen) dropdown.classList.add('open');
+}
+
+// Close dropdowns on outside click
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.tile-menu')) {
+    document.querySelectorAll('.tile-dropdown.open').forEach(d => d.classList.remove('open'));
+  }
+});
+
+function taskAction(taskId, action, btn) {
+  // Close the menu
+  document.querySelectorAll('.tile-dropdown.open').forEach(d => d.classList.remove('open'));
+  fetch('/action', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({task_id: taskId, action: action})
+  });
 }
 
 function connect() {
