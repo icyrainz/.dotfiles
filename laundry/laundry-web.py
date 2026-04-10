@@ -43,6 +43,11 @@ HTML = """<!DOCTYPE html>
   }
   .tile-header .project { color: #565f89; margin-right: 8px; }
   .tile-header .status { font-size: 11px; color: #565f89; }
+  .tile-header .links { display: flex; gap: 6px; }
+  .tile-header .links a {
+    color: #9ece6a; text-decoration: none; font-size: 11px; font-weight: normal;
+  }
+  .tile-header .links a:hover { text-decoration: underline; }
   .tile-content {
     flex: 1; overflow-y: auto; padding: 6px 10px;
     white-space: pre-wrap; word-break: break-all;
@@ -104,10 +109,13 @@ function updateGrid(tasks) {
       // Create new tile
       const tile = document.createElement('div');
       tile.className = 'tile';
+      const linksHtml = (t.links || []).map(l =>
+        `<a href="${esc(l.url)}" target="_blank">${esc(l.label)}</a>`
+      ).join('');
       tile.innerHTML = `
         <div class="tile-header">
           <span><span class="project">${esc(t.project)}</span>${esc(t.title)}</span>
-          <span class="status">${esc(t.id)}</span>
+          <span class="links">${linksHtml}</span>
         </div>
         <div class="tile-content" id="content-${t.id}"></div>
         <div class="tile-input">
@@ -134,6 +142,14 @@ function updateGrid(tasks) {
       if (autoScroll[t.id]) {
         content.scrollTop = content.scrollHeight;
       }
+    }
+
+    // Update links
+    const linksEl = tiles[t.id].querySelector('.links');
+    if (linksEl && t.links) {
+      linksEl.innerHTML = t.links.map(l =>
+        `<a href="${esc(l.url)}" target="_blank">${esc(l.label)}</a>`
+      ).join('');
     }
   });
 
@@ -233,12 +249,23 @@ def get_dashboard_data():
         content = capture_pane(t["tmux_window_id"])
         project = Path(t["project"]).name if t.get("project") else ""
         title = t.get("title") or t.get("initial_prompt", "")[:40] or t["id"]
+        # Build compact link labels
+        prs = t.get("links", {}).get("prs", [])
+        jiras = t.get("links", {}).get("jira", [])
+        links = []
+        for j in jiras:
+            links.append({"label": j, "url": f"https://jira.atlassian.net/browse/{j}"})
+        for i, pr in enumerate(prs):
+            # owner/repo#123 → PR#123 linking to github
+            repo, num = pr.rsplit("#", 1) if "#" in pr else ("", pr)
+            links.append({"label": f"PR#{num}", "url": f"https://github.com/{repo}/pull/{num}"})
         result.append({
             "id": t["id"],
             "project": project,
             "title": title,
             "target": t["tmux_window_id"],
             "content": content,
+            "links": links,
         })
     return result
 
