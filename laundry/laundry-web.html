@@ -223,13 +223,16 @@
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
   .paused-item .meta { color: var(--text-dim); font-size: 10px; margin-top: 2px; }
-  .paused-item .resume-btn {
-    background: var(--accent); color: var(--bg-deep); border: none;
-    padding: 4px 12px; border-radius: 4px; cursor: pointer;
-    font-family: var(--mono); font-size: 11px; font-weight: 500;
-    flex-shrink: 0; margin-left: 12px; transition: transform 0.1s;
+  .paused-item .actions { display: flex; gap: 6px; flex-shrink: 0; margin-left: 12px; }
+  .paused-item .actions button {
+    border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer;
+    font-family: var(--mono); font-size: 10px; font-weight: 500;
+    transition: transform 0.1s;
   }
-  .paused-item .resume-btn:hover { transform: translateY(-1px); }
+  .paused-item .actions button:hover { transform: translateY(-1px); }
+  .paused-item .actions .resume { background: var(--accent); color: var(--bg-deep); }
+  .paused-item .actions .done { background: var(--success); color: var(--bg-deep); }
+  .paused-item .actions .cancel { background: var(--border-active); color: var(--text); }
 </style>
 </head>
 <body>
@@ -312,8 +315,6 @@ function updateGrid(tasks) {
               <button onclick="taskAction('${t.id}','pause',this)">Pause</button>
               <button onclick="taskAction('${t.id}','done',this)">Done</button>
               <button onclick="taskAction('${t.id}','cancel',this)">Cancel</button>
-              <hr>
-              <button class="danger" onclick="taskAction('${t.id}','delete',this)">Delete</button>
             </div>
           </span>
           <span class="title-left"><span class="project">${esc(t.project)}</span>${esc(t.title)}</span>
@@ -461,7 +462,11 @@ function openPausedModal() {
           <div class="name">${esc(t.title)}</div>
           <div class="meta">${esc(t.project)} &middot; ${esc(t.age)}</div>
         </div>
-        <button class="resume-btn" onclick="resumeTask('${t.id}')">Resume</button>
+        <div class="actions">
+          <button class="resume" onclick="pausedAction('${t.id}','open')">Resume</button>
+          <button class="done" onclick="pausedAction('${t.id}','done')">Done</button>
+          <button class="cancel" onclick="pausedAction('${t.id}','cancel')">Cancel</button>
+        </div>
       </li>
     `).join('');
   });
@@ -472,13 +477,14 @@ function closePausedModal() {
   document.getElementById('paused-modal').classList.remove('open');
 }
 
-function resumeTask(taskId) {
+function pausedAction(taskId, action) {
   fetch('/action', {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({task_id: taskId, action: 'open'})
+    body: JSON.stringify({task_id: taskId, action: action})
   }).then(() => {
-    closePausedModal();
+    if (action === 'open') closePausedModal();
+    else openPausedModal(); // refresh the list
   });
 }
 
