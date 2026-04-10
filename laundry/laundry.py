@@ -154,7 +154,9 @@ Manage this task with the `laundry` CLI:
 - `laundry link {tid} --pr owner/repo#N` — link a PR
 - `laundry link {tid} --jira PROJ-N` — link a Jira ticket
 - `laundry add "subtask title" --parent {tid}` — break work into subtasks
-- `laundry done {tid}` — mark complete when finished"""
+- `laundry done {tid}` — mark complete when finished
+
+Git workflow: before making changes, check if the main/master branch has uncommitted or in-progress work (dirty worktree, staged files, etc.). If it does, create a git worktree for this task to avoid conflicts with other work. Use a branch name like `laundry/{tid}`."""
 
 
 # --- daemon client ---
