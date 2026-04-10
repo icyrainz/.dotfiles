@@ -1176,12 +1176,15 @@ def cmd_wall(args):
         curses.curs_set(0)
         stdscr.nodelay(True)
         has_color = False
-        if curses.has_colors():
-            curses.start_color()
-            curses.init_pair(1, curses.COLOR_BLUE, curses.COLOR_BLACK)
-            curses.init_pair(2, curses.COLOR_WHITE, curses.COLOR_BLACK)
-            curses.init_pair(3, curses.COLOR_WHITE, curses.COLOR_BLACK)
-            has_color = True
+        try:
+            if curses.has_colors():
+                curses.start_color()
+                curses.init_pair(1, curses.COLOR_BLUE, curses.COLOR_BLACK)
+                curses.init_pair(2, curses.COLOR_WHITE, curses.COLOR_BLACK)
+                curses.init_pair(3, curses.COLOR_WHITE, curses.COLOR_BLACK)
+                has_color = True
+        except (curses.error, ValueError):
+            pass
 
         while True:
             tasks = get_active_tasks()
@@ -1202,7 +1205,8 @@ def cmd_wall(args):
 
                     # Draw header
                     try:
-                        stdscr.addstr(ty, tx, header, curses.color_pair(1) | curses.A_BOLD)
+                        attr = curses.color_pair(1) | curses.A_BOLD if has_color else curses.A_BOLD
+                        stdscr.addstr(ty, tx, header, attr)
                     except curses.error:
                         pass
 
@@ -1212,7 +1216,7 @@ def cmd_wall(args):
                     visible = content[-(th - 2):] if content else []
                     for j, line in enumerate(visible):
                         try:
-                            stdscr.addstr(ty + 1 + j, tx, line[:tw - 1], curses.color_pair(2))
+                            stdscr.addstr(ty + 1 + j, tx, line[:tw - 1])
                         except curses.error:
                             pass
 
@@ -1220,7 +1224,7 @@ def cmd_wall(args):
                     if tx + tw < cols:
                         for row in range(ty, min(ty + th, rows)):
                             try:
-                                stdscr.addstr(row, tx + tw - 1, "│", curses.color_pair(3))
+                                stdscr.addstr(row, tx + tw - 1, "│")
                             except curses.error:
                                 pass
 
