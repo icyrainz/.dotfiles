@@ -210,8 +210,7 @@ def _format_list(data, status_filter=None, show_all=False, parent=None, fmt=None
     out = StringIO()
     if fmt == "tv":
         if not tasks:
-            out.write("No tasks yet\n")
-            return out.getvalue()
+            return ""
 
         DIM = "\033[2m"
         RESET = "\033[0m"
