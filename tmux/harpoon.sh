@@ -1,47 +1,47 @@
 #!/usr/bin/env bash
-# tmux session harpoon — pin sessions to slots and jump to them
+# tmux harpoon — pin windows to slots, jump with Alt+1-4
+# Format per line: session:window_id (native tmux target syntax)
+# goto tries exact target first, falls back to session only
 set -euo pipefail
 
-HARPOON_FILE="${HOME}/.config/tmux/harpoon-sessions"
-MAX_SLOTS=4
+FILE="${HOME}/.config/tmux/harpoon-sessions"
+TASKS="${HOME}/.local/share/laundry/tasks.json"
 
-ensure_file() {
-  mkdir -p "$(dirname "$HARPOON_FILE")"
-  touch "$HARPOON_FILE"
-  local lines
-  lines=$(wc -l < "$HARPOON_FILE")
-  while [ "$lines" -lt "$MAX_SLOTS" ]; do
-    echo "" >> "$HARPOON_FILE"
-    lines=$((lines + 1))
-  done
-}
-
-mark() {
-  local slot="$1"
-  local session
-  session=$(tmux display-message -p '#S')
-  ensure_file
-  # awk replace is portable across macOS and Linux (no sed -i differences)
-  local tmp="${HARPOON_FILE}.tmp"
-  awk -v s="$slot" -v val="$session" 'NR==s{print val;next}{print}' "$HARPOON_FILE" > "$tmp"
-  mv "$tmp" "$HARPOON_FILE"
-  tmux display-message "harpoon [${slot}] → ${session}"
-}
-
-goto_slot() {
-  local slot="$1"
-  ensure_file
-  local session
-  session=$(sed -n "${slot}p" "$HARPOON_FILE")
-  if [ -n "$session" ] && tmux has-session -t "=$session" 2>/dev/null; then
-    tmux switch-client -t "=$session"
-  else
-    tmux display-message "harpoon [${slot}] empty or session gone"
-  fi
+_write() {
+  local slot="$1" val="$2"
+  mkdir -p "$(dirname "$FILE")" && touch "$FILE"
+  while [ "$(wc -l < "$FILE")" -lt 4 ]; do echo "" >> "$FILE"; done
+  awk -v s="$slot" -v v="$val" 'NR==s{print v;next}{print}' "$FILE" > "$FILE.tmp" && mv "$FILE.tmp" "$FILE"
 }
 
 case "${1:-}" in
-  mark) mark "${2:-1}" ;;
-  goto) goto_slot "${2:-1}" ;;
-  *)    echo "Usage: harpoon.sh {mark|goto} <slot>" ;;
+  goto)
+    slot="${2:-1}"
+    target=$(sed -n "${slot}p" "$FILE" 2>/dev/null)
+    session="${target%%:*}"
+    if [ -z "$target" ]; then
+      tmux display-message "harpoon [$slot] empty"
+    elif tmux switch-client -t "$target" 2>/dev/null; then
+      : # switched to session:window
+    elif [ -n "$session" ] && tmux has-session -t "=$session" 2>/dev/null; then
+      tmux switch-client -t "=$session"
+    else
+      tmux display-message "harpoon [$slot] gone"
+    fi
+    ;;
+  mark)
+    slot="${2:-1}"
+    val="$(tmux display-message -p '#S:#{window_id}')"
+    _write "$slot" "$val"
+    tmux display-message "harpoon [$slot] → $val"
+    ;;
+  pin)
+    slot="${2:-1}"
+    task_id="${3:?task_id required}"
+    # tasks.json stores full tmux target (session:@N) — just extract it
+    target=$(grep -A15 "\"id\": \"$task_id\"" "$TASKS" | grep '"tmux_window_id"' | head -1 | sed 's/.*": *"\([^"]*\)".*/\1/')
+    [ -z "$target" ] && exit 0
+    _write "$slot" "$target"
+    ;;
+  *) echo "Usage: harpoon.sh {goto|mark|pin} <slot> [task_id]" ;;
 esac

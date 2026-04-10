@@ -72,6 +72,8 @@
       if: command -v ghostty > /dev/null
     ~/.local/bin/laundry:
       path: laundry/laundry.py
+    ~/.local/share/laundry/system-prompt.md:
+      path: laundry/system-prompt.md
     ~/.config/tmux/laundry-new.sh:
       path: laundry/laundry-new.sh
     ~/.config/television:

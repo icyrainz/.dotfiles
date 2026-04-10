@@ -33,3 +33,23 @@ command = "laundry done '{split: :0}'"
 [actions.4-cancel]
 description = "Cancel task"
 command = "laundry cancel '{split: :0}'"
+
+[actions.5-delete]
+description = "Delete task"
+command = "laundry delete '{split: :0}'"
+
+[actions.h1-pin1]
+description = "Pin → harpoon [1]"
+command = "bash ~/.config/tmux/harpoon.sh pin 1 '{split: :0}'"
+
+[actions.h2-pin2]
+description = "Pin → harpoon [2]"
+command = "bash ~/.config/tmux/harpoon.sh pin 2 '{split: :0}'"
+
+[actions.h3-pin3]
+description = "Pin → harpoon [3]"
+command = "bash ~/.config/tmux/harpoon.sh pin 3 '{split: :0}'"
+
+[actions.h4-pin4]
+description = "Pin → harpoon [4]"
+command = "bash ~/.config/tmux/harpoon.sh pin 4 '{split: :0}'"

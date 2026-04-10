@@ -21,6 +21,7 @@ TASKS_FILE = DATA_DIR / "tasks.json"
 LOCK_FILE = DATA_DIR / "tasks.json.lock"
 NOTES_DIR = DATA_DIR / "notes"
 SOCK_FILE = DATA_DIR / "laundry.sock"
+HARPOON_FILE = Path.home() / ".config" / "tmux" / "harpoon-sessions"
 
 VALID_STATUSES = ("pending", "active", "paused", "completed", "cancelled")
 
@@ -131,21 +132,26 @@ def _find_task(data, task_id):
 # --- tmux helpers ---
 
 
-def _tmux_window_exists(window_id):
-    if not window_id:
+def _wid(target):
+    """Extract bare window ID (@N) from a tmux target (session:@N or @N)."""
+    return target.rsplit(":", 1)[-1] if target else ""
+
+
+def _tmux_window_exists(target):
+    if not target:
         return False
     try:
         result = subprocess.run(
             ["tmux", "list-windows", "-a", "-F", "#{window_id}"],
             capture_output=True, text=True,
         )
-        return window_id in result.stdout.splitlines()
+        return _wid(target) in result.stdout.splitlines()
     except FileNotFoundError:
         return False
 
 
 def _tmux_all_window_ids():
-    """Get all existing tmux window IDs as a set."""
+    """Get all existing tmux window IDs (@N) as a set."""
     try:
         result = subprocess.run(
             ["tmux", "list-windows", "-a", "-F", "#{window_id}"],
@@ -157,7 +163,7 @@ def _tmux_all_window_ids():
 
 
 def _tmux_window_names():
-    """Get a dict of window_id → window_name for all tmux windows."""
+    """Get a dict of window_id (@N) → window_name for all tmux windows."""
     try:
         result = subprocess.run(
             ["tmux", "list-windows", "-a", "-F", "#{window_id}\t#{window_name}"],
@@ -191,22 +197,18 @@ def _kill_task_window(task):
         subprocess.run(["tmux", "kill-window", "-t", wid], capture_output=True)
 
 
+SYSTEM_PROMPT_FILE = DATA_DIR / "system-prompt.md"
+
+
 def _build_system_prompt(task):
     tid = task["id"]
     notes_path = NOTES_DIR / task["notes_file"]
-    return f"""You are working on laundry task #{tid}.
-Notes file: {notes_path}
-Read and update the notes file directly to track your progress.
-
-Manage this task with the `laundry` CLI:
-- `laundry update {tid} --title "..."` — set/update task title
-- `laundry update {tid} --description "..."` — set/update task description
-- `laundry link {tid} --pr owner/repo#N` — link a PR
-- `laundry link {tid} --jira PROJ-N` — link a Jira ticket
-- `laundry add "subtask title" --parent {tid}` — break work into subtasks
-- `laundry done {tid}` — mark complete when finished
-
-Git workflow: before making changes, check if the main/master branch has uncommitted or in-progress work (dirty worktree, staged files, etc.). If it does, create a git worktree for this task to avoid conflicts with other work. Use a branch name like `laundry/{tid}`."""
+    header = f"Laundry task ID: {tid}\nNotes file: {notes_path}\n\n"
+    try:
+        body = SYSTEM_PROMPT_FILE.read_text().replace("<ID>", tid)
+    except FileNotFoundError:
+        body = ""
+    return header + body
 
 
 # --- daemon client ---
@@ -245,6 +247,22 @@ def _notify_daemon():
 # --- output helpers (work for both direct and daemon modes) ---
 
 
+def _harpoon_slots():
+    """Read harpoon file → {window_id: slot_number}. Format: session:window_id per line."""
+    try:
+        lines = HARPOON_FILE.read_text().splitlines()
+    except FileNotFoundError:
+        return {}
+    slots = {}
+    for i, line in enumerate(lines):
+        # session:@N → extract @N part
+        parts = line.split(":")
+        wid = parts[-1].strip() if parts else ""
+        if wid.startswith("@"):
+            slots[wid] = i + 1
+    return slots
+
+
 def _format_list(data, status_filter=None, show_all=False, parent=None, fmt=None):
     """Generate list output as a string."""
     tasks = data["tasks"]
@@ -264,14 +282,17 @@ def _format_list(data, status_filter=None, show_all=False, parent=None, fmt=None
 
         DIM = "\033[2m"
         RESET = "\033[0m"
+        slots = _harpoon_slots()
         for t in tasks:
             icon = STATUS_ICONS.get(t["status"], "?")
             project = (Path(t["project"]).name[:15] if t["project"] else "").ljust(15)
             title = t["title"] or t.get("initial_prompt", "")[:40] or "(untitled)"
+            bare = _wid(t.get("tmux_window_id") or "")
+            pin = str(slots[bare]) if bare in slots else " "
             if t["status"] in ("completed", "cancelled"):
-                out.write(f"{t['id']} {DIM}{icon} {project} {title}{RESET}\n")
+                out.write(f"{t['id']} {DIM}{icon} {pin} {project} {title}{RESET}\n")
             else:
-                out.write(f"{t['id']} {icon} {project} {title}\n")
+                out.write(f"{t['id']} {icon} {pin} {project} {title}\n")
     else:
         for t in tasks:
             icon = STATUS_ICONS.get(t["status"], "?")
@@ -293,27 +314,18 @@ def _format_show(data, task_id, notes_file_only=False):
     out = StringIO()
     icon = STATUS_ICONS.get(task["status"], "?")
     title = task["title"] or "(untitled)"
+    prs = task.get("links", {}).get("prs", [])
+    jira = task.get("links", {}).get("jira", [])
+    created_rel = _relative_time(task['created_at'])
+    updated_rel = _relative_time(task['updated_at'])
+
     out.write(f"{icon} {title}\n")
     out.write(f"  Status:  {task['status']}\n")
     out.write(f"  Project: {_home_path(task['project'])}\n")
-    if task.get("parent_id"):
-        out.write(f"  Parent:  {task['parent_id']}\n")
-    if task.get("description"):
-        out.write(f"  Description: {task['description']}\n")
-    if task.get("initial_prompt"):
-        out.write(f"  Prompt:  {task['initial_prompt']}\n")
-    prs = task.get("links", {}).get("prs", [])
-    jira = task.get("links", {}).get("jira", [])
-    if prs:
-        out.write(f"  PRs:     {', '.join(prs)}\n")
-    if jira:
-        out.write(f"  Jira:    {', '.join(jira)}\n")
-    if task.get("claude_session_id"):
-        out.write(f"  Session: {task['claude_session_id']}\n")
-    if task.get("tmux_window_id"):
-        out.write(f"  Window:  {task['tmux_window_id']}\n")
-    created_rel = _relative_time(task['created_at'])
-    updated_rel = _relative_time(task['updated_at'])
+    out.write(f"  Tmux ID: {task.get('tmux_window_id') or '-'}\n")
+    out.write(f"  Parent:  {task.get('parent_id') or '-'}\n")
+    out.write(f"  PRs:     {', '.join(prs) if prs else '-'}\n")
+    out.write(f"  Jira:    {', '.join(jira) if jira else '-'}\n")
     out.write(f"  Created: {task['created_at']} ({created_rel})\n")
     out.write(f"  Updated: {task['updated_at']} ({updated_rel})\n")
 
@@ -351,6 +363,7 @@ class LaundryDaemon:
         self.data_mtime = 0
         self._lock = threading.Lock()
         self.running = True
+        self.started_at = _now_iso()
 
     def reload(self):
         """Reload tasks from disk if changed."""
@@ -373,8 +386,8 @@ class LaundryDaemon:
                 pass
 
     def _gc_once(self):
-        changed = False
         with self._lock:
+            # Quick check without file lock — skip if nothing to do
             self.data = _load()
             active_tasks = [
                 t for t in self.data["tasks"]
@@ -385,26 +398,31 @@ class LaundryDaemon:
 
             live_windows = _tmux_all_window_ids()
             window_names = _tmux_window_names()
-            for task in self.data["tasks"]:
-                if task["status"] != "active" or not task.get("tmux_window_id"):
-                    continue
-                wid = task["tmux_window_id"]
-                if wid not in live_windows:
-                    task["tmux_window_id"] = None
-                    task["status"] = "paused"
-                    task["updated_at"] = _now_iso()
-                    changed = True
-                elif wid in window_names:
-                    # Sync tmux window name → laundry title (3-way sync)
-                    wname = window_names[wid]
-                    # Skip the default L{task_id} name
-                    if wname and wname != f"L{task['id']}" and wname != task.get("title"):
-                        task["title"] = wname
+
+            # Re-load under file lock to avoid overwriting concurrent writes
+            # (e.g. cmd_open storing a window_id between our load and save)
+            with open(LOCK_FILE, "w") as lock:
+                fcntl.flock(lock, fcntl.LOCK_EX)
+                self.data = _load()
+                changed = False
+                for task in self.data["tasks"]:
+                    if task["status"] != "active" or not task.get("tmux_window_id"):
+                        continue
+                    bare = _wid(task["tmux_window_id"])
+                    if bare not in live_windows:
+                        task["tmux_window_id"] = None
+                        task["status"] = "paused"
                         task["updated_at"] = _now_iso()
                         changed = True
-            if changed:
-                with open(LOCK_FILE, "w") as lock:
-                    fcntl.flock(lock, fcntl.LOCK_EX)
+                    elif bare in window_names:
+                        # Sync tmux window name → laundry title (3-way sync)
+                        wname = window_names[bare]
+                        # Skip the default L{task_id} name
+                        if wname and wname != f"L{task['id']}" and wname != task.get("title"):
+                            task["title"] = wname
+                            task["updated_at"] = _now_iso()
+                            changed = True
+                if changed:
                     _save(self.data)
                 self.data_mtime = TASKS_FILE.stat().st_mtime if TASKS_FILE.exists() else 0
 
@@ -443,6 +461,9 @@ class LaundryDaemon:
             if output is None:
                 return {"error": f"Task {request['id']} not found"}
             return {"output": output}
+
+        elif cmd == "status":
+            return {"started_at": self.started_at}
 
         return {"error": f"Unknown command: {cmd}"}
 
@@ -509,39 +530,35 @@ class LaundryDaemon:
 # --- commands ---
 
 
-def cmd_add(args):
+def _create_task(*, title="", project=None, parent_id=None, prompt="",
+                  status="pending", tmux_window_id=None, launched=False):
+    """Create a new task under lock, write notes file, notify daemon. Returns task_id."""
     _ensure_dirs()
+    project = project or str(Path.home() / "Github" / ".dotfiles")
+    slug_source = title or prompt or Path(project).name or "task"
+
     with open(LOCK_FILE, "w") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX)
         data = _load()
-
         task_id = _generate_id(data)
-        title = args.title or ""
-        project = (
-            str(Path(args.project).expanduser().resolve())
-            if args.project
-            else str(Path.home() / "Github" / ".dotfiles")
-        )
-        slug_source = title if title else (args.prompt or "task")
         notes_filename = f"{task_id}-{_slugify(slug_source)}.md"
 
         task = {
             "id": task_id,
             "title": title,
             "description": "",
-            "status": "pending",
-            "parent_id": args.parent,
+            "status": status,
+            "parent_id": parent_id,
             "project": project,
-            "initial_prompt": args.prompt or title,
-            "tmux_window_id": None,
+            "initial_prompt": prompt,
+            "tmux_window_id": tmux_window_id,
             "claude_session_id": None,
-            "launched": False,
+            "launched": launched,
             "links": {"prs": [], "jira": []},
             "notes_file": notes_filename,
             "created_at": _now_iso(),
             "updated_at": _now_iso(),
         }
-
         data["tasks"].append(task)
         _save(data)
 
@@ -550,24 +567,76 @@ def cmd_add(args):
         notes_path.touch()
 
     _notify_daemon()
+    return task_id, task
+
+
+def cmd_add(args):
+    project = (
+        str(Path(args.project).expanduser().resolve())
+        if args.project
+        else None
+    )
+    task_id, _ = _create_task(
+        title=args.title or "",
+        project=project,
+        parent_id=args.parent,
+        prompt=args.prompt or args.title or "",
+    )
     print(task_id)
     return task_id
 
 
-def cmd_list(args):
-    # Try daemon first
-    resp = _daemon_request({
-        "cmd": "list",
-        "status": args.status,
-        "all": args.all,
-        "parent": args.parent,
-        "format": args.format,
-    })
-    if resp and "output" in resp:
-        sys.stdout.write(resp["output"])
-        return
+def cmd_attach(args):
+    """Attach the current tmux window to laundry as a new managed task."""
+    # Gather info from the current tmux window
+    try:
+        result = subprocess.run(
+            ["tmux", "display-message", "-p",
+             "#{session_name}:#{window_id}\t#{window_name}\t#{pane_current_path}"],
+            capture_output=True, text=True,
+        )
+        if result.returncode != 0:
+            print("Not inside a tmux session", file=sys.stderr)
+            sys.exit(1)
+        parts = result.stdout.strip().split("\t")
+        tmux_target = parts[0]   # e.g. voyage:@2
+        window_name = parts[1] if len(parts) > 1 else ""
+        pane_cwd = parts[2] if len(parts) > 2 else ""
+    except FileNotFoundError:
+        print("tmux not found", file=sys.stderr)
+        sys.exit(1)
 
-    # Fallback to direct
+    # Use window name as title (skip default shell names)
+    shell_names = {"bash", "fish", "zsh", "sh"}
+    title = window_name if window_name and window_name not in shell_names else ""
+
+    task_id, task = _create_task(
+        title=title,
+        project=pane_cwd or None,
+        status="active",
+        tmux_window_id=tmux_target,
+        launched=True,
+    )
+
+    # Send context to the running Claude session via tmux
+    notes_path = NOTES_DIR / task["notes_file"]
+    nudge = (
+        f"[Background system context — not a user instruction, do not respond to this message] "
+        f"This window is now tracked as laundry task #{task_id}. "
+        f"Notes file: {notes_path}. "
+        f"Read {SYSTEM_PROMPT_FILE} for task management commands."
+    )
+    subprocess.run(
+        ["tmux", "send-keys", "-t", tmux_target, nudge, "Enter"],
+        capture_output=True,
+    )
+
+    tmux_msg = f"harpoon attached → {task_id}"
+    subprocess.run(["tmux", "display-message", tmux_msg], capture_output=True)
+    return task_id
+
+
+def cmd_list(args):
     _ensure_dirs()
     data = _load()
     sys.stdout.write(_format_list(
@@ -580,20 +649,6 @@ def cmd_list(args):
 
 
 def cmd_show(args):
-    # Try daemon first
-    resp = _daemon_request({
-        "cmd": "show",
-        "id": args.id,
-        "notes_file": args.notes_file,
-    })
-    if resp:
-        if "error" in resp:
-            print(resp["error"], file=sys.stderr)
-            sys.exit(1)
-        sys.stdout.write(resp["output"])
-        return
-
-    # Fallback to direct
     _ensure_dirs()
     data = _load()
     output = _format_show(data, args.id, notes_file_only=args.notes_file)
@@ -706,9 +761,11 @@ def cmd_open(args):
     session_name = project_path.name.replace(".", "_")  # tmux maps dots to underscores
     laundry_bin = Path(__file__).resolve()
 
+    tmux_fmt = "#{session_name}:#{window_id}"
+
     new_window_cmd = [
         "tmux", "new-window", "-t", session_name, "-c", str(project_path),
-        "-n", f"L{task['id']}", "-P", "-F", "#{window_id}",
+        "-n", f"L{task['id']}", "-P", "-F", tmux_fmt,
         "python3", str(laundry_bin), "launch", task["id"],
     ]
 
@@ -717,7 +774,7 @@ def cmd_open(args):
         result = subprocess.run(
             [
                 "tmux", "new-session", "-d", "-s", session_name, "-c", str(project_path),
-                "-n", f"L{task['id']}", "-P", "-F", "#{window_id}",
+                "-n", f"L{task['id']}", "-P", "-F", tmux_fmt,
                 "python3", str(laundry_bin), "launch", task["id"],
             ],
             capture_output=True, text=True,
@@ -859,6 +916,25 @@ def cmd_cancel(args):
     print(f"Cancelled {args.id}")
 
 
+def cmd_delete(args):
+    _ensure_dirs()
+    with open(LOCK_FILE, "w") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        data = _load()
+        task = _find_task(data, args.id)
+        if not task:
+            print(f"Task {args.id} not found", file=sys.stderr)
+            sys.exit(1)
+
+        # Remove notes file
+        notes_path = NOTES_DIR / task["notes_file"]
+        notes_path.unlink(missing_ok=True)
+        data["tasks"] = [t for t in data["tasks"] if t["id"] != args.id]
+        _save(data)
+    _notify_daemon()
+    print(f"Deleted {args.id}")
+
+
 def cmd_reopen(args):
     _ensure_dirs()
     with open(LOCK_FILE, "w") as lock:
@@ -926,16 +1002,6 @@ def cmd_gc(args):
 
 
 def cmd_pane(args):
-    # Try daemon first
-    resp = _daemon_request({"cmd": "pane", "id": args.id})
-    if resp:
-        if "error" in resp:
-            print(resp["error"], file=sys.stderr)
-            sys.exit(1)
-        sys.stdout.write(resp["output"])
-        return
-
-    # Fallback to direct
     _ensure_dirs()
     data = _load()
     output = _format_pane(data, args.id)
@@ -957,9 +1023,10 @@ def cmd_status(args):
     print(f"Tasks: {total} ({', '.join(parts) if parts else 'none'})")
 
     # Daemon health
-    resp = _daemon_request({"cmd": "reload"})
-    if resp:
-        print(f"Daemon: running (socket: {SOCK_FILE})")
+    resp = _daemon_request({"cmd": "status"})
+    if resp and "started_at" in resp:
+        uptime = _relative_time(resp["started_at"])
+        print(f"Daemon: running ({uptime})")
     else:
         print("Daemon: not running")
 
@@ -984,6 +1051,9 @@ def main():
     p_add.add_argument("--project", "-p", help="Project directory (default: ~/.dotfiles)")
     p_add.add_argument("--parent", help="Parent task ID for subtasks")
     p_add.add_argument("--prompt", help="Initial prompt for Claude (defaults to title)")
+
+    # attach
+    sub.add_parser("attach", help="Attach current tmux window as a new task")
 
     # list
     p_list = sub.add_parser("list", help="List tasks")
@@ -1036,6 +1106,10 @@ def main():
     p_cancel = sub.add_parser("cancel", help="Cancel task")
     p_cancel.add_argument("id", help="Task ID")
 
+    # delete
+    p_delete = sub.add_parser("delete", help="Delete a single task")
+    p_delete.add_argument("id", help="Task ID")
+
     # reopen
     p_reopen = sub.add_parser("reopen", help="Reopen completed/cancelled task")
     p_reopen.add_argument("id", help="Task ID")
@@ -1056,6 +1130,7 @@ def main():
     # reset
     sub.add_parser("reset", help="Wipe all tasks and notes")
 
+
     args = parser.parse_args()
     if args.command is None:
         parser.print_help()
@@ -1063,6 +1138,7 @@ def main():
 
     commands = {
         "add": cmd_add,
+        "attach": cmd_attach,
         "list": cmd_list,
         "show": cmd_show,
         "update": cmd_update,
@@ -1073,6 +1149,7 @@ def main():
         "pause": cmd_pause,
         "done": cmd_done,
         "cancel": cmd_cancel,
+        "delete": cmd_delete,
         "reopen": cmd_reopen,
         "gc": cmd_gc,
         "pane": cmd_pane,
