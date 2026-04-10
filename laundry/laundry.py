@@ -1117,77 +1117,131 @@ def cmd_gc(args):
 
 
 def cmd_wall(args):
-    """Create a tiled tmux window showing all active task panes live."""
+    """Fullscreen tiled dashboard showing all active task panes live."""
+    import curses
+
     _ensure_dirs()
-    data = _load()
-    windows = Tmux.window_info()
 
-    active = [
-        t for t in _sort_tasks(data["tasks"])
-        if t["status"] == "active" and t.get("tmux_window_id")
-        and t["tmux_window_id"] in windows
-    ]
 
-    if not active:
-        print("No active tasks with windows", file=sys.stderr)
-        sys.exit(1)
+    def get_active_tasks():
+        data = _load()
+        windows = Tmux.window_info()
+        return [
+            t for t in _sort_tasks(data["tasks"])
+            if t["status"] == "active" and t.get("tmux_window_id")
+            and t["tmux_window_id"] in windows
+        ]
 
-    # Build a watch command for each task pane
-    # Shows task title as header + live pane capture
-    wall_cmds = []
-    for t in active:
-        target = t["tmux_window_id"]
-        title = t.get("title") or t.get("initial_prompt", "")[:40] or t["id"]
-        project = Path(t["project"]).name if t.get("project") else ""
-        header = f"{project}: {title}"
-        # Capture target pane content, clean it for the wall tile:
-        # -J joins soft-wraps, sed strips trailing empty lines + Claude TUI
-        # chrome (status bar with │, ──), cut truncates to tile width
-        cmd = (
-            f"watch -n1 -t "
-            f"'w=$(tput cols 2>/dev/null || echo 80); "
-            f"h=$(tput lines 2>/dev/null || echo 15); "
-            f"echo \"\\033[1;34m{header}\\033[0m\"; "
-            f"tmux capture-pane -t \"{target}\" -p -J "
-            f"| grep -v \"^─\\{{4,\\}}\" "
-            f"| grep -v \"^[[:space:]]*$\" "
-            f"| grep -v \"^❯\" "
-            f"| grep -v \"auto mode on\" "
-            f"| grep -v \"Opus [0-9]\" "
-            f"| cut -c1-$w | tail -$((h-2))'"
+    def capture_clean(target, width):
+        """Capture pane content, clean chrome, truncate to width."""
+        result = subprocess.run(
+            ["tmux", "capture-pane", "-t", target, "-p", "-J"],
+            capture_output=True, text=True,
         )
-        wall_cmds.append(cmd)
+        lines = []
+        for line in (result.stdout or "").splitlines():
+            stripped = line.rstrip()
+            # Skip chrome lines
+            if not stripped:
+                continue
+            if stripped.startswith("─" * 4):
+                continue
+            if stripped.startswith("❯"):
+                continue
+            if "auto mode on" in stripped or "Opus " in stripped:
+                continue
+            lines.append(stripped[:width])
+        return lines
 
-    # Kill existing wall session if any
-    SESSION = "laundry-wall"
-    Tmux._run("kill-session", "-t", SESSION, capture_output=True)
+    def tile_layout(n, rows, cols):
+        """Calculate tile positions for n tiles in rows x cols grid."""
+        if n <= 0:
+            return []
+        # Determine grid dimensions
+        grid_cols = 1
+        while grid_cols * grid_cols < n:
+            grid_cols += 1
+        grid_rows = (n + grid_cols - 1) // grid_cols
 
-    # Create a dedicated session with the first pane
-    first_cmd = wall_cmds[0]
-    result = Tmux._run(
-        "new-session", "-d", "-s", SESSION, "-n", "wall",
-        "-P", "-F", "#{session_name}:#{window_id}",
-        "bash", "-c", first_cmd,
-        capture_output=True, text=True,
-    )
-    wall_window = result.stdout.strip()
-    if not wall_window:
-        print("Failed to create wall session", file=sys.stderr)
-        sys.exit(1)
+        tile_h = rows // grid_rows
+        tile_w = cols // grid_cols
 
-    # Split for each additional task
-    for cmd in wall_cmds[1:]:
-        Tmux._run(
-            "split-window", "-t", wall_window,
-            "bash", "-c", cmd,
-            capture_output=True,
-        )
-        # Re-tile after each split to keep layout balanced
-        Tmux._run("select-layout", "-t", wall_window, "tiled", capture_output=True)
+        tiles = []
+        for i in range(n):
+            r, c = divmod(i, grid_cols)
+            tiles.append((r * tile_h, c * tile_w, tile_h, tile_w))
+        return tiles
 
-    # Final tiled layout and switch
-    Tmux._run("select-layout", "-t", wall_window, "tiled", capture_output=True)
-    Tmux.switch(wall_window)
+    def run_wall(stdscr):
+        curses.curs_set(0)
+        stdscr.nodelay(True)
+        has_color = False
+        if curses.has_colors():
+            curses.start_color()
+            try:
+                curses.use_default_colors()
+                bg = -1
+            except curses.error:
+                bg = curses.COLOR_BLACK
+            curses.init_pair(1, curses.COLOR_BLUE, bg)
+            curses.init_pair(2, curses.COLOR_WHITE, bg)
+            curses.init_pair(3, curses.COLOR_WHITE, bg)
+            has_color = True
+
+        while True:
+            tasks = get_active_tasks()
+            if not tasks:
+                stdscr.clear()
+                stdscr.addstr(0, 0, "No active tasks")
+                stdscr.refresh()
+            else:
+                rows, cols = stdscr.getmaxyx()
+                tiles = tile_layout(len(tasks), rows, cols)
+
+                stdscr.erase()
+                for i, (t, (ty, tx, th, tw)) in enumerate(zip(tasks, tiles)):
+                    target = t["tmux_window_id"]
+                    title = t.get("title") or t.get("initial_prompt", "")[:30] or t["id"]
+                    project = Path(t["project"]).name if t.get("project") else ""
+                    header = f" {project}: {title} "[:tw - 1]
+
+                    # Draw header
+                    try:
+                        stdscr.addstr(ty, tx, header, curses.color_pair(1) | curses.A_BOLD)
+                    except curses.error:
+                        pass
+
+                    # Draw content
+                    content = capture_clean(target, tw - 1)
+                    # Take last (th-2) lines to show the bottom
+                    visible = content[-(th - 2):] if content else []
+                    for j, line in enumerate(visible):
+                        try:
+                            stdscr.addstr(ty + 1 + j, tx, line[:tw - 1], curses.color_pair(2))
+                        except curses.error:
+                            pass
+
+                    # Draw vertical border (right edge of each tile except last col)
+                    if tx + tw < cols:
+                        for row in range(ty, min(ty + th, rows)):
+                            try:
+                                stdscr.addstr(row, tx + tw - 1, "│", curses.color_pair(3))
+                            except curses.error:
+                                pass
+
+                stdscr.refresh()
+
+            # Wait 1s, break on 'q' or Ctrl-C
+            for _ in range(10):
+                try:
+                    ch = stdscr.getch()
+                    if ch in (ord('q'), ord('Q'), 27):  # q, Q, Esc
+                        return
+                except curses.error:
+                    pass
+                time.sleep(0.1)
+
+    curses.wrapper(run_wall)
 
 
 def cmd_pane(args):
