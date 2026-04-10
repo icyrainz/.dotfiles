@@ -187,7 +187,7 @@ class Tmux:
         Tmux._run("kill-window", "-t", target, capture_output=True)
 
     @staticmethod
-    def capture_pane(target, lines=30):
+    def capture_pane(target, lines=40):
         result = Tmux._run(
             "capture-pane", "-t", target, "-p",
             capture_output=True, text=True,
