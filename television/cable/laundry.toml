@@ -9,7 +9,8 @@ command = [
 ]
 no_sort = true
 ansi = true
-watch_interval = 5
+
+watch = 5
 
 [preview]
 command = [
