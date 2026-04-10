@@ -9,6 +9,12 @@
 - If unsure: say so. Never guess or invent file paths.
 - User instructions always override this file.
 
+## Laundry task management
+- When a laundry task ID is provided at session start (via system prompt or user message), read `~/.local/share/laundry/system-prompt.md` and follow its instructions.
+- Keep the task title and description up to date as the work evolves (`laundry update <ID> --title "..."`).
+- Link PRs and Jira tickets as they are created (`laundry link <ID> --pr/--jira`).
+- NEVER run `laundry done <ID>` without explicit user confirmation — it kills the tmux window.
+
 ## Efficiency
 - Read before writing. Understand the problem before coding.
 - No redundant file reads. Read each file once.
