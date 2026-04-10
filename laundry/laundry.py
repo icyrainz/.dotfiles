@@ -7,7 +7,12 @@ import sys
 import fcntl
 import uuid
 import re
+import socket
+import signal
 import subprocess
+import threading
+import time
+from io import StringIO
 from pathlib import Path
 from datetime import datetime, timezone, timedelta
 
@@ -15,6 +20,7 @@ DATA_DIR = Path.home() / ".local" / "share" / "laundry"
 TASKS_FILE = DATA_DIR / "tasks.json"
 LOCK_FILE = DATA_DIR / "tasks.json.lock"
 NOTES_DIR = DATA_DIR / "notes"
+SOCK_FILE = DATA_DIR / "laundry.sock"
 
 VALID_STATUSES = ("pending", "active", "paused", "completed", "cancelled")
 
@@ -105,6 +111,18 @@ def _tmux_window_exists(window_id):
         return False
 
 
+def _tmux_all_window_ids():
+    """Get all existing tmux window IDs as a set."""
+    try:
+        result = subprocess.run(
+            ["tmux", "list-windows", "-a", "-F", "#{window_id}"],
+            capture_output=True, text=True,
+        )
+        return set(result.stdout.splitlines())
+    except FileNotFoundError:
+        return set()
+
+
 def _tmux_switch(window_id):
     subprocess.run(["tmux", "switch-client", "-t", window_id])
 
@@ -137,6 +155,292 @@ Manage this task with the `laundry` CLI:
 - `laundry link {tid} --jira PROJ-N` — link a Jira ticket
 - `laundry add "subtask title" --parent {tid}` — break work into subtasks
 - `laundry done {tid}` — mark complete when finished"""
+
+
+# --- daemon client ---
+
+
+def _daemon_request(request):
+    """Send a request to the daemon, return response string or None if daemon not running."""
+    if not SOCK_FILE.exists():
+        return None
+    try:
+        sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        sock.settimeout(2)
+        sock.connect(str(SOCK_FILE))
+        sock.sendall(json.dumps(request).encode() + b"\n")
+        chunks = []
+        while True:
+            chunk = sock.recv(65536)
+            if not chunk:
+                break
+            chunks.append(chunk)
+        sock.close()
+        resp = json.loads(b"".join(chunks).decode())
+        return resp
+    except (ConnectionRefusedError, FileNotFoundError, OSError, json.JSONDecodeError):
+        return None
+
+
+def _notify_daemon():
+    """Tell the daemon to reload tasks from disk."""
+    _daemon_request({"cmd": "reload"})
+
+
+# --- output helpers (work for both direct and daemon modes) ---
+
+
+def _format_list(data, status_filter=None, show_all=False, parent=None, fmt=None):
+    """Generate list output as a string."""
+    tasks = data["tasks"]
+
+    if status_filter:
+        tasks = [t for t in tasks if t["status"] == status_filter]
+    elif not show_all:
+        tasks = [t for t in tasks if t["status"] in ("pending", "active", "paused")]
+
+    if parent:
+        tasks = [t for t in tasks if t.get("parent_id") == parent]
+
+    out = StringIO()
+    if fmt == "tv":
+        if not tasks:
+            out.write("No tasks yet\n")
+            return out.getvalue()
+
+        DIM = "\033[2m"
+        RESET = "\033[0m"
+        PROJECT_WIDTH = 20
+        for t in tasks:
+            icon = STATUS_ICONS.get(t["status"], "?")
+            project = Path(t["project"]).name if t["project"] else ""
+            project = project[:PROJECT_WIDTH].ljust(PROJECT_WIDTH)
+            prompt = t["title"] or t.get("initial_prompt", "")[:80] or "(untitled)"
+            if t["status"] in ("completed", "cancelled"):
+                out.write(f"{t['id']}\t{DIM}{icon}\t{project}\t{prompt}{RESET}\n")
+            else:
+                out.write(f"{t['id']}\t{icon}\t{project}\t{prompt}\n")
+    else:
+        for t in tasks:
+            icon = STATUS_ICONS.get(t["status"], "?")
+            title = t["title"] or t.get("initial_prompt", "")[:60] or "(untitled)"
+            parent_str = f"  ↳ child of {t['parent_id']}" if t.get("parent_id") else ""
+            out.write(f"  {icon} {t['id']}  {title}{parent_str}\n")
+    return out.getvalue()
+
+
+def _format_show(data, task_id, notes_file_only=False):
+    """Generate show output as a string."""
+    task = _find_task(data, task_id)
+    if not task:
+        return None
+
+    if notes_file_only:
+        return str(NOTES_DIR / task["notes_file"]) + "\n"
+
+    out = StringIO()
+    icon = STATUS_ICONS.get(task["status"], "?")
+    title = task["title"] or "(untitled)"
+    out.write(f"{icon} {task['id']}: {title}\n")
+    out.write(f"  Status:  {task['status']}\n")
+    out.write(f"  Project: {task['project']}\n")
+    if task.get("parent_id"):
+        out.write(f"  Parent:  {task['parent_id']}\n")
+    if task.get("description"):
+        out.write(f"  Description: {task['description']}\n")
+    if task.get("initial_prompt"):
+        out.write(f"  Prompt:  {task['initial_prompt']}\n")
+    prs = task.get("links", {}).get("prs", [])
+    jira = task.get("links", {}).get("jira", [])
+    if prs:
+        out.write(f"  PRs:     {', '.join(prs)}\n")
+    if jira:
+        out.write(f"  Jira:    {', '.join(jira)}\n")
+    if task.get("claude_session_id"):
+        out.write(f"  Session: {task['claude_session_id']}\n")
+    if task.get("tmux_window_id"):
+        out.write(f"  Window:  {task['tmux_window_id']}\n")
+    out.write(f"  Created: {task['created_at']}\n")
+    out.write(f"  Updated: {task['updated_at']}\n")
+
+    notes_path = NOTES_DIR / task["notes_file"]
+    if notes_path.exists():
+        content = notes_path.read_text().strip()
+        if content:
+            out.write(f"\n--- Notes ---\n{content}\n")
+    return out.getvalue()
+
+
+def _format_pane(data, task_id):
+    """Capture tmux pane content for a task."""
+    task = _find_task(data, task_id)
+    if not task:
+        return None
+
+    wid = task.get("tmux_window_id")
+    if not wid or not _tmux_window_exists(wid):
+        return f"No active window for task {task_id}\n"
+
+    result = subprocess.run(
+        ["tmux", "capture-pane", "-t", wid, "-p", "-S", "-50"],
+        capture_output=True, text=True,
+    )
+    return result.stdout if result.stdout else ""
+
+
+# --- daemon server ---
+
+
+class LaundryDaemon:
+    def __init__(self):
+        self.data = {"version": 1, "tasks": []}
+        self.data_mtime = 0
+        self._lock = threading.Lock()
+        self.running = True
+
+    def reload(self):
+        """Reload tasks from disk if changed."""
+        try:
+            mtime = TASKS_FILE.stat().st_mtime if TASKS_FILE.exists() else 0
+        except OSError:
+            mtime = 0
+        if mtime != self.data_mtime:
+            with self._lock:
+                self.data = _load()
+                self.data_mtime = mtime
+
+    def gc_loop(self):
+        """Background thread: poll tmux every 2s, auto-pause orphaned tasks."""
+        while self.running:
+            time.sleep(2)
+            try:
+                self._gc_once()
+            except Exception:
+                pass
+
+    def _gc_once(self):
+        self.reload()
+        active_tasks = [
+            t for t in self.data["tasks"]
+            if t["status"] == "active" and t.get("tmux_window_id")
+        ]
+        if not active_tasks:
+            return
+
+        live_windows = _tmux_all_window_ids()
+        changed = False
+        with self._lock:
+            # Re-read in case of external mutation
+            self.data = _load()
+            for task in self.data["tasks"]:
+                if (task["status"] == "active"
+                        and task.get("tmux_window_id")
+                        and task["tmux_window_id"] not in live_windows):
+                    task["tmux_window_id"] = None
+                    task["status"] = "paused"
+                    task["updated_at"] = _now_iso()
+                    changed = True
+            if changed:
+                with open(LOCK_FILE, "w") as lock:
+                    fcntl.flock(lock, fcntl.LOCK_EX)
+                    _save(self.data)
+                    self.data_mtime = TASKS_FILE.stat().st_mtime
+
+    def handle_request(self, request):
+        """Handle a single request, return response dict."""
+        self.reload()
+        cmd = request.get("cmd", "")
+
+        if cmd == "reload":
+            with self._lock:
+                self.data = _load()
+                self.data_mtime = TASKS_FILE.stat().st_mtime if TASKS_FILE.exists() else 0
+            return {"output": "ok"}
+
+        elif cmd == "list":
+            output = _format_list(
+                self.data,
+                status_filter=request.get("status"),
+                show_all=request.get("all", False),
+                parent=request.get("parent"),
+                fmt=request.get("format"),
+            )
+            return {"output": output}
+
+        elif cmd == "show":
+            output = _format_show(
+                self.data, request["id"],
+                notes_file_only=request.get("notes_file", False),
+            )
+            if output is None:
+                return {"error": f"Task {request['id']} not found"}
+            return {"output": output}
+
+        elif cmd == "pane":
+            output = _format_pane(self.data, request["id"])
+            if output is None:
+                return {"error": f"Task {request['id']} not found"}
+            return {"output": output}
+
+        return {"error": f"Unknown command: {cmd}"}
+
+    def serve(self):
+        """Main daemon loop."""
+        _ensure_dirs()
+        self.reload()
+
+        # Clean up stale socket
+        if SOCK_FILE.exists():
+            try:
+                test = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+                test.settimeout(1)
+                test.connect(str(SOCK_FILE))
+                test.close()
+                print("Daemon already running", file=sys.stderr)
+                sys.exit(0)
+            except (ConnectionRefusedError, OSError):
+                SOCK_FILE.unlink(missing_ok=True)
+
+        server = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        server.bind(str(SOCK_FILE))
+        server.listen(5)
+        server.settimeout(1)
+
+        # Start GC thread
+        gc_thread = threading.Thread(target=self.gc_loop, daemon=True)
+        gc_thread.start()
+
+        def shutdown(signum, frame):
+            self.running = False
+
+        signal.signal(signal.SIGTERM, shutdown)
+        signal.signal(signal.SIGINT, shutdown)
+
+        while self.running:
+            try:
+                conn, _ = server.accept()
+            except socket.timeout:
+                continue
+            except OSError:
+                break
+            try:
+                raw = b""
+                while b"\n" not in raw:
+                    chunk = conn.recv(4096)
+                    if not chunk:
+                        break
+                    raw += chunk
+                if raw:
+                    request = json.loads(raw.decode().strip())
+                    response = self.handle_request(request)
+                    conn.sendall(json.dumps(response).encode())
+            except Exception:
+                pass
+            finally:
+                conn.close()
+
+        server.close()
+        SOCK_FILE.unlink(missing_ok=True)
 
 
 # --- commands ---
@@ -182,89 +486,58 @@ def cmd_add(args):
     if not notes_path.exists():
         notes_path.write_text(f"# {title or 'New task'}\n")
 
+    _notify_daemon()
     print(task_id)
     return task_id
 
 
 def cmd_list(args):
+    # Try daemon first
+    resp = _daemon_request({
+        "cmd": "list",
+        "status": args.status,
+        "all": args.all,
+        "parent": args.parent,
+        "format": args.format,
+    })
+    if resp and "output" in resp:
+        sys.stdout.write(resp["output"])
+        return
+
+    # Fallback to direct
     _ensure_dirs()
     data = _load()
-    tasks = data["tasks"]
-
-    if args.status:
-        tasks = [t for t in tasks if t["status"] == args.status]
-    elif not args.all:
-        tasks = [t for t in tasks if t["status"] in ("pending", "active", "paused")]
-
-    if args.parent:
-        tasks = [t for t in tasks if t.get("parent_id") == args.parent]
-
-    if args.format == "tv":
-        if not tasks:
-            print("No tasks yet")
-            return
-
-        DIM = "\033[2m"
-        RESET = "\033[0m"
-        PROJECT_WIDTH = 20
-        for t in tasks:
-            icon = STATUS_ICONS.get(t["status"], "?")
-            project = Path(t["project"]).name if t["project"] else ""
-            project = project[:PROJECT_WIDTH].ljust(PROJECT_WIDTH)
-            prompt = t["title"] or t.get("initial_prompt", "")[:80] or "(untitled)"
-            if t["status"] in ("completed", "cancelled"):
-                print(f"{t['id']}\t{DIM}{icon}\t{project}\t{prompt}{RESET}")
-            else:
-                print(f"{t['id']}\t{icon}\t{project}\t{prompt}")
-    else:
-        for t in tasks:
-            icon = STATUS_ICONS.get(t["status"], "?")
-            title = t["title"] or t.get("initial_prompt", "")[:60] or "(untitled)"
-            parent_str = f"  ↳ child of {t['parent_id']}" if t.get("parent_id") else ""
-            print(f"  {icon} {t['id']}  {title}{parent_str}")
+    sys.stdout.write(_format_list(
+        data,
+        status_filter=args.status,
+        show_all=args.all,
+        parent=args.parent,
+        fmt=args.format,
+    ))
 
 
 def cmd_show(args):
-    _ensure_dirs()
-    data = _load()
-    task = _find_task(data, args.id)
-    if not task:
-        print(f"Task {args.id} not found", file=sys.stderr)
-        sys.exit(1)
-
-    if args.notes_file:
-        print(NOTES_DIR / task["notes_file"])
+    # Try daemon first
+    resp = _daemon_request({
+        "cmd": "show",
+        "id": args.id,
+        "notes_file": args.notes_file,
+    })
+    if resp:
+        if "error" in resp:
+            print(resp["error"], file=sys.stderr)
+            sys.exit(1)
+        sys.stdout.write(resp["output"])
         return
 
-    icon = STATUS_ICONS.get(task["status"], "?")
-    title = task["title"] or "(untitled)"
-    print(f"{icon} {task['id']}: {title}")
-    print(f"  Status:  {task['status']}")
-    print(f"  Project: {task['project']}")
-    if task.get("parent_id"):
-        print(f"  Parent:  {task['parent_id']}")
-    if task.get("description"):
-        print(f"  Description: {task['description']}")
-    if task.get("initial_prompt"):
-        print(f"  Prompt:  {task['initial_prompt']}")
-    prs = task.get("links", {}).get("prs", [])
-    jira = task.get("links", {}).get("jira", [])
-    if prs:
-        print(f"  PRs:     {', '.join(prs)}")
-    if jira:
-        print(f"  Jira:    {', '.join(jira)}")
-    if task.get("claude_session_id"):
-        print(f"  Session: {task['claude_session_id']}")
-    if task.get("tmux_window_id"):
-        print(f"  Window:  {task['tmux_window_id']}")
-    print(f"  Created: {task['created_at']}")
-    print(f"  Updated: {task['updated_at']}")
-
-    notes_path = NOTES_DIR / task["notes_file"]
-    if notes_path.exists():
-        content = notes_path.read_text().strip()
-        if content:
-            print(f"\n--- Notes ---\n{content}")
+    # Fallback to direct
+    _ensure_dirs()
+    data = _load()
+    output = _format_show(data, args.id, notes_file_only=args.notes_file)
+    if output is None:
+        print(f"Task {args.id} not found", file=sys.stderr)
+        sys.exit(1)
+    sys.stdout.write(output)
 
 
 def cmd_update(args):
@@ -285,6 +558,7 @@ def cmd_update(args):
             task["claude_session_id"] = args.claude_session
         task["updated_at"] = _now_iso()
         _save(data)
+    _notify_daemon()
     print(f"Updated {args.id}")
 
 
@@ -304,6 +578,7 @@ def cmd_link(args):
             task["links"]["jira"].append(args.jira)
         task["updated_at"] = _now_iso()
         _save(data)
+    _notify_daemon()
     print(f"Linked {args.id}")
 
 
@@ -323,6 +598,7 @@ def cmd_unlink(args):
             task["links"]["jira"].remove(args.jira)
         task["updated_at"] = _now_iso()
         _save(data)
+    _notify_daemon()
     print(f"Unlinked {args.id}")
 
 
@@ -373,6 +649,7 @@ def cmd_open(args):
         task["updated_at"] = _now_iso()
         _save(data)
 
+    _notify_daemon()
     _tmux_switch(window_id)
 
 
@@ -397,6 +674,7 @@ def cmd_launch(args):
         t = _find_task(data, args.id)
         t["launched"] = True
         _save(data)
+    _notify_daemon()
 
     if is_resume:
         os.execvp("claude", [
@@ -434,6 +712,7 @@ def cmd_pause(args):
         task["status"] = "paused"
         task["updated_at"] = _now_iso()
         _save(data)
+    _notify_daemon()
     print(f"Paused {args.id}")
 
 
@@ -455,6 +734,7 @@ def cmd_done(args):
         task["status"] = "completed"
         task["updated_at"] = _now_iso()
         _save(data)
+    _notify_daemon()
     print(f"Completed {args.id}")
 
 
@@ -476,6 +756,7 @@ def cmd_cancel(args):
         task["status"] = "cancelled"
         task["updated_at"] = _now_iso()
         _save(data)
+    _notify_daemon()
     print(f"Cancelled {args.id}")
 
 
@@ -496,6 +777,7 @@ def cmd_reopen(args):
         task["tmux_window_id"] = None
         task["updated_at"] = _now_iso()
         _save(data)
+    _notify_daemon()
     print(f"Reopened {args.id}")
 
 
@@ -517,6 +799,7 @@ def cmd_reset(args):
     # Remove all notes
     shutil.rmtree(NOTES_DIR, ignore_errors=True)
     NOTES_DIR.mkdir(parents=True, exist_ok=True)
+    _notify_daemon()
     print("All tasks wiped")
 
 
@@ -540,28 +823,32 @@ def cmd_gc(args):
                 print(f"Paused orphaned task {tid}")
         else:
             print("No orphaned tasks found")
+    _notify_daemon()
 
 
 def cmd_pane(args):
-    """Capture the tmux pane content for a task's window."""
-    _ensure_dirs()
-    data = _load()
-    task = _find_task(data, args.id)
-    if not task:
-        print(f"Task {args.id} not found", file=sys.stderr)
-        sys.exit(1)
-
-    wid = task.get("tmux_window_id")
-    if not wid or not _tmux_window_exists(wid):
-        print(f"No active window for task {args.id}")
+    # Try daemon first
+    resp = _daemon_request({"cmd": "pane", "id": args.id})
+    if resp:
+        if "error" in resp:
+            print(resp["error"], file=sys.stderr)
+            sys.exit(1)
+        sys.stdout.write(resp["output"])
         return
 
-    result = subprocess.run(
-        ["tmux", "capture-pane", "-t", wid, "-p", "-S", "-50"],
-        capture_output=True, text=True,
-    )
-    if result.stdout:
-        print(result.stdout, end="")
+    # Fallback to direct
+    _ensure_dirs()
+    data = _load()
+    output = _format_pane(data, args.id)
+    if output is None:
+        print(f"Task {args.id} not found", file=sys.stderr)
+        sys.exit(1)
+    sys.stdout.write(output)
+
+
+def cmd_serve(args):
+    daemon = LaundryDaemon()
+    daemon.serve()
 
 
 # --- main ---
@@ -642,6 +929,9 @@ def main():
     p_pane = sub.add_parser("pane", help="Capture tmux pane content for a task")
     p_pane.add_argument("id", help="Task ID")
 
+    # serve
+    sub.add_parser("serve", help="Start the laundry daemon")
+
     # reset
     sub.add_parser("reset", help="Wipe all tasks and notes")
 
@@ -665,6 +955,7 @@ def main():
         "reopen": cmd_reopen,
         "gc": cmd_gc,
         "pane": cmd_pane,
+        "serve": cmd_serve,
         "reset": cmd_reset,
     }
     commands[args.command](args)
