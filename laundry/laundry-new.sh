@@ -3,7 +3,7 @@
 set -euo pipefail
 
 # Step 1: Get the initial prompt
-echo -n "Task idea: "
+echo -n "Prompt: "
 read -r prompt
 if [[ -z "$prompt" ]]; then
     echo "No prompt provided, aborting."
@@ -14,7 +14,7 @@ fi
 default_dir="$(tmux display-message -p '#{pane_current_path}' 2>/dev/null || pwd)"
 
 if command -v zoxide &>/dev/null && command -v fzf &>/dev/null; then
-    dir=$(zoxide query --list 2>/dev/null | fzf --height=15 --prompt="Project dir: " --query="$default_dir" --select-1 || true)
+    dir=$(zoxide query --list 2>/dev/null | fzf --height=15 --prompt="Project: " --query="$default_dir" --select-1 || true)
 fi
 dir="${dir:-$default_dir}"
 
