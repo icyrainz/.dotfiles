@@ -1138,21 +1138,9 @@ def cmd_wall(args):
             ["tmux", "capture-pane", "-t", target, "-p", "-J"],
             capture_output=True, text=True,
         )
-        lines = []
-        for line in (result.stdout or "").rstrip().splitlines():
-            s = line.rstrip()
-            # Skip Claude Code TUI chrome (not content)
-            if not s:
-                continue
-            if s.lstrip().startswith("❯") and len(s.lstrip()) < 3:
-                continue  # empty prompt line
-            if s.startswith("─" * 10):
-                continue  # separator between messages
-            if "⏵⏵ auto mode" in s or "shift+tab to cycle" in s:
-                continue  # mode indicator
-            if re.match(r"^\s+\S.+\| (Opus|Sonnet|Haiku) .+\|.*[░█]", s):
-                continue  # status bar: project | model | context bar
-            lines.append(s[:width])
+        # Drop last 4 lines (Claude TUI chrome: separator, status bar, mode, prompt)
+        all_lines = (result.stdout or "").rstrip().splitlines()
+        lines = [l.rstrip()[:width] for l in all_lines[:-4]]
         return lines
 
     def tile_layout(n, rows, cols):
