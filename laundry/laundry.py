@@ -164,6 +164,7 @@ def _daemon_request(request):
     """Send a request to the daemon, return response string or None if daemon not running."""
     if not SOCK_FILE.exists():
         return None
+    sock = None
     try:
         sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
         sock.settimeout(2)
@@ -175,11 +176,13 @@ def _daemon_request(request):
             if not chunk:
                 break
             chunks.append(chunk)
-        sock.close()
         resp = json.loads(b"".join(chunks).decode())
         return resp
     except (ConnectionRefusedError, FileNotFoundError, OSError, json.JSONDecodeError):
         return None
+    finally:
+        if sock:
+            sock.close()
 
 
 def _notify_daemon():
@@ -319,19 +322,17 @@ class LaundryDaemon:
                 pass
 
     def _gc_once(self):
-        self.reload()
-        active_tasks = [
-            t for t in self.data["tasks"]
-            if t["status"] == "active" and t.get("tmux_window_id")
-        ]
-        if not active_tasks:
-            return
-
-        live_windows = _tmux_all_window_ids()
         changed = False
         with self._lock:
-            # Re-read in case of external mutation
             self.data = _load()
+            active_tasks = [
+                t for t in self.data["tasks"]
+                if t["status"] == "active" and t.get("tmux_window_id")
+            ]
+            if not active_tasks:
+                return
+
+            live_windows = _tmux_all_window_ids()
             for task in self.data["tasks"]:
                 if (task["status"] == "active"
                         and task.get("tmux_window_id")
@@ -344,7 +345,7 @@ class LaundryDaemon:
                 with open(LOCK_FILE, "w") as lock:
                     fcntl.flock(lock, fcntl.LOCK_EX)
                     _save(self.data)
-                    self.data_mtime = TASKS_FILE.stat().st_mtime
+                self.data_mtime = TASKS_FILE.stat().st_mtime if TASKS_FILE.exists() else 0
 
     def handle_request(self, request):
         """Handle a single request, return response dict."""
@@ -424,8 +425,9 @@ class LaundryDaemon:
             except OSError:
                 break
             try:
+                conn.settimeout(2)
                 raw = b""
-                while b"\n" not in raw:
+                while b"\n" not in raw and len(raw) < 65536:
                     chunk = conn.recv(4096)
                     if not chunk:
                         break
@@ -604,15 +606,24 @@ def cmd_unlink(args):
 
 def cmd_open(args):
     _ensure_dirs()
+
+    # Quick check without lock — if already active with valid window, just switch
+    data = _load()
+    task = _find_task(data, args.id)
+    if not task:
+        print(f"Task {args.id} not found", file=sys.stderr)
+        sys.exit(1)
+    if task["status"] == "active" and _tmux_window_exists(task.get("tmux_window_id")):
+        _tmux_switch(task["tmux_window_id"])
+        return
+
+    # Need to mutate — acquire lock
     with open(LOCK_FILE, "w") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX)
         data = _load()
         task = _find_task(data, args.id)
-        if not task:
-            print(f"Task {args.id} not found", file=sys.stderr)
-            sys.exit(1)
 
-        # If already active with valid window, just switch
+        # Re-check after lock (another process may have changed state)
         if task["status"] == "active" and _tmux_window_exists(task.get("tmux_window_id")):
             _tmux_switch(task["tmux_window_id"])
             return
@@ -624,29 +635,37 @@ def cmd_open(args):
         if not task.get("claude_session_id"):
             task["claude_session_id"] = str(uuid.uuid4())
 
-        # Determine tmux session
-        project_path = Path(task["project"])
-        session_name = project_path.name.replace(".", "_")  # tmux maps dots to underscores
-        if not _tmux_session_exists(session_name):
-            subprocess.run(
-                ["tmux", "new-session", "-d", "-s", session_name, "-c", str(project_path)],
-                capture_output=True,
-            )
-
-        # Create window with laundry launch as the command
-        laundry_bin = Path(__file__).resolve()
-        result = subprocess.run(
-            [
-                "tmux", "new-window", "-t", session_name, "-c", str(project_path),
-                "-n", f"L{task['id']}", "-P", "-F", "#{window_id}",
-                "python3", str(laundry_bin), "launch", task["id"],
-            ],
-            capture_output=True, text=True,
-        )
-        window_id = result.stdout.strip()
-        task["tmux_window_id"] = window_id
+        # Update state before spawning tmux (so daemon GC doesn't race)
         task["status"] = "active"
         task["updated_at"] = _now_iso()
+        _save(data)
+
+    # tmux operations outside lock
+    project_path = Path(task["project"])
+    session_name = project_path.name.replace(".", "_")  # tmux maps dots to underscores
+    if not _tmux_session_exists(session_name):
+        subprocess.run(
+            ["tmux", "new-session", "-d", "-s", session_name, "-c", str(project_path)],
+            capture_output=True,
+        )
+
+    laundry_bin = Path(__file__).resolve()
+    result = subprocess.run(
+        [
+            "tmux", "new-window", "-t", session_name, "-c", str(project_path),
+            "-n", f"L{task['id']}", "-P", "-F", "#{window_id}",
+            "python3", str(laundry_bin), "launch", task["id"],
+        ],
+        capture_output=True, text=True,
+    )
+    window_id = result.stdout.strip()
+
+    # Store window ID
+    with open(LOCK_FILE, "w") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        data = _load()
+        task = _find_task(data, args.id)
+        task["tmux_window_id"] = window_id
         _save(data)
 
     _notify_daemon()
