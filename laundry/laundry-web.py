@@ -26,10 +26,15 @@ _pr_cache_lock = Lock()
 
 HTML_FILE = Path(__file__).resolve().parent / "laundry-web.html"
 
-_HTML_BUILTIN = """<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
+_HTML_FALLBACK = (
+    '<!DOCTYPE html><html><head><meta charset="utf-8"><title>laundry</title></head>'
+    '<body style="background:#1a1b26;color:#c0caf5;font-family:monospace;padding:40px;text-align:center">'
+    '<h2>laundry-web.html not found</h2>'
+    f'<p>Expected at: {Path(__file__).resolve().parent / "laundry-web.html"}</p>'
+    '</body></html>'
+)
+
+_REMOVED = """
 <title>laundry</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -219,10 +224,10 @@ connect();
 
 
 def _load_html():
-    """Load HTML from external file if exists, otherwise use builtin."""
+    """Load HTML from external file, or show error page."""
     if HTML_FILE.exists():
         return HTML_FILE.read_text()
-    return _HTML_BUILTIN
+    return _HTML_FALLBACK
 
 
 def load_tasks():
@@ -415,7 +420,7 @@ def add_and_open_task(prompt, project):
     laundry_bin = Path(__file__).resolve().parent / "laundry.py"
     args = [sys.executable, str(laundry_bin), "add"]
     if prompt:
-        args += ["--prompt", prompt, prompt]
+        args += [prompt, "--prompt", prompt]
     if project:
         args += ["--project", project]
     result = subprocess.run(args, capture_output=True, text=True)

@@ -15,14 +15,13 @@
   }
   .tile {
     background: #1a1b26; display: flex; flex-direction: column;
-    min-height: 0; overflow: hidden;
-    border-left: 2px solid transparent; transition: opacity 0.3s, border-color 0.3s;
+    min-height: 0; overflow: hidden; transition: opacity 0.3s;
   }
   .tile.state-idle { opacity: 0.45; }
   .tile.state-idle:hover,
   .tile.state-idle:focus-within { opacity: 1; }
-  .tile.state-thinking { border-left-color: #7aa2f7; }
-  .tile.state-permission { border-left-color: #e0af68; }
+  .tile.state-thinking .tile-header { border-bottom-color: #7aa2f7; }
+  .tile.state-permission .tile-header { border-bottom-color: #e0af68; }
   .tile-header {
     padding: 6px 10px; font-weight: bold; color: #7aa2f7;
     border-bottom: 1px solid #292e42; flex-shrink: 0;
