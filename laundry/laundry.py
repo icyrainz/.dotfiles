@@ -1148,17 +1148,21 @@ def cmd_wall(args):
         )
         wall_cmds.append(cmd)
 
-    # Create the wall window — first pane runs the first command
+    # Kill existing wall session if any
+    SESSION = "laundry-wall"
+    Tmux._run("kill-session", "-t", SESSION, capture_output=True)
+
+    # Create a dedicated session with the first pane
     first_cmd = wall_cmds[0]
     result = Tmux._run(
-        "new-window", "-n", "wall",
+        "new-session", "-d", "-s", SESSION, "-n", "wall",
         "-P", "-F", "#{session_name}:#{window_id}",
         "bash", "-c", first_cmd,
         capture_output=True, text=True,
     )
     wall_window = result.stdout.strip()
     if not wall_window:
-        print("Failed to create wall window", file=sys.stderr)
+        print("Failed to create wall session", file=sys.stderr)
         sys.exit(1)
 
     # Split for each additional task
@@ -1171,7 +1175,7 @@ def cmd_wall(args):
         # Re-tile after each split to keep layout balanced
         Tmux._run("select-layout", "-t", wall_window, "tiled", capture_output=True)
 
-    # Final tiled layout
+    # Final tiled layout and switch
     Tmux._run("select-layout", "-t", wall_window, "tiled", capture_output=True)
     Tmux.switch(wall_window)
 
