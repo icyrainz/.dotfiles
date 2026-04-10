@@ -3,135 +3,199 @@
 <head>
 <meta charset="utf-8">
 <title>laundry</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
 <style>
+  :root {
+    --bg-deep: #0d1017;
+    --bg-panel: #131820;
+    --bg-surface: #1a2030;
+    --border: #1e2a3a;
+    --border-active: #2a3a50;
+    --text: #a0b0c8;
+    --text-dim: #4a5a70;
+    --text-bright: #d0dce8;
+    --accent: #4a9eff;
+    --accent-glow: rgba(74, 158, 255, 0.15);
+    --warn: #e8a84c;
+    --warn-glow: rgba(232, 168, 76, 0.15);
+    --danger: #e85c5c;
+    --success: #4ce890;
+    --purple: #a78bfa;
+    --mono: 'IBM Plex Mono', 'JetBrains Mono', monospace;
+    --display: 'Space Grotesk', sans-serif;
+  }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
-    background: #1a1b26; color: #c0caf5; font-family: 'JetBrains Mono', 'Fira Code', monospace;
-    font-size: 13px; height: 100vh; overflow: hidden;
+    background: var(--bg-deep); color: var(--text); font-family: var(--mono);
+    font-size: 12px; height: 100vh; overflow: hidden;
   }
   #grid {
-    display: grid; gap: 1px; height: 100vh; padding: 1px;
-    background: #292e42;
+    display: grid; gap: 2px; height: 100vh; padding: 2px;
+    background: var(--bg-deep);
   }
+
+  /* Tiles */
   .tile {
-    background: #1a1b26; display: flex; flex-direction: column;
-    min-height: 0; overflow: hidden; transition: opacity 0.3s;
+    background: var(--bg-panel); display: flex; flex-direction: column;
+    min-height: 0; overflow: hidden; border-radius: 4px;
+    border: 1px solid var(--border);
+    transition: opacity 0.4s ease, border-color 0.4s ease;
   }
-  .tile.state-idle { opacity: 0.45; }
+  .tile.state-idle { opacity: 0.4; }
   .tile.state-idle:hover,
   .tile.state-idle:focus-within { opacity: 1; }
-  .tile.state-thinking .tile-header { border-bottom-color: #7aa2f7; }
-  .tile.state-permission .tile-header { border-bottom-color: #e0af68; }
+  .tile.state-thinking { border-color: var(--accent); }
+  .tile.state-thinking .tile-header { border-bottom-color: var(--accent); }
+  .tile.state-permission { border-color: var(--warn); }
+  .tile.state-permission .tile-header { border-bottom-color: var(--warn); }
+
+  /* Header */
   .tile-header {
-    padding: 6px 10px; font-weight: bold; color: #7aa2f7;
-    border-bottom: 1px solid #292e42; flex-shrink: 0;
-    display: flex; justify-content: space-between; align-items: center;
-    gap: 8px;
+    padding: 8px 10px; font-family: var(--display); font-weight: 500;
+    color: var(--text-bright);
+    border-bottom: 2px solid var(--border); flex-shrink: 0;
+    display: flex; align-items: center; gap: 8px;
+    background: var(--bg-surface);
   }
   .tile-header .title-left {
     min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    flex: 1; font-size: 13px; letter-spacing: -0.02em;
   }
-  .tile-header .project { color: #565f89; margin-right: 8px; }
-  .tile-header .header-right { display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
-  .tile-header .links { display: flex; gap: 8px; align-items: center; }
+  .tile-header .project {
+    color: var(--text-dim); margin-right: 6px;
+    text-transform: uppercase; font-size: 10px; letter-spacing: 0.05em;
+  }
+
+  /* Link pills */
+  .tile-header .links { display: flex; gap: 6px; align-items: center; flex-shrink: 0; }
   .tile-header .links a,
   .tile-header .links a:link,
   .tile-header .links a:visited,
   .tile-header .links a:active {
-    text-decoration: none !important; font-size: 11px; font-weight: 600;
-    padding: 2px 8px; border-radius: 10px;
-    color: #1a1b26 !important; white-space: nowrap;
+    text-decoration: none !important; font-size: 10px; font-weight: 600;
+    font-family: var(--mono);
+    padding: 2px 8px; border-radius: 3px; white-space: nowrap;
+    letter-spacing: 0.02em; transition: transform 0.1s;
   }
-  .tile-header .links a:hover { opacity: 0.85; }
-  .tile-header .links a.jira { background: #7dcfff !important; }
+  .tile-header .links a:hover { transform: translateY(-1px); }
+  .tile-header .links a.jira { background: var(--accent) !important; color: var(--bg-deep) !important; }
   .tile-header .links a.pr-PENDING,
-  .tile-header .links a.pr-REVIEW_REQUIRED { background: #e0af68 !important; }
-  .tile-header .links a.pr-APPROVED { background: #73daca !important; }
-  .tile-header .links a.pr-CHANGES_REQUESTED { background: #f7768e !important; }
-  .tile-header .links a.pr-MERGED { background: #bb9af7 !important; }
-  .tile-header .links a.pr-CLOSED { background: #3b4261 !important; color: #c0caf5 !important; }
+  .tile-header .links a.pr-REVIEW_REQUIRED { background: var(--warn) !important; color: var(--bg-deep) !important; }
+  .tile-header .links a.pr-APPROVED { background: var(--success) !important; color: var(--bg-deep) !important; }
+  .tile-header .links a.pr-CHANGES_REQUESTED { background: var(--danger) !important; color: var(--bg-deep) !important; }
+  .tile-header .links a.pr-MERGED { background: var(--purple) !important; color: var(--bg-deep) !important; }
+  .tile-header .links a.pr-CLOSED { background: var(--border-active) !important; color: var(--text-dim) !important; }
+
+  /* Content */
   .tile-content {
-    flex: 1; overflow-y: auto; padding: 6px 10px;
+    flex: 1; overflow-y: auto; padding: 8px 10px;
     white-space: pre-wrap; overflow-wrap: break-word;
-    font-size: 12px; line-height: 1.4;
+    font-size: 11px; line-height: 1.5; color: var(--text);
   }
-  .tile-content::-webkit-scrollbar { width: 4px; }
-  .tile-content::-webkit-scrollbar-thumb { background: #292e42; border-radius: 2px; }
+  .tile-content::-webkit-scrollbar { width: 3px; }
+  .tile-content::-webkit-scrollbar-track { background: transparent; }
+  .tile-content::-webkit-scrollbar-thumb { background: var(--border-active); border-radius: 3px; }
+
+  /* Input */
   .tile-input {
-    border-top: 1px solid #292e42; padding: 4px 8px; flex-shrink: 0;
-    display: flex; gap: 4px;
+    border-top: 1px solid var(--border); padding: 6px 8px; flex-shrink: 0;
+    display: flex; gap: 4px; background: var(--bg-surface);
   }
   .tile-input input {
-    flex: 1; background: #24283b; color: #c0caf5; border: 1px solid #292e42;
-    padding: 4px 8px; font-family: inherit; font-size: 12px;
-    border-radius: 3px; outline: none;
+    flex: 1; background: var(--bg-deep); color: var(--text-bright);
+    border: 1px solid var(--border); padding: 5px 8px;
+    font-family: var(--mono); font-size: 11px;
+    border-radius: 3px; outline: none; transition: border-color 0.2s;
   }
-  .tile-input input:focus { border-color: #7aa2f7; background: #292e42; }
+  .tile-input input:focus { border-color: var(--accent); background: var(--bg-panel); }
   .tile-input button {
-    background: #292e42; color: #7aa2f7; border: none; padding: 4px 10px;
-    cursor: pointer; border-radius: 3px; font-family: inherit; font-size: 12px;
+    background: var(--border-active); color: var(--accent); border: none;
+    padding: 5px 10px; cursor: pointer; border-radius: 3px;
+    font-family: var(--mono); font-size: 11px; transition: background 0.15s;
   }
-  .tile-input button:hover { background: #343b58; }
+  .tile-input button:hover { background: var(--accent); color: var(--bg-deep); }
+
+  /* Dropdown menu */
   .tile-menu { position: relative; flex-shrink: 0; }
   .tile-menu-btn {
-    background: none; border: none; color: #565f89; cursor: pointer;
-    font-size: 16px; padding: 2px 4px; line-height: 1; border-radius: 3px;
+    background: none; border: none; color: var(--text-dim); cursor: pointer;
+    font-size: 14px; padding: 2px 4px; line-height: 1; border-radius: 3px;
+    transition: color 0.15s;
   }
-  .tile-menu-btn:hover { color: #c0caf5; background: #292e42; }
+  .tile-menu-btn:hover { color: var(--text-bright); }
   .tile-dropdown {
     display: none; position: absolute; left: 0; top: 100%; z-index: 10;
-    background: #24283b; border: 1px solid #292e42; border-radius: 4px;
-    padding: 2px 0; white-space: nowrap; box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    background: var(--bg-surface); border: 1px solid var(--border-active);
+    border-radius: 4px; padding: 2px 0; white-space: nowrap;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
   }
   .tile-dropdown.open { display: block; }
   .tile-dropdown button {
     display: block; width: 100%; text-align: left; background: none;
-    border: none; color: #c0caf5; padding: 5px 12px; cursor: pointer;
-    font-family: inherit; font-size: 11px;
+    border: none; color: var(--text); padding: 5px 12px; cursor: pointer;
+    font-family: var(--mono); font-size: 11px; transition: background 0.1s;
   }
-  .tile-dropdown button:hover { background: #292e42; }
-  .tile-dropdown button.danger { color: #f7768e; }
-  .tile-dropdown button.danger:hover { background: #3b2030; }
-  .tile-dropdown hr {
-    border: none; border-top: 1px solid #292e42; margin: 2px 0;
-  }
+  .tile-dropdown button:hover { background: var(--border); }
+  .tile-dropdown button.danger { color: var(--danger); }
+  .tile-dropdown button.danger:hover { background: rgba(232,92,92,0.1); }
+  .tile-dropdown hr { border: none; border-top: 1px solid var(--border); margin: 2px 0; }
+
+  /* Empty state */
   #empty {
     display: flex; align-items: center; justify-content: center;
-    height: 100vh; color: #565f89; font-size: 16px;
+    height: 100vh; color: var(--text-dim); font-size: 14px;
+    font-family: var(--display);
   }
+
+  /* FAB */
   #add-btn {
-    position: fixed; bottom: 16px; right: 16px; z-index: 20;
-    background: #7aa2f7; color: #1a1b26; border: none; width: 40px; height: 40px;
-    border-radius: 50%; font-size: 22px; cursor: pointer; line-height: 1;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    position: fixed; bottom: 20px; right: 20px; z-index: 20;
+    background: var(--accent); color: var(--bg-deep); border: none;
+    width: 44px; height: 44px; border-radius: 12px;
+    font-size: 24px; cursor: pointer; line-height: 1;
+    box-shadow: 0 4px 16px rgba(74,158,255,0.3);
+    transition: transform 0.15s, box-shadow 0.15s;
   }
-  #add-btn:hover { background: #89b4fa; }
+  #add-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(74,158,255,0.4); }
+
+  /* Modal */
   .modal-overlay {
     display: none; position: fixed; inset: 0; z-index: 30;
-    background: rgba(0,0,0,0.6); align-items: center; justify-content: center;
+    background: rgba(0,0,0,0.7); align-items: center; justify-content: center;
+    backdrop-filter: blur(4px);
   }
   .modal-overlay.open { display: flex; }
   .modal {
-    background: #24283b; border: 1px solid #292e42; border-radius: 8px;
-    padding: 16px; width: 380px; box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+    background: var(--bg-panel); border: 1px solid var(--border-active);
+    border-radius: 8px; padding: 20px; width: 400px;
+    box-shadow: 0 16px 48px rgba(0,0,0,0.5);
   }
-  .modal h3 { color: #7aa2f7; margin-bottom: 12px; font-size: 14px; }
-  .modal label { display: block; color: #565f89; font-size: 11px; margin-bottom: 4px; margin-top: 10px; }
+  .modal h3 {
+    color: var(--text-bright); margin-bottom: 16px; font-size: 15px;
+    font-family: var(--display); font-weight: 700; letter-spacing: -0.02em;
+  }
+  .modal label {
+    display: block; color: var(--text-dim); font-size: 10px;
+    margin-bottom: 4px; margin-top: 12px;
+    text-transform: uppercase; letter-spacing: 0.08em;
+  }
   .modal input, .modal select {
-    width: 100%; background: #1a1b26; color: #c0caf5; border: 1px solid #292e42;
-    padding: 6px 8px; font-family: inherit; font-size: 12px;
-    border-radius: 4px; outline: none;
+    width: 100%; background: var(--bg-deep); color: var(--text-bright);
+    border: 1px solid var(--border); padding: 8px 10px;
+    font-family: var(--mono); font-size: 12px;
+    border-radius: 4px; outline: none; transition: border-color 0.2s;
   }
-  .modal input:focus, .modal select:focus { border-color: #7aa2f7; }
-  .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 14px; }
+  .modal input:focus, .modal select:focus { border-color: var(--accent); }
+  .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 18px; }
   .modal-actions button {
-    padding: 5px 14px; border: none; border-radius: 4px; cursor: pointer;
-    font-family: inherit; font-size: 12px;
+    padding: 7px 16px; border: none; border-radius: 4px; cursor: pointer;
+    font-family: var(--mono); font-size: 12px; font-weight: 500;
+    transition: transform 0.1s;
   }
-  .modal-actions .primary { background: #7aa2f7; color: #1a1b26; }
-  .modal-actions .primary:hover { background: #89b4fa; }
-  .modal-actions .secondary { background: #292e42; color: #c0caf5; }
-  .modal-actions .secondary:hover { background: #343b58; }
+  .modal-actions button:hover { transform: translateY(-1px); }
+  .modal-actions .primary { background: var(--accent); color: var(--bg-deep); }
+  .modal-actions .secondary { background: var(--border-active); color: var(--text); }
 </style>
 </head>
 <body>
@@ -147,7 +211,7 @@
     <select id="add-project"></select>
     <div class="modal-actions">
       <button class="secondary" onclick="closeAddModal()">Cancel</button>
-      <button class="primary" onclick="submitAddTask()">Create & Open</button>
+      <button class="primary" onclick="submitAddTask()">Create</button>
     </div>
   </div>
 </div>
@@ -175,7 +239,6 @@ function updateGrid(tasks) {
   grid.style.display = 'grid';
   empty.style.display = 'none';
 
-  // Pick columns so rows are as balanced as possible
   let cols;
   if (tasks.length <= 1) cols = 1;
   else if (tasks.length <= 4) cols = 2;
@@ -186,10 +249,8 @@ function updateGrid(tasks) {
   grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
   grid.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
 
-  // Last row: make tiles span remaining columns to fill the row
   const lastRowCount = tasks.length % cols || cols;
   const lastRowStart = tasks.length - lastRowCount;
-
   const seen = new Set();
 
   tasks.forEach(t => {
@@ -216,7 +277,7 @@ function updateGrid(tasks) {
         <div class="tile-input">
           <input type="text" placeholder="send input..." id="input-${t.id}"
                  onkeydown="if(event.key==='Enter')sendInput('${t.id}',this.value,this)">
-          <button onclick="sendInput('${t.id}',document.getElementById('input-${t.id}').value,document.getElementById('input-${t.id}'))">↵</button>
+          <button onclick="sendInput('${t.id}',document.getElementById('input-${t.id}').value,document.getElementById('input-${t.id}'))">send</button>
         </div>`;
       grid.appendChild(tile);
       tiles[t.id] = tile;
@@ -229,16 +290,13 @@ function updateGrid(tasks) {
       });
     }
 
-    // Update state class
     tiles[t.id].className = `tile state-${t.state || 'idle'}`;
 
-    // Update title + project (may change mid-session)
     const titleEl = tiles[t.id].querySelector('.title-left');
     if (titleEl) {
       titleEl.innerHTML = `<span class="project">${esc(t.project)}</span>${esc(t.title)}`;
     }
 
-    // Update content
     const content = document.getElementById('content-' + t.id);
     if (content && t.content !== undefined) {
       content.textContent = t.content;
@@ -247,14 +305,12 @@ function updateGrid(tasks) {
       }
     }
 
-    // Update links
     const linksEl = tiles[t.id].querySelector('.links');
     if (linksEl && t.links) {
       linksEl.innerHTML = renderLinks(t.links);
     }
   });
 
-  // Balance last row — distribute extra columns evenly
   if (lastRowCount < cols) {
     const spanSize = Math.floor(cols / lastRowCount);
     const extra = cols % lastRowCount;
@@ -262,7 +318,6 @@ function updateGrid(tasks) {
       const span = spanSize + (i < extra ? 1 : 0);
       tiles[t.id].style.gridColumn = `span ${span}`;
     });
-    // Reset non-last-row tiles
     tasks.slice(0, lastRowStart).forEach(t => {
       tiles[t.id].style.gridColumn = '';
     });
@@ -270,7 +325,6 @@ function updateGrid(tasks) {
     tasks.forEach(t => { tiles[t.id].style.gridColumn = ''; });
   }
 
-  // Remove stale tiles
   Object.keys(tiles).forEach(id => {
     if (!seen.has(id)) {
       tiles[id].remove();
@@ -287,27 +341,24 @@ function esc(s) {
 }
 
 function sendInput(taskId, text, input) {
-  // Empty text sends a bare Enter (quick approve)
   fetch('/send', {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify({task_id: taskId, text: text})
   }).then(r => {
-    if (!r.ok) input.style.background = '#3b2030';
-    else input.style.background = '';
-  }).catch(() => { input.style.background = '#3b2030'; });
+    if (!r.ok) input.style.borderColor = 'var(--danger)';
+    else input.style.borderColor = '';
+  }).catch(() => { input.style.borderColor = 'var(--danger)'; });
   input.value = '';
 }
 
 function toggleMenu(btn) {
   const dropdown = btn.nextElementSibling;
   const wasOpen = dropdown.classList.contains('open');
-  // Close all dropdowns first
   document.querySelectorAll('.tile-dropdown.open').forEach(d => d.classList.remove('open'));
   if (!wasOpen) dropdown.classList.add('open');
 }
 
-// Close dropdowns on outside click
 document.addEventListener('click', (e) => {
   if (!e.target.closest('.tile-menu')) {
     document.querySelectorAll('.tile-dropdown.open').forEach(d => d.classList.remove('open'));
@@ -315,7 +366,6 @@ document.addEventListener('click', (e) => {
 });
 
 function taskAction(taskId, action, btn) {
-  // Close the menu
   document.querySelectorAll('.tile-dropdown.open').forEach(d => d.classList.remove('open'));
   fetch('/action', {
     method: 'POST',
@@ -325,7 +375,6 @@ function taskAction(taskId, action, btn) {
 }
 
 function openAddModal() {
-  // Fetch project dirs from server
   fetch('/projects').then(r => r.json()).then(dirs => {
     const sel = document.getElementById('add-project');
     sel.innerHTML = dirs.map(d => `<option value="${esc(d)}">${esc(d)}</option>`).join('');
@@ -350,7 +399,6 @@ function submitAddTask() {
   });
 }
 
-// Close modal on Escape or overlay click
 document.getElementById('add-modal').addEventListener('click', (e) => {
   if (e.target.classList.contains('modal-overlay')) closeAddModal();
 });
@@ -361,7 +409,7 @@ document.addEventListener('keydown', (e) => {
 function connect() {
   const es = new EventSource('/events');
   es.onmessage = (e) => {
-    try { updateGrid(JSON.parse(e.data)); } catch(err) {}
+    try { updateGrid(JSON.parse(e.data)); } catch(err) { console.error(err); }
   };
   es.onerror = () => {
     es.close();
