@@ -366,6 +366,40 @@ def send_to_pane(task_id, text):
 ALLOWED_ACTIONS = {"pause", "done", "cancel", "delete"}
 
 
+def get_project_dirs():
+    """Get project directories from zoxide (most frequent first)."""
+    try:
+        result = subprocess.run(
+            ["zoxide", "query", "--list"],
+            capture_output=True, text=True, timeout=5,
+        )
+        if result.returncode == 0:
+            return [d.strip() for d in result.stdout.splitlines() if d.strip()][:20]
+    except Exception:
+        pass
+    return [str(Path.home() / "Github")]
+
+
+def add_and_open_task(prompt, project):
+    """Create a task and open it. Returns task_id or None."""
+    laundry_bin = Path(__file__).resolve().parent / "laundry.py"
+    args = [sys.executable, str(laundry_bin), "add"]
+    if prompt:
+        args += ["--prompt", prompt, prompt]
+    if project:
+        args += ["--project", project]
+    result = subprocess.run(args, capture_output=True, text=True)
+    if result.returncode != 0:
+        return None
+    task_id = result.stdout.strip()
+    # Open the task (creates tmux window + Claude)
+    subprocess.run(
+        [sys.executable, str(laundry_bin), "open", task_id],
+        capture_output=True, text=True,
+    )
+    return task_id
+
+
 def run_task_action(task_id, action):
     """Run a laundry CLI action on a task."""
     if action not in ALLOWED_ACTIONS:
@@ -403,6 +437,9 @@ class Handler(BaseHTTPRequestHandler):
                     time.sleep(REFRESH_INTERVAL)
             except (BrokenPipeError, ConnectionResetError):
                 pass
+        elif self.path == "/projects":
+            dirs = get_project_dirs()
+            self._json_response(200, dirs)
         else:
             self.send_error(404)
 
@@ -416,6 +453,9 @@ class Handler(BaseHTTPRequestHandler):
         elif self.path == "/action":
             ok = run_task_action(body["task_id"], body["action"])
             self._json_response(200 if ok else 400, {"ok": ok})
+        elif self.path == "/add":
+            task_id = add_and_open_task(body.get("prompt", ""), body.get("project", ""))
+            self._json_response(200 if task_id else 400, {"ok": bool(task_id), "task_id": task_id})
         else:
             self.send_error(404)
 

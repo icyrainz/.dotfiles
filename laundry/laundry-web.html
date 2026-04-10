@@ -94,11 +94,58 @@
     display: flex; align-items: center; justify-content: center;
     height: 100vh; color: #565f89; font-size: 16px;
   }
+  #add-btn {
+    position: fixed; bottom: 16px; right: 16px; z-index: 20;
+    background: #7aa2f7; color: #1a1b26; border: none; width: 40px; height: 40px;
+    border-radius: 50%; font-size: 22px; cursor: pointer; line-height: 1;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+  }
+  #add-btn:hover { background: #89b4fa; }
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; z-index: 30;
+    background: rgba(0,0,0,0.6); align-items: center; justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: #24283b; border: 1px solid #292e42; border-radius: 8px;
+    padding: 16px; width: 380px; box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+  }
+  .modal h3 { color: #7aa2f7; margin-bottom: 12px; font-size: 14px; }
+  .modal label { display: block; color: #565f89; font-size: 11px; margin-bottom: 4px; margin-top: 10px; }
+  .modal input, .modal select {
+    width: 100%; background: #1a1b26; color: #c0caf5; border: 1px solid #292e42;
+    padding: 6px 8px; font-family: inherit; font-size: 12px;
+    border-radius: 4px; outline: none;
+  }
+  .modal input:focus, .modal select:focus { border-color: #7aa2f7; }
+  .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 14px; }
+  .modal-actions button {
+    padding: 5px 14px; border: none; border-radius: 4px; cursor: pointer;
+    font-family: inherit; font-size: 12px;
+  }
+  .modal-actions .primary { background: #7aa2f7; color: #1a1b26; }
+  .modal-actions .primary:hover { background: #89b4fa; }
+  .modal-actions .secondary { background: #292e42; color: #c0caf5; }
+  .modal-actions .secondary:hover { background: #343b58; }
 </style>
 </head>
 <body>
 <div id="grid"></div>
 <div id="empty" style="display:none">No active tasks</div>
+<button id="add-btn" onclick="openAddModal()">+</button>
+<div class="modal-overlay" id="add-modal">
+  <div class="modal">
+    <h3>New task</h3>
+    <label>Prompt</label>
+    <input type="text" id="add-prompt" placeholder="what to work on...">
+    <label>Project</label>
+    <select id="add-project"></select>
+    <div class="modal-actions">
+      <button class="secondary" onclick="closeAddModal()">Cancel</button>
+      <button class="primary" onclick="submitAddTask()">Create & Open</button>
+    </div>
+  </div>
+</div>
 <script>
 const grid = document.getElementById('grid');
 const empty = document.getElementById('empty');
@@ -270,6 +317,40 @@ function taskAction(taskId, action, btn) {
     body: JSON.stringify({task_id: taskId, action: action})
   });
 }
+
+function openAddModal() {
+  // Fetch project dirs from server
+  fetch('/projects').then(r => r.json()).then(dirs => {
+    const sel = document.getElementById('add-project');
+    sel.innerHTML = dirs.map(d => `<option value="${esc(d)}">${esc(d)}</option>`).join('');
+  });
+  document.getElementById('add-prompt').value = '';
+  document.getElementById('add-modal').classList.add('open');
+  document.getElementById('add-prompt').focus();
+}
+
+function closeAddModal() {
+  document.getElementById('add-modal').classList.remove('open');
+}
+
+function submitAddTask() {
+  const prompt = document.getElementById('add-prompt').value;
+  const project = document.getElementById('add-project').value;
+  closeAddModal();
+  fetch('/add', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({prompt: prompt, project: project})
+  });
+}
+
+// Close modal on Escape or overlay click
+document.getElementById('add-modal').addEventListener('click', (e) => {
+  if (e.target.classList.contains('modal-overlay')) closeAddModal();
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeAddModal();
+});
 
 function connect() {
   const es = new EventSource('/events');
