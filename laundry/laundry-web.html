@@ -79,7 +79,7 @@
   }
   .tile-menu-btn:hover { color: #c0caf5; background: #292e42; }
   .tile-dropdown {
-    display: none; position: absolute; right: 0; top: 100%; z-index: 10;
+    display: none; position: absolute; left: 0; top: 100%; z-index: 10;
     background: #24283b; border: 1px solid #292e42; border-radius: 4px;
     padding: 2px 0; white-space: nowrap; box-shadow: 0 4px 12px rgba(0,0,0,0.4);
   }
@@ -199,20 +199,18 @@ function updateGrid(tasks) {
       tile.className = 'tile';
       tile.innerHTML = `
         <div class="tile-header">
-          <span class="title-left"><span class="project">${esc(t.project)}</span>${esc(t.title)}</span>
-          <span class="header-right">
-            <span class="links">${renderLinks(t.links)}</span>
-            <span class="tile-menu">
-              <button class="tile-menu-btn" onclick="toggleMenu(this)">⋮</button>
-              <div class="tile-dropdown">
-                <button onclick="taskAction('${t.id}','pause',this)">Pause</button>
-                <button onclick="taskAction('${t.id}','done',this)">Done</button>
-                <button onclick="taskAction('${t.id}','cancel',this)">Cancel</button>
-                <hr>
-                <button class="danger" onclick="taskAction('${t.id}','delete',this)">Delete</button>
-              </div>
-            </span>
+          <span class="tile-menu">
+            <button class="tile-menu-btn" onclick="toggleMenu(this)">⋮</button>
+            <div class="tile-dropdown">
+              <button onclick="taskAction('${t.id}','pause',this)">Pause</button>
+              <button onclick="taskAction('${t.id}','done',this)">Done</button>
+              <button onclick="taskAction('${t.id}','cancel',this)">Cancel</button>
+              <hr>
+              <button class="danger" onclick="taskAction('${t.id}','delete',this)">Delete</button>
+            </div>
           </span>
+          <span class="title-left"><span class="project">${esc(t.project)}</span>${esc(t.title)}</span>
+          <span class="links">${renderLinks(t.links)}</span>
         </div>
         <div class="tile-content" id="content-${t.id}"></div>
         <div class="tile-input">
