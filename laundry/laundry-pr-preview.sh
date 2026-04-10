@@ -58,7 +58,7 @@ D  = '\033[2m'
 N  = '\033[0m'
 BD = '\033[1m'
 
-ICONS = {'pass': f'{G}✓', 'fail': f'{R}✗', 'pending': f'{Y}⟳', 'skip': f'{D}○'}
+ICONS = {'pass': f'{G}+', 'fail': f'{R}x', 'pending': f'{Y}~', 'skip': f'{D}-'}
 
 def bucket(c):
     # CheckRun uses conclusion/status; StatusContext uses state
@@ -100,9 +100,9 @@ for j in range(count):
 
     # Review
     review_map = {
-        'APPROVED': f'{G}✓ Approved{N}',
-        'CHANGES_REQUESTED': f'{R}✗ Changes requested{N}',
-        'REVIEW_REQUIRED': f'{Y}○ Review required{N}',
+        'APPROVED': f'{G}+ Approved{N}',
+        'CHANGES_REQUESTED': f'{R}x Changes requested{N}',
+        'REVIEW_REQUIRED': f'{Y}~ Review required{N}',
     }
     review_s = review_map.get(review, f'{D}No reviews{N}')
 
