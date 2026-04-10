@@ -137,64 +137,111 @@ def _wid(target):
     return target.rsplit(":", 1)[-1] if target else ""
 
 
-def _tmux_window_exists(target):
-    if not target:
-        return False
-    try:
-        result = subprocess.run(
-            ["tmux", "list-windows", "-a", "-F", "#{window_id}"],
+class Tmux:
+    """Encapsulates all tmux subprocess interactions."""
+
+    @staticmethod
+    def _run(*args, **kwargs):
+        """Run a tmux command. Raises FileNotFoundError if tmux is missing."""
+        return subprocess.run(["tmux", *args], **kwargs)
+
+    @staticmethod
+    def window_info():
+        """Single call returning (ids: set[@N], names: dict[@N → name])."""
+        try:
+            result = Tmux._run(
+                "list-windows", "-a", "-F", "#{window_id}\t#{window_name}",
+                capture_output=True, text=True,
+            )
+            ids = set()
+            names = {}
+            for line in result.stdout.splitlines():
+                parts = line.split("\t", 1)
+                if parts:
+                    ids.add(parts[0])
+                    if len(parts) == 2:
+                        names[parts[0]] = parts[1]
+            return ids, names
+        except FileNotFoundError:
+            return set(), {}
+
+    @staticmethod
+    def window_exists(target):
+        if not target:
+            return False
+        ids, _ = Tmux.window_info()
+        return _wid(target) in ids
+
+    @staticmethod
+    def session_exists(name):
+        result = Tmux._run("has-session", "-t", name, capture_output=True)
+        return result.returncode == 0
+
+    @staticmethod
+    def switch(window_id):
+        Tmux._run("switch-client", "-t", window_id)
+
+    @staticmethod
+    def kill_window(target):
+        Tmux._run("kill-window", "-t", target, capture_output=True)
+
+    @staticmethod
+    def capture_pane(target, lines=50):
+        result = Tmux._run(
+            "capture-pane", "-t", target, "-p", "-S", f"-{lines}",
             capture_output=True, text=True,
         )
-        return _wid(target) in result.stdout.splitlines()
-    except FileNotFoundError:
-        return False
+        return result.stdout or ""
 
+    @staticmethod
+    def display(fmt, target=None):
+        """Query tmux with display-message -p. Returns stdout string."""
+        cmd = ["display-message"]
+        if target:
+            cmd += ["-t", target]
+        cmd += ["-p", fmt]
+        result = Tmux._run(*cmd, capture_output=True, text=True)
+        if result.returncode != 0:
+            return None
+        return result.stdout.strip()
 
-def _tmux_all_window_ids():
-    """Get all existing tmux window IDs (@N) as a set."""
-    try:
-        result = subprocess.run(
-            ["tmux", "list-windows", "-a", "-F", "#{window_id}"],
+    @staticmethod
+    def toast(msg):
+        """Show a transient tmux status-line message."""
+        Tmux._run("display-message", msg, capture_output=True)
+
+    @staticmethod
+    def send_keys(target, text, enter=True):
+        cmd = ["send-keys", "-t", target, text]
+        if enter:
+            cmd.append("Enter")
+        Tmux._run(*cmd, capture_output=True)
+
+    @staticmethod
+    def new_window(session, cwd, name, fmt, command):
+        """Create a new window, return formatted output (e.g. session:@N)."""
+        result = Tmux._run(
+            "new-window", "-t", session, "-c", cwd,
+            "-n", name, "-P", "-F", fmt, *command,
             capture_output=True, text=True,
         )
-        return set(result.stdout.splitlines())
-    except FileNotFoundError:
-        return set()
+        return result.stdout.strip() if result.returncode == 0 else None
 
-
-def _tmux_window_names():
-    """Get a dict of window_id (@N) → window_name for all tmux windows."""
-    try:
-        result = subprocess.run(
-            ["tmux", "list-windows", "-a", "-F", "#{window_id}\t#{window_name}"],
+    @staticmethod
+    def new_session(name, cwd, window_name, fmt, command):
+        """Create a new detached session, return formatted output."""
+        result = Tmux._run(
+            "new-session", "-d", "-s", name, "-c", cwd,
+            "-n", window_name, "-P", "-F", fmt, *command,
             capture_output=True, text=True,
         )
-        names = {}
-        for line in result.stdout.splitlines():
-            parts = line.split("\t", 1)
-            if len(parts) == 2:
-                names[parts[0]] = parts[1]
-        return names
-    except FileNotFoundError:
-        return {}
-
-
-def _tmux_switch(window_id):
-    subprocess.run(["tmux", "switch-client", "-t", window_id])
-
-
-def _tmux_session_exists(session_name):
-    result = subprocess.run(
-        ["tmux", "has-session", "-t", session_name],
-        capture_output=True,
-    )
-    return result.returncode == 0
+        return result.stdout.strip() if result.returncode == 0 else None
 
 
 def _kill_task_window(task):
     wid = task.get("tmux_window_id")
-    if wid and _tmux_window_exists(wid):
-        subprocess.run(["tmux", "kill-window", "-t", wid], capture_output=True)
+    if wid:
+        Tmux.kill_window(wid)
 
 
 SYSTEM_PROMPT_FILE = DATA_DIR / "system-prompt.md"
@@ -344,14 +391,10 @@ def _format_pane(data, task_id):
         return None
 
     wid = task.get("tmux_window_id")
-    if not wid or not _tmux_window_exists(wid):
+    if not wid or not Tmux.window_exists(wid):
         return f"No active window for task {task_id}\n"
 
-    result = subprocess.run(
-        ["tmux", "capture-pane", "-t", wid, "-p", "-S", "-50"],
-        capture_output=True, text=True,
-    )
-    return result.stdout if result.stdout else ""
+    return Tmux.capture_pane(wid)
 
 
 # --- daemon server ---
@@ -396,8 +439,7 @@ class LaundryDaemon:
             if not active_tasks:
                 return
 
-            live_windows = _tmux_all_window_ids()
-            window_names = _tmux_window_names()
+            live_windows, window_names = Tmux.window_info()
 
             # Re-load under file lock to avoid overwriting concurrent writes
             # (e.g. cmd_open storing a window_id between our load and save)
@@ -586,27 +628,81 @@ def cmd_add(args):
     return task_id
 
 
-def cmd_attach(args):
-    """Attach the current tmux window to laundry as a new managed task."""
-    # Gather info from the current tmux window
-    try:
-        result = subprocess.run(
-            ["tmux", "display-message", "-p",
-             "#{session_name}:#{window_id}\t#{window_name}\t#{pane_current_path}"],
-            capture_output=True, text=True,
-        )
-        if result.returncode != 0:
-            print("Not inside a tmux session", file=sys.stderr)
-            sys.exit(1)
-        parts = result.stdout.strip().split("\t")
-        tmux_target = parts[0]   # e.g. voyage:@2
-        window_name = parts[1] if len(parts) > 1 else ""
-        pane_cwd = parts[2] if len(parts) > 2 else ""
-    except FileNotFoundError:
-        print("tmux not found", file=sys.stderr)
-        sys.exit(1)
+def _detect_task_in_pane():
+    """Try to find an existing laundry task ID from the Claude process in the current tmux pane.
 
-    # Use window name as title (skip default shell names)
+    Checks (in order):
+    1. Pane PID args — works when Claude was launched via execvp
+    2. Window name L{task_id} — set by laundry open before slug watcher renames
+    3. Window name matches a known task title — set by slug watcher + daemon sync
+    """
+    try:
+        info = Tmux.display("#{pane_pid}\t#{window_name}")
+        if not info:
+            return None
+        parts = info.split("\t", 1)
+        pane_pid = parts[0]
+        window_name = parts[1] if len(parts) > 1 else ""
+
+        # 1. Pane PID is the claude process itself (execvp launch)
+        if pane_pid:
+            ps_result = subprocess.run(
+                ["ps", "-p", pane_pid, "-o", "args="],
+                capture_output=True, text=True,
+            )
+            if ps_result.returncode == 0:
+                m = re.search(r"Laundry task ID: (\d{8}-\d{6})", ps_result.stdout)
+                if m:
+                    return m.group(1)
+
+        # 2. Window name is L{task_id}
+        if window_name:
+            m = re.match(r"^L(\d{8}-\d{6})$", window_name)
+            if m:
+                return m.group(1)
+
+        # 3. Window name matches a task title (slug name synced by daemon)
+        if window_name:
+            data = _load()
+            for task in data["tasks"]:
+                if task.get("title") == window_name and task["status"] in ("active", "paused"):
+                    return task["id"]
+    except Exception:
+        pass
+    return None
+
+
+def cmd_attach(args):
+    """Attach the current tmux window to laundry, reattaching existing tasks if detected."""
+    # Gather info from the current tmux window
+    info = Tmux.display("#{session_name}:#{window_id}\t#{window_name}\t#{pane_current_path}")
+    if info is None:
+        print("Not inside a tmux session", file=sys.stderr)
+        sys.exit(1)
+    parts = info.split("\t")
+    tmux_target = parts[0]   # e.g. voyage:@2
+    window_name = parts[1] if len(parts) > 1 else ""
+    pane_cwd = parts[2] if len(parts) > 2 else ""
+
+    # Try to detect an existing task from the running Claude process
+    detected_id = _detect_task_in_pane()
+    if detected_id:
+        _ensure_dirs()
+        with open(LOCK_FILE, "w") as lock:
+            fcntl.flock(lock, fcntl.LOCK_EX)
+            data = _load()
+            for task in data["tasks"]:
+                if task["id"] == detected_id:
+                    task["tmux_window_id"] = tmux_target
+                    task["status"] = "active"
+                    task["updated_at"] = _now_iso()
+                    _save(data)
+                    _notify_daemon()
+                    Tmux.toast(f"harpoon reattached → {detected_id}")
+                    print(detected_id)
+                    return detected_id
+
+    # No existing task found — create a new one
     shell_names = {"bash", "fish", "zsh", "sh"}
     title = window_name if window_name and window_name not in shell_names else ""
 
@@ -626,13 +722,8 @@ def cmd_attach(args):
         f"Notes file: {notes_path}. "
         f"Read {SYSTEM_PROMPT_FILE} for task management commands."
     )
-    subprocess.run(
-        ["tmux", "send-keys", "-t", tmux_target, nudge, "Enter"],
-        capture_output=True,
-    )
-
-    tmux_msg = f"harpoon attached → {task_id}"
-    subprocess.run(["tmux", "display-message", tmux_msg], capture_output=True)
+    Tmux.send_keys(tmux_target, nudge)
+    Tmux.toast(f"harpoon attached → {task_id}")
     return task_id
 
 
@@ -723,14 +814,17 @@ def cmd_unlink(args):
 def cmd_open(args):
     _ensure_dirs()
 
+    # Single tmux query for both checks
+    live_windows, _ = Tmux.window_info()
+
     # Quick check without lock — if already active with valid window, just switch
     data = _load()
     task = _find_task(data, args.id)
     if not task:
         print(f"Task {args.id} not found", file=sys.stderr)
         sys.exit(1)
-    if task["status"] == "active" and _tmux_window_exists(task.get("tmux_window_id")):
-        _tmux_switch(task["tmux_window_id"])
+    if task["status"] == "active" and _wid(task.get("tmux_window_id") or "") in live_windows:
+        Tmux.switch(task["tmux_window_id"])
         return
 
     # Need to mutate — acquire lock
@@ -740,8 +834,8 @@ def cmd_open(args):
         task = _find_task(data, args.id)
 
         # Re-check after lock (another process may have changed state)
-        if task["status"] == "active" and _tmux_window_exists(task.get("tmux_window_id")):
-            _tmux_switch(task["tmux_window_id"])
+        if task["status"] == "active" and _wid(task.get("tmux_window_id") or "") in live_windows:
+            Tmux.switch(task["tmux_window_id"])
             return
 
         if task["status"] not in ("pending", "paused"):
@@ -762,29 +856,23 @@ def cmd_open(args):
     laundry_bin = Path(__file__).resolve()
 
     tmux_fmt = "#{session_name}:#{window_id}"
+    window_name = f"L{task['id']}"
+    launch_cmd = ["python3", str(laundry_bin), "launch", task["id"]]
 
-    new_window_cmd = [
-        "tmux", "new-window", "-t", session_name, "-c", str(project_path),
-        "-n", f"L{task['id']}", "-P", "-F", tmux_fmt,
-        "python3", str(laundry_bin), "launch", task["id"],
-    ]
-
-    if not _tmux_session_exists(session_name):
+    if not Tmux.session_exists(session_name):
         # Create session with the task as the initial window (no orphan shell)
-        result = subprocess.run(
-            [
-                "tmux", "new-session", "-d", "-s", session_name, "-c", str(project_path),
-                "-n", f"L{task['id']}", "-P", "-F", tmux_fmt,
-                "python3", str(laundry_bin), "launch", task["id"],
-            ],
-            capture_output=True, text=True,
+        window_id = Tmux.new_session(
+            session_name, str(project_path), window_name, tmux_fmt, launch_cmd,
         )
         # Race: another process created the session first — fall back to new-window
-        if result.returncode != 0:
-            result = subprocess.run(new_window_cmd, capture_output=True, text=True)
+        if not window_id:
+            window_id = Tmux.new_window(
+                session_name, str(project_path), window_name, tmux_fmt, launch_cmd,
+            )
     else:
-        result = subprocess.run(new_window_cmd, capture_output=True, text=True)
-    window_id = result.stdout.strip()
+        window_id = Tmux.new_window(
+            session_name, str(project_path), window_name, tmux_fmt, launch_cmd,
+        )
 
     # Store window ID
     with open(LOCK_FILE, "w") as lock:
@@ -795,7 +883,7 @@ def cmd_open(args):
         _save(data)
 
     _notify_daemon()
-    _tmux_switch(window_id)
+    Tmux.switch(window_id)
 
 
 def cmd_launch(args):
@@ -980,13 +1068,15 @@ def cmd_reset(args):
 
 def cmd_gc(args):
     _ensure_dirs()
+    live_windows, _ = Tmux.window_info()
     with open(LOCK_FILE, "w") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX)
         data = _load()
         changed = []
 
         for task in data["tasks"]:
-            if task["status"] == "active" and not _tmux_window_exists(task.get("tmux_window_id")):
+            wid = task.get("tmux_window_id")
+            if task["status"] == "active" and (not wid or _wid(wid) not in live_windows):
                 task["tmux_window_id"] = None
                 task["status"] = "paused"
                 task["updated_at"] = _now_iso()
