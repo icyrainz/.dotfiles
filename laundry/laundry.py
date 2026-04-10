@@ -350,8 +350,8 @@ def _format_list(data, status_filter=None, show_all=False, parent=None, fmt=None
         for t in tasks:
             icon = STATUS_ICONS.get(t["status"], "?")
             project = (Path(t["project"]).name[:12] if t["project"] else "").ljust(12)
-            raw_title = t["title"] or t.get("initial_prompt", "")[:30] or "(untitled)"
-            title = raw_title[:30].ljust(30)
+            raw_title = t["title"] or t.get("initial_prompt", "")[:40] or "(untitled)"
+            title = raw_title[:40].ljust(40)
             target = t.get("tmux_window_id") or ""
             pin = str(slots[target]) if target in slots else " "
             age = _relative_time(t.get("updated_at", ""), short=True).rjust(4)
