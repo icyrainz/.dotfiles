@@ -10,7 +10,6 @@ command = [
 ]
 no_sort = true
 ansi = true
-display = "{split: :1..|join: }"
 
 [preview]
 command = [
