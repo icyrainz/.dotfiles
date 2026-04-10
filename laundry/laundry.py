@@ -1212,8 +1212,9 @@ def cmd_wall(args):
 
                     # Draw content
                     content = capture_clean(target, tw - 1)
-                    # Take last (th-2) lines to show the bottom
-                    visible = content[-(th - 2):] if content else []
+                    # Reserve: 1 for header, 1 for bottom border (if not last row)
+                    content_h = th - 2 if ty + th >= rows else th - 3
+                    visible = content[-content_h:] if content else []
                     for j, line in enumerate(visible):
                         try:
                             stdscr.addstr(ty + 1 + j, tx, line[:tw - 1])
@@ -1225,6 +1226,20 @@ def cmd_wall(args):
                         for row in range(ty, min(ty + th, rows)):
                             try:
                                 stdscr.addstr(row, tx + tw - 1, "│")
+                            except curses.error:
+                                pass
+
+                    # Draw horizontal border (bottom edge of each tile except last row)
+                    if ty + th < rows:
+                        for col in range(tx, min(tx + tw, cols) - 1):
+                            try:
+                                stdscr.addstr(ty + th - 1, col, "─")
+                            except curses.error:
+                                pass
+                        # Draw intersection if both borders meet
+                        if tx + tw < cols:
+                            try:
+                                stdscr.addstr(ty + th - 1, tx + tw - 1, "┼")
                             except curses.error:
                                 pass
 
