@@ -1139,18 +1139,8 @@ def cmd_wall(args):
             capture_output=True, text=True,
         )
         lines = []
-        for line in (result.stdout or "").splitlines():
-            stripped = line.rstrip()
-            # Skip chrome lines
-            if not stripped:
-                continue
-            if stripped.startswith("─" * 4):
-                continue
-            if stripped.startswith("❯"):
-                continue
-            if "auto mode on" in stripped or "Opus " in stripped:
-                continue
-            lines.append(stripped[:width])
+        for line in (result.stdout or "").rstrip().splitlines():
+            lines.append(line.rstrip()[:width])
         return lines
 
     def tile_layout(n, rows, cols):
