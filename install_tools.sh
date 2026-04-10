@@ -117,6 +117,7 @@ pkg ripgrep      brew=ripgrep    pacman=ripgrep    apt=ripgrep
 pkg sox          brew=sox
 pkg sccache      brew=sccache    apt=sccache
 pkg sesh         brew=sesh       script="bash $SCRIPT_DIR/sesh/install.sh"
+pkg television   brew=television
 pkg tmux         brew=tmux       pacman=tmux       apt=tmux
 pkg tree         brew=tree       pacman=tree       apt=tree
 pkg wget         brew=wget       pacman=wget       apt=wget
