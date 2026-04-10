@@ -404,6 +404,9 @@ def main():
 
     class ThreadedServer(ThreadingMixIn, HTTPServer):
         daemon_threads = True
+        def handle_error(self, request, client_address):
+            # Suppress connection reset errors (browser closing SSE)
+            pass
 
     server = ThreadedServer(("127.0.0.1", PORT), Handler)
     print(f"laundry-web → http://localhost:{PORT}")
