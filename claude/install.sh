@@ -14,7 +14,7 @@ fi
 MARKETPLACES=(
 )
 
-for repo in "${MARKETPLACES[@]}"; do
+for repo in "${MARKETPLACES[@]+"${MARKETPLACES[@]}"}"; do
   slug="${repo##*/}"
   if [ -d "$HOME/.claude/plugins/marketplaces/$slug" ]; then
     echo "Marketplace $slug already registered"
@@ -72,6 +72,24 @@ if [ -f "$HOME/.akio-homelab" ]; then
   link_skills "homelab" "$SCRIPT_DIR/skills-homelab"
 else
   echo "Skipping homelab skills (~/.akio-homelab not found)"
+fi
+
+# --- Symlink settings.json (work vs personal) ---
+SETTINGS_TARGET="$HOME/.claude/settings.json"
+if [ -f "$HOME/.akio-work" ]; then
+  SETTINGS_SOURCE="$SCRIPT_DIR/settings.work.json"
+  echo "Linking work settings..."
+elif [ -f "$HOME/.akio-personal" ]; then
+  SETTINGS_SOURCE="$SCRIPT_DIR/settings.personal.json"
+  echo "Linking personal settings..."
+else
+  SETTINGS_SOURCE=""
+  echo "Skipping settings.json (~/.akio-work and ~/.akio-personal not found)"
+fi
+
+if [ -n "$SETTINGS_SOURCE" ]; then
+  ln -sf "$SETTINGS_SOURCE" "$SETTINGS_TARGET"
+  echo "  Linked: settings.json -> $(basename "$SETTINGS_SOURCE")"
 fi
 
 echo "Done. Plugins declared in settings.json will activate on next session."

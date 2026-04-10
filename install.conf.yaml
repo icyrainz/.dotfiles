@@ -46,8 +46,6 @@
       if: '[ -f ~/.akio-personal ]'
     ~/.claude/CLAUDE.md:
       path: claude/CLAUDE.md
-    ~/.claude/settings.json:
-      path: claude/settings.json
     ~/.claude/statusline-command.sh:
       path: claude/statusline-command.sh
     ~/.claude/claude-hook.sh:
