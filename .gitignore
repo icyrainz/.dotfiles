@@ -18,6 +18,7 @@ docs/plans/
 tmux/plugins/*
 tmux/resurrect
 tmux/harpoon-sessions
+tmux/laundry-new.sh
 
 # Fish
 fish/include/ignore/*
