@@ -309,7 +309,10 @@ class Handler(BaseHTTPRequestHandler):
             statuses = {"paused", "completed", "cancelled"} if show_all else {"paused"}
             filtered = [t for t in tasks if t["status"] in statuses]
             order = {"paused": 0, "completed": 1, "cancelled": 2}
-            filtered.sort(key=lambda t: (order.get(t["status"], 9), t.get("updated_at", "")))
+            filtered.sort(key=lambda t: (
+                order.get(t["status"], 9),
+                -time.mktime(time.strptime(t.get("updated_at", "2000-01-01T00:00:00Z"), "%Y-%m-%dT%H:%M:%SZ")),
+            ))
             result = [
                 {
                     "id": t["id"],
