@@ -187,14 +187,15 @@ class Tmux:
         Tmux._run("kill-window", "-t", target, capture_output=True)
 
     @staticmethod
-    def capture_pane(target, lines=50):
+    def capture_pane(target, lines=30):
         result = Tmux._run(
-            "capture-pane", "-t", target, "-p", "-S", f"-{lines}",
+            "capture-pane", "-t", target, "-p",
             capture_output=True, text=True,
         )
-        # Strip leading blank lines so preview shows content at the top
-        text = result.stdout or ""
-        return text.lstrip("\n")
+        # Take the last N non-empty lines so preview shows the bottom
+        text = (result.stdout or "").rstrip()
+        trimmed = "\n".join(text.splitlines()[-lines:]) if text else ""
+        return trimmed
 
     @staticmethod
     def display(fmt, target=None):
@@ -349,17 +350,18 @@ def _format_list(data, status_filter=None, show_all=False, parent=None, fmt=None
         for t in tasks:
             icon = STATUS_ICONS.get(t["status"], "?")
             project = (Path(t["project"]).name[:12] if t["project"] else "").ljust(12)
-            title = t["title"] or t.get("initial_prompt", "")[:40] or "(untitled)"
+            raw_title = t["title"] or t.get("initial_prompt", "")[:30] or "(untitled)"
+            title = raw_title[:30].ljust(30)
             target = t.get("tmux_window_id") or ""
             pin = str(slots[target]) if target in slots else " "
             age = _relative_time(t.get("updated_at", ""), short=True).rjust(4)
             # ID is first field (hidden by display template, used by {split: :0})
             if t["status"] in ("completed", "cancelled"):
-                out.write(f"{t['id']} {DIM}{icon} {pin} {project} {title}  {age}{RESET}\n")
+                out.write(f"{t['id']} {DIM}{icon} {pin} {project} {title} {age}{RESET}\n")
             elif t["status"] == "paused":
-                out.write(f"{t['id']} {YELLOW}{icon} {pin} {project} {title}  {age}{RESET}\n")
+                out.write(f"{t['id']} {YELLOW}{icon} {pin} {project} {title} {age}{RESET}\n")
             else:
-                out.write(f"{t['id']} {icon} {pin} {project} {title}  {age}\n")
+                out.write(f"{t['id']} {icon} {pin} {project} {title} {age}\n")
     else:
         for t in tasks:
             icon = STATUS_ICONS.get(t["status"], "?")
