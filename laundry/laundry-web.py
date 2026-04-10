@@ -51,32 +51,22 @@ HTML = """<!DOCTYPE html>
   .tile-header .project { color: #565f89; margin-right: 8px; }
   .tile-header .status { font-size: 11px; color: #565f89; }
   .tile-header .links { display: flex; gap: 8px; align-items: center; }
-  .tile-header .links a {
-    text-decoration: none; font-size: 11px; font-weight: 600;
+  .tile-header .links a,
+  .tile-header .links a:link,
+  .tile-header .links a:visited,
+  .tile-header .links a:active {
+    text-decoration: none !important; font-size: 11px; font-weight: 600;
     padding: 2px 8px; border-radius: 10px;
+    color: #1a1b26 !important;
   }
   .tile-header .links a:hover { opacity: 0.85; }
-  .tile-header .links a.jira,
-  .tile-header .links a.jira:link,
-  .tile-header .links a.jira:visited { color: #1a1b26; background: #7dcfff; }
+  .tile-header .links a.jira { background: #7dcfff !important; }
   .tile-header .links a.pr-PENDING,
-  .tile-header .links a.pr-PENDING:link,
-  .tile-header .links a.pr-PENDING:visited,
-  .tile-header .links a.pr-REVIEW_REQUIRED,
-  .tile-header .links a.pr-REVIEW_REQUIRED:link,
-  .tile-header .links a.pr-REVIEW_REQUIRED:visited { color: #1a1b26; background: #e0af68; }
-  .tile-header .links a.pr-APPROVED,
-  .tile-header .links a.pr-APPROVED:link,
-  .tile-header .links a.pr-APPROVED:visited { color: #1a1b26; background: #73daca; }
-  .tile-header .links a.pr-CHANGES_REQUESTED,
-  .tile-header .links a.pr-CHANGES_REQUESTED:link,
-  .tile-header .links a.pr-CHANGES_REQUESTED:visited { color: #1a1b26; background: #f7768e; }
-  .tile-header .links a.pr-MERGED,
-  .tile-header .links a.pr-MERGED:link,
-  .tile-header .links a.pr-MERGED:visited { color: #1a1b26; background: #bb9af7; }
-  .tile-header .links a.pr-CLOSED,
-  .tile-header .links a.pr-CLOSED:link,
-  .tile-header .links a.pr-CLOSED:visited { color: #c0caf5; background: #3b4261; }
+  .tile-header .links a.pr-REVIEW_REQUIRED { background: #e0af68 !important; }
+  .tile-header .links a.pr-APPROVED { background: #73daca !important; }
+  .tile-header .links a.pr-CHANGES_REQUESTED { background: #f7768e !important; }
+  .tile-header .links a.pr-MERGED { background: #bb9af7 !important; }
+  .tile-header .links a.pr-CLOSED { background: #3b4261 !important; color: #c0caf5 !important; }
   .tile-content {
     flex: 1; overflow-y: auto; padding: 6px 10px;
     white-space: pre-wrap; word-break: break-all;
