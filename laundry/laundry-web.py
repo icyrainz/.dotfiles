@@ -303,18 +303,21 @@ class Handler(BaseHTTPRequestHandler):
         elif self.path == "/projects":
             dirs = get_project_dirs()
             self._json_response(200, dirs)
-        elif self.path == "/paused":
+        elif self.path.startswith("/paused"):
+            show_all = "all=1" in self.path
             tasks = load_tasks()
-            paused = [
+            statuses = {"paused", "completed", "cancelled"} if show_all else {"paused"}
+            result = [
                 {
                     "id": t["id"],
                     "title": t.get("title") or t.get("initial_prompt", "")[:40] or t["id"],
                     "project": Path(t["project"]).name if t.get("project") else "",
                     "age": _relative_time(t.get("updated_at", "")),
+                    "status": t["status"],
                 }
-                for t in tasks if t["status"] == "paused"
+                for t in tasks if t["status"] in statuses
             ]
-            self._json_response(200, paused)
+            self._json_response(200, result)
         else:
             self.send_error(404)
 

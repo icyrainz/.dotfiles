@@ -244,7 +244,13 @@
 </div>
 <div class="modal-overlay" id="paused-modal">
   <div class="modal">
-    <h3>Paused sessions</h3>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <h3 style="margin:0" id="paused-title">Paused sessions</h3>
+      <label style="margin:0;display:flex;align-items:center;gap:6px;cursor:pointer">
+        <input type="checkbox" id="show-all-inactive" onchange="openPausedModal()" style="accent-color:var(--accent)">
+        <span style="font-size:11px;color:var(--text-dim)">Show completed</span>
+      </label>
+    </div>
     <ul class="paused-list" id="paused-list"></ul>
     <div class="modal-actions">
       <button class="secondary" onclick="closePausedModal()">Close</button>
@@ -450,25 +456,36 @@ function submitAddTask() {
 }
 
 function openPausedModal() {
-  fetch('/paused').then(r => r.json()).then(tasks => {
+  const showAll = document.getElementById('show-all-inactive').checked;
+  const url = showAll ? '/paused?all=1' : '/paused';
+  document.getElementById('paused-title').textContent = showAll ? 'Inactive sessions' : 'Paused sessions';
+  fetch(url).then(r => r.json()).then(tasks => {
     const list = document.getElementById('paused-list');
     if (!tasks.length) {
       list.innerHTML = '<li style="color:var(--text-dim);padding:12px 0">No paused sessions</li>';
       return;
     }
-    list.innerHTML = tasks.map(t => `
-      <li class="paused-item">
-        <div class="info">
-          <div class="name">${esc(t.title)}</div>
-          <div class="meta">${esc(t.project)} &middot; ${esc(t.age)}</div>
-        </div>
-        <div class="actions">
+    list.innerHTML = tasks.map(t => {
+      const dim = (t.status === 'completed' || t.status === 'cancelled') ? 'opacity:0.5' : '';
+      const statusLabel = t.status !== 'paused' ? `<span style="color:var(--text-dim);font-size:9px;text-transform:uppercase;letter-spacing:0.05em;margin-left:6px">${esc(t.status)}</span>` : '';
+      let buttons = '';
+      if (t.status === 'paused') {
+        buttons = `
           <button class="resume" onclick="pausedAction('${t.id}','open')">Resume</button>
           <button class="done" onclick="pausedAction('${t.id}','done')">Done</button>
-          <button class="cancel" onclick="pausedAction('${t.id}','cancel')">Cancel</button>
-        </div>
-      </li>
-    `).join('');
+          <button class="cancel" onclick="pausedAction('${t.id}','cancel')">Cancel</button>`;
+      } else {
+        buttons = `<button class="resume" onclick="pausedAction('${t.id}','open')">Reopen</button>`;
+      }
+      return `
+        <li class="paused-item" style="${dim}">
+          <div class="info">
+            <div class="name">${esc(t.title)}${statusLabel}</div>
+            <div class="meta">${esc(t.project)} &middot; ${esc(t.age)}</div>
+          </div>
+          <div class="actions">${buttons}</div>
+        </li>`;
+    }).join('');
   });
   document.getElementById('paused-modal').classList.add('open');
 }
