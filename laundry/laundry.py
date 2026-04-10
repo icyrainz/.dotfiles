@@ -745,7 +745,7 @@ def cmd_done(args):
         if not task:
             print(f"Task {args.id} not found", file=sys.stderr)
             sys.exit(1)
-        if task["status"] != "active":
+        if task["status"] not in ("active", "paused"):
             print(f"Cannot complete task in '{task['status']}' state", file=sys.stderr)
             sys.exit(1)
 
@@ -866,6 +866,25 @@ def cmd_pane(args):
     sys.stdout.write(output)
 
 
+def cmd_status(args):
+    _ensure_dirs()
+    data = _load()
+    counts = {}
+    for t in data["tasks"]:
+        counts[t["status"]] = counts.get(t["status"], 0) + 1
+
+    total = len(data["tasks"])
+    parts = [f"{counts.get(s, 0)} {s}" for s in VALID_STATUSES if counts.get(s, 0)]
+    print(f"Tasks: {total} ({', '.join(parts) if parts else 'none'})")
+
+    # Daemon health
+    resp = _daemon_request({"cmd": "reload"})
+    if resp:
+        print(f"Daemon: running (socket: {SOCK_FILE})")
+    else:
+        print("Daemon: not running")
+
+
 def cmd_serve(args):
     daemon = LaundryDaemon()
     daemon.serve()
@@ -949,6 +968,9 @@ def main():
     p_pane = sub.add_parser("pane", help="Capture tmux pane content for a task")
     p_pane.add_argument("id", help="Task ID")
 
+    # status
+    sub.add_parser("status", help="Show task counts and daemon health")
+
     # serve
     sub.add_parser("serve", help="Start the laundry daemon")
 
@@ -975,6 +997,7 @@ def main():
         "reopen": cmd_reopen,
         "gc": cmd_gc,
         "pane": cmd_pane,
+        "status": cmd_status,
         "serve": cmd_serve,
         "reset": cmd_reset,
     }
