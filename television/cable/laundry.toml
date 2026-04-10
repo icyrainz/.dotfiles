@@ -10,7 +10,7 @@ command = [
 no_sort = true
 ansi = true
 
-watch = 5
+watch = 2
 
 [preview]
 command = [
