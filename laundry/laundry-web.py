@@ -293,19 +293,36 @@ def capture_pane(target):
         ["tmux", "capture-pane", "-t", target, "-p", "-J"],
         capture_output=True, text=True,
     )
-    raw = (result.stdout or "").rstrip()
-    lines = raw.splitlines()
-    # Drop last 6 lines (Claude TUI chrome)
-    content = "\n".join(lines[:-6]) if len(lines) > 6 else raw
-    # Detect session state from the raw output (including chrome)
-    tail = "\n".join(lines[-10:]).lower() if lines else ""
-    if any(s in tail for s in ["clauding", "stewing", "thinking", "running"]):
-        state = "thinking"
-    elif "allow" in tail and ("y/n" in tail or "permission" in tail):
-        state = "permission"
-    else:
-        state = "idle"
-    return content, state
+    lines = (result.stdout or "").rstrip().splitlines()
+    content = "\n".join(lines[:-6]) if len(lines) > 6 else result.stdout or ""
+    return content
+
+
+def get_claude_states():
+    """Read @claude-state from all tmux windows in one call. Returns {target: state}."""
+    try:
+        result = subprocess.run(
+            ["tmux", "list-windows", "-a", "-F",
+             "#{session_name}:#{window_id}\t#{@claude-state}"],
+            capture_output=True, text=True,
+        )
+        states = {}
+        for line in result.stdout.splitlines():
+            parts = line.split("\t", 1)
+            if len(parts) == 2:
+                target = parts[0]
+                raw = parts[1].strip()
+                if raw == "▶":
+                    states[target] = "thinking"
+                elif raw == "●":
+                    states[target] = "permission"
+                elif raw == "■":
+                    states[target] = "idle"
+                else:
+                    states[target] = "idle"
+        return states
+    except Exception:
+        return {}
 
 
 def get_dashboard_data():
@@ -322,8 +339,10 @@ def get_dashboard_data():
           if t.get("updated_at") else 0),
     ))
     result = []
+    claude_states = get_claude_states()
     for t in active:
-        content, session_state = capture_pane(t["tmux_window_id"])
+        content = capture_pane(t["tmux_window_id"])
+        session_state = claude_states.get(t["tmux_window_id"], "idle")
         project = Path(t["project"]).name if t.get("project") else ""
         title = t.get("title") or t.get("initial_prompt", "")[:40] or t["id"]
         # Build compact link labels
