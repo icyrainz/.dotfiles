@@ -99,10 +99,20 @@ function updateGrid(tasks) {
   grid.style.display = 'grid';
   empty.style.display = 'none';
 
-  const cols = tasks.length <= 1 ? 1 : tasks.length <= 4 ? 2 : 3;
+  // Pick columns so rows are as balanced as possible
+  let cols;
+  if (tasks.length <= 1) cols = 1;
+  else if (tasks.length <= 4) cols = 2;
+  else if (tasks.length <= 6) cols = 3;
+  else if (tasks.length <= 8) cols = 4;
+  else cols = Math.ceil(Math.sqrt(tasks.length));
   const rows = Math.ceil(tasks.length / cols);
   grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
   grid.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
+
+  // Last row: make tiles span remaining columns to fill the row
+  const lastRowCount = tasks.length % cols || cols;
+  const lastRowStart = tasks.length - lastRowCount;
 
   const seen = new Set();
 
@@ -154,6 +164,22 @@ function updateGrid(tasks) {
       linksEl.innerHTML = renderLinks(t.links);
     }
   });
+
+  // Balance last row — distribute extra columns evenly
+  if (lastRowCount < cols) {
+    const spanSize = Math.floor(cols / lastRowCount);
+    const extra = cols % lastRowCount;
+    tasks.slice(lastRowStart).forEach((t, i) => {
+      const span = spanSize + (i < extra ? 1 : 0);
+      tiles[t.id].style.gridColumn = `span ${span}`;
+    });
+    // Reset non-last-row tiles
+    tasks.slice(0, lastRowStart).forEach(t => {
+      tiles[t.id].style.gridColumn = '';
+    });
+  } else {
+    tasks.forEach(t => { tiles[t.id].style.gridColumn = ''; });
+  }
 
   // Remove stale tiles
   Object.keys(tiles).forEach(id => {
