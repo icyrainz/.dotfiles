@@ -322,6 +322,7 @@ def _format_list(data, status_filter=None, show_all=False, parent=None, fmt=None
             return "No task\n"
 
         DIM = "\033[2m"
+        YELLOW = "\033[33m"
         RESET = "\033[0m"
         slots = _harpoon_slots()
         for t in tasks:
@@ -332,6 +333,8 @@ def _format_list(data, status_filter=None, show_all=False, parent=None, fmt=None
             pin = str(slots[target]) if target in slots else " "
             if t["status"] in ("completed", "cancelled"):
                 out.write(f"{t['id']} {DIM}{icon} {pin} {project} {title}{RESET}\n")
+            elif t["status"] == "paused":
+                out.write(f"{t['id']} {YELLOW}{icon} {pin} {project} {title}{RESET}\n")
             else:
                 out.write(f"{t['id']} {icon} {pin} {project} {title}\n")
     else:
