@@ -1,5 +1,3 @@
-watch = 10
-
 [metadata]
 name = "laundry"
 description = "Task list — jump to Claude workspaces"
