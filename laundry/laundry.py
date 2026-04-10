@@ -132,10 +132,6 @@ def _find_task(data, task_id):
 # --- tmux helpers ---
 
 
-def _wid(target):
-    """Extract bare window ID (@N) from a tmux target (session:@N or @N)."""
-    return target.rsplit(":", 1)[-1] if target else ""
-
 
 class Tmux:
     """Encapsulates all tmux subprocess interactions."""
@@ -147,30 +143,30 @@ class Tmux:
 
     @staticmethod
     def window_info():
-        """Single call returning (ids: set[@N], names: dict[@N → name])."""
+        """Single call returning (windows: dict[session:@N → name]).
+
+        Keys are full tmux targets (e.g. 'myproject:@3'), values are window names.
+        """
         try:
             result = Tmux._run(
-                "list-windows", "-a", "-F", "#{window_id}\t#{window_name}",
+                "list-windows", "-a", "-F",
+                "#{session_name}:#{window_id}\t#{window_name}",
                 capture_output=True, text=True,
             )
-            ids = set()
-            names = {}
+            windows = {}
             for line in result.stdout.splitlines():
                 parts = line.split("\t", 1)
                 if parts:
-                    ids.add(parts[0])
-                    if len(parts) == 2:
-                        names[parts[0]] = parts[1]
-            return ids, names
+                    windows[parts[0]] = parts[1] if len(parts) >= 2 else ""
+            return windows
         except FileNotFoundError:
-            return set(), {}
+            return {}
 
     @staticmethod
     def window_exists(target):
         if not target:
             return False
-        ids, _ = Tmux.window_info()
-        return _wid(target) in ids
+        return target in Tmux.window_info()
 
     @staticmethod
     def session_exists(name):
@@ -295,18 +291,16 @@ def _notify_daemon():
 
 
 def _harpoon_slots():
-    """Read harpoon file → {window_id: slot_number}. Format: session:window_id per line."""
+    """Read harpoon file → {target: slot_number}. Format: session:@N per line."""
     try:
         lines = HARPOON_FILE.read_text().splitlines()
     except FileNotFoundError:
         return {}
     slots = {}
     for i, line in enumerate(lines):
-        # session:@N → extract @N part
-        parts = line.split(":")
-        wid = parts[-1].strip() if parts else ""
-        if wid.startswith("@"):
-            slots[wid] = i + 1
+        target = line.strip()
+        if target:
+            slots[target] = i + 1
     return slots
 
 
@@ -334,8 +328,8 @@ def _format_list(data, status_filter=None, show_all=False, parent=None, fmt=None
             icon = STATUS_ICONS.get(t["status"], "?")
             project = (Path(t["project"]).name[:15] if t["project"] else "").ljust(15)
             title = t["title"] or t.get("initial_prompt", "")[:40] or "(untitled)"
-            bare = _wid(t.get("tmux_window_id") or "")
-            pin = str(slots[bare]) if bare in slots else " "
+            target = t.get("tmux_window_id") or ""
+            pin = str(slots[target]) if target in slots else " "
             if t["status"] in ("completed", "cancelled"):
                 out.write(f"{t['id']} {DIM}{icon} {pin} {project} {title}{RESET}\n")
             else:
@@ -439,7 +433,7 @@ class LaundryDaemon:
             if not active_tasks:
                 return
 
-            live_windows, window_names = Tmux.window_info()
+            windows = Tmux.window_info()
 
             # Re-load under file lock to avoid overwriting concurrent writes
             # (e.g. cmd_open storing a window_id between our load and save)
@@ -450,15 +444,15 @@ class LaundryDaemon:
                 for task in self.data["tasks"]:
                     if task["status"] != "active" or not task.get("tmux_window_id"):
                         continue
-                    bare = _wid(task["tmux_window_id"])
-                    if bare not in live_windows:
+                    target = task["tmux_window_id"]
+                    if target not in windows:
                         task["tmux_window_id"] = None
                         task["status"] = "paused"
                         task["updated_at"] = _now_iso()
                         changed = True
-                    elif bare in window_names:
+                    else:
                         # Sync tmux window name → laundry title (3-way sync)
-                        wname = window_names[bare]
+                        wname = windows[target]
                         # Skip the default L{task_id} name
                         if wname and wname != f"L{task['id']}" and wname != task.get("title"):
                             task["title"] = wname
@@ -813,8 +807,8 @@ def cmd_unlink(args):
 def cmd_open(args):
     _ensure_dirs()
 
-    # Single tmux query for both checks
-    live_windows, _ = Tmux.window_info()
+    # Single tmux query
+    windows = Tmux.window_info()
 
     # Quick check without lock — if already active with valid window, just switch
     data = _load()
@@ -822,9 +816,20 @@ def cmd_open(args):
     if not task:
         print(f"Task {args.id} not found", file=sys.stderr)
         sys.exit(1)
-    if task["status"] == "active" and _wid(task.get("tmux_window_id") or "") in live_windows:
-        Tmux.switch(task["tmux_window_id"])
+
+    target = task.get("tmux_window_id") or ""
+    if task["status"] == "active" and target in windows:
+        Tmux.switch(target)
         return
+
+    # Reconcile: find dangling window for this task (e.g. after done/cancel failed to kill)
+    if not target:
+        l_name = f"L{task['id']}"
+        title = task.get("title", "")
+        for wid, wname in windows.items():
+            if wname == l_name or (title and wname == title):
+                target = wid
+                break
 
     # Need to mutate — acquire lock
     with open(LOCK_FILE, "w") as lock:
@@ -833,13 +838,25 @@ def cmd_open(args):
         task = _find_task(data, args.id)
 
         # Re-check after lock (another process may have changed state)
-        if task["status"] == "active" and _wid(task.get("tmux_window_id") or "") in live_windows:
+        if task["status"] == "active" and (task.get("tmux_window_id") or "") in windows:
             Tmux.switch(task["tmux_window_id"])
             return
 
-        if task["status"] not in ("pending", "paused"):
-            print(f"Cannot open task in '{task['status']}' state (must be pending or paused)", file=sys.stderr)
+        if task["status"] in ("completed", "cancelled"):
+            task["status"] = "pending"
+        elif task["status"] not in ("pending", "paused"):
+            print(f"Cannot open task in '{task['status']}' state", file=sys.stderr)
             sys.exit(1)
+
+        # Reconcile: if we found a dangling window pre-lock, re-associate and switch
+        if target and target in windows and not task.get("tmux_window_id"):
+            task["tmux_window_id"] = target
+            task["status"] = "active"
+            task["updated_at"] = _now_iso()
+            _save(data)
+            _notify_daemon()
+            Tmux.switch(target)
+            return
 
         if not task.get("claude_session_id"):
             task["claude_session_id"] = str(uuid.uuid4())
@@ -1022,25 +1039,6 @@ def cmd_delete(args):
     print(f"Deleted {args.id}")
 
 
-def cmd_reopen(args):
-    _ensure_dirs()
-    with open(LOCK_FILE, "w") as lock:
-        fcntl.flock(lock, fcntl.LOCK_EX)
-        data = _load()
-        task = _find_task(data, args.id)
-        if not task:
-            print(f"Task {args.id} not found", file=sys.stderr)
-            sys.exit(1)
-        if task["status"] not in ("completed", "cancelled"):
-            print(f"Cannot reopen task in '{task['status']}' state", file=sys.stderr)
-            sys.exit(1)
-
-        task["status"] = "pending"
-        task["tmux_window_id"] = None
-        task["updated_at"] = _now_iso()
-        _save(data)
-    _notify_daemon()
-    print(f"Reopened {args.id}")
 
 
 def cmd_reset(args):
@@ -1067,15 +1065,15 @@ def cmd_reset(args):
 
 def cmd_gc(args):
     _ensure_dirs()
-    live_windows, _ = Tmux.window_info()
+    windows = Tmux.window_info()
     with open(LOCK_FILE, "w") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX)
         data = _load()
         changed = []
 
         for task in data["tasks"]:
-            wid = task.get("tmux_window_id")
-            if task["status"] == "active" and (not wid or _wid(wid) not in live_windows):
+            target = task.get("tmux_window_id")
+            if task["status"] == "active" and (not target or target not in windows):
                 task["tmux_window_id"] = None
                 task["status"] = "paused"
                 task["updated_at"] = _now_iso()
@@ -1199,9 +1197,6 @@ def main():
     p_delete = sub.add_parser("delete", help="Delete a single task")
     p_delete.add_argument("id", help="Task ID")
 
-    # reopen
-    p_reopen = sub.add_parser("reopen", help="Reopen completed/cancelled task")
-    p_reopen.add_argument("id", help="Task ID")
 
     # gc
     sub.add_parser("gc", help="Reconcile: pause tasks with missing tmux windows")
@@ -1239,7 +1234,6 @@ def main():
         "done": cmd_done,
         "cancel": cmd_cancel,
         "delete": cmd_delete,
-        "reopen": cmd_reopen,
         "gc": cmd_gc,
         "pane": cmd_pane,
         "status": cmd_status,
