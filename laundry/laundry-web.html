@@ -66,6 +66,10 @@
     color: var(--text-dim); margin-right: 6px;
     text-transform: uppercase; font-size: 10px; letter-spacing: 0.05em;
   }
+  .tile-header .age {
+    color: var(--text-dim); font-size: 10px; font-family: var(--mono);
+    flex-shrink: 0;
+  }
 
   /* Link pills */
   .tile-header .links { display: flex; gap: 6px; align-items: center; flex-shrink: 0; }
@@ -149,15 +153,26 @@
   }
 
   /* FAB */
-  #add-btn {
-    position: fixed; bottom: 20px; right: 20px; z-index: 20;
-    background: var(--accent); color: var(--bg-deep); border: none;
+  .fab-group { position: fixed; bottom: 20px; right: 20px; z-index: 20; display: flex; gap: 10px; }
+  .fab {
+    color: var(--bg-deep); border: none;
     width: 44px; height: 44px; border-radius: 12px;
-    font-size: 24px; cursor: pointer; line-height: 1;
-    box-shadow: 0 4px 16px rgba(74,158,255,0.3);
+    font-size: 20px; cursor: pointer; line-height: 1;
     transition: transform 0.15s, box-shadow 0.15s;
   }
-  #add-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(74,158,255,0.4); }
+  .fab:hover { transform: translateY(-2px); }
+  #add-btn {
+    background: var(--accent);
+    box-shadow: 0 4px 16px rgba(74,158,255,0.3); font-size: 24px;
+  }
+  #paused-btn {
+    background: var(--warn);
+    box-shadow: 0 4px 16px rgba(232,168,76,0.3); font-size: 16px;
+    font-family: var(--mono); font-weight: 600;
+  }
+  #paused-btn .count {
+    font-size: 13px;
+  }
 
   /* Modal */
   .modal-overlay {
@@ -196,12 +211,43 @@
   .modal-actions button:hover { transform: translateY(-1px); }
   .modal-actions .primary { background: var(--accent); color: var(--bg-deep); }
   .modal-actions .secondary { background: var(--border-active); color: var(--text); }
+  .paused-list { list-style: none; max-height: 400px; overflow-y: auto; }
+  .paused-item {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 0; border-bottom: 1px solid var(--border);
+  }
+  .paused-item:last-child { border-bottom: none; }
+  .paused-item .info { min-width: 0; overflow: hidden; }
+  .paused-item .name {
+    color: var(--text-bright); font-size: 12px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .paused-item .meta { color: var(--text-dim); font-size: 10px; margin-top: 2px; }
+  .paused-item .resume-btn {
+    background: var(--accent); color: var(--bg-deep); border: none;
+    padding: 4px 12px; border-radius: 4px; cursor: pointer;
+    font-family: var(--mono); font-size: 11px; font-weight: 500;
+    flex-shrink: 0; margin-left: 12px; transition: transform 0.1s;
+  }
+  .paused-item .resume-btn:hover { transform: translateY(-1px); }
 </style>
 </head>
 <body>
 <div id="grid"></div>
 <div id="empty" style="display:none">No active tasks</div>
-<button id="add-btn" onclick="openAddModal()">+</button>
+<div class="fab-group">
+  <button class="fab" id="paused-btn" onclick="openPausedModal()" style="display:none"><span class="count"></span></button>
+  <button class="fab" id="add-btn" onclick="openAddModal()">+</button>
+</div>
+<div class="modal-overlay" id="paused-modal">
+  <div class="modal">
+    <h3>Paused sessions</h3>
+    <ul class="paused-list" id="paused-list"></ul>
+    <div class="modal-actions">
+      <button class="secondary" onclick="closePausedModal()">Close</button>
+    </div>
+  </div>
+</div>
 <div class="modal-overlay" id="add-modal">
   <div class="modal">
     <h3>New task</h3>
@@ -271,6 +317,7 @@ function updateGrid(tasks) {
             </div>
           </span>
           <span class="title-left"><span class="project">${esc(t.project)}</span>${esc(t.title)}</span>
+          <span class="age">${esc(t.age || '')}</span>
           <span class="links">${renderLinks(t.links)}</span>
         </div>
         <div class="tile-content" id="content-${t.id}"></div>
@@ -303,6 +350,9 @@ function updateGrid(tasks) {
         content.scrollTop = content.scrollHeight;
       }
     }
+
+    const ageEl = tiles[t.id].querySelector('.age');
+    if (ageEl) ageEl.textContent = t.age || '';
 
     const linksEl = tiles[t.id].querySelector('.links');
     if (linksEl && t.links) {
@@ -398,17 +448,65 @@ function submitAddTask() {
   });
 }
 
+function openPausedModal() {
+  fetch('/paused').then(r => r.json()).then(tasks => {
+    const list = document.getElementById('paused-list');
+    if (!tasks.length) {
+      list.innerHTML = '<li style="color:var(--text-dim);padding:12px 0">No paused sessions</li>';
+      return;
+    }
+    list.innerHTML = tasks.map(t => `
+      <li class="paused-item">
+        <div class="info">
+          <div class="name">${esc(t.title)}</div>
+          <div class="meta">${esc(t.project)} &middot; ${esc(t.age)}</div>
+        </div>
+        <button class="resume-btn" onclick="resumeTask('${t.id}')">Resume</button>
+      </li>
+    `).join('');
+  });
+  document.getElementById('paused-modal').classList.add('open');
+}
+
+function closePausedModal() {
+  document.getElementById('paused-modal').classList.remove('open');
+}
+
+function resumeTask(taskId) {
+  fetch('/action', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({task_id: taskId, action: 'open'})
+  }).then(() => {
+    closePausedModal();
+  });
+}
+
+document.getElementById('paused-modal').addEventListener('click', (e) => {
+  if (e.target.classList.contains('modal-overlay')) closePausedModal();
+});
 document.getElementById('add-modal').addEventListener('click', (e) => {
   if (e.target.classList.contains('modal-overlay')) closeAddModal();
 });
 document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') closeAddModal();
+  if (e.key === 'Escape') { closeAddModal(); closePausedModal(); }
 });
 
 function connect() {
   const es = new EventSource('/events');
   es.onmessage = (e) => {
-    try { updateGrid(JSON.parse(e.data)); } catch(err) { console.error(err); }
+    try {
+      const d = JSON.parse(e.data);
+      updateGrid(d.tasks || d);
+      // Update paused button
+      const btn = document.getElementById('paused-btn');
+      if (d.paused_count > 0) {
+        btn.style.display = '';
+        btn.querySelector('.count').textContent = d.paused_count;
+      } else {
+        btn.style.display = 'none';
+      }
+    } catch(err) { console.error(err); }
   };
   es.onerror = () => {
     es.close();

@@ -143,6 +143,19 @@ def get_claude_states():
         return {}
 
 
+def _relative_time(iso_str):
+    try:
+        from datetime import datetime, timezone
+        dt = datetime.strptime(iso_str, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
+        secs = int((datetime.now(timezone.utc) - dt).total_seconds())
+        if secs < 60: return f"{secs}s"
+        if secs < 3600: return f"{secs // 60}m"
+        if secs < 86400: return f"{secs // 3600}h"
+        return f"{secs // 86400}d"
+    except Exception:
+        return ""
+
+
 def get_dashboard_data():
     tasks = load_tasks()
     windows = tmux_window_info()
@@ -187,8 +200,10 @@ def get_dashboard_data():
             "content": content,
             "links": links,
             "state": session_state,
+            "age": _relative_time(t.get("updated_at", "")),
         })
-    return result
+    paused_count = sum(1 for t in tasks if t["status"] == "paused")
+    return {"tasks": result, "paused_count": paused_count}
 
 
 def send_to_pane(task_id, text):
@@ -211,7 +226,7 @@ def send_to_pane(task_id, text):
     return False
 
 
-ALLOWED_ACTIONS = {"pause", "done", "cancel", "delete"}
+ALLOWED_ACTIONS = {"pause", "done", "cancel", "delete", "open"}
 
 
 def get_project_dirs():
@@ -288,6 +303,18 @@ class Handler(BaseHTTPRequestHandler):
         elif self.path == "/projects":
             dirs = get_project_dirs()
             self._json_response(200, dirs)
+        elif self.path == "/paused":
+            tasks = load_tasks()
+            paused = [
+                {
+                    "id": t["id"],
+                    "title": t.get("title") or t.get("initial_prompt", "")[:40] or t["id"],
+                    "project": Path(t["project"]).name if t.get("project") else "",
+                    "age": _relative_time(t.get("updated_at", "")),
+                }
+                for t in tasks if t["status"] == "paused"
+            ]
+            self._json_response(200, paused)
         else:
             self.send_error(404)
 
