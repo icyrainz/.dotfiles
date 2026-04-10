@@ -231,6 +231,8 @@
   }
   .paused-item .actions button:hover { transform: translateY(-1px); }
   .paused-item .actions .resume { background: var(--accent); color: var(--bg-deep); }
+  .paused-item .actions .reopen { background: none; color: var(--text-dim); border: 1px solid var(--border-active); }
+  .paused-item .actions .reopen:hover { color: var(--text-bright); border-color: var(--text-dim); }
   .paused-item .actions .done { background: var(--success); color: var(--bg-deep); }
   .paused-item .actions .cancel { background: var(--border-active); color: var(--text); }
 </style>
@@ -475,7 +477,7 @@ function openPausedModal() {
           <button class="done" onclick="pausedAction('${t.id}','done')">Done</button>
           <button class="cancel" onclick="pausedAction('${t.id}','cancel')">Cancel</button>`;
       } else {
-        buttons = `<button class="resume" onclick="pausedAction('${t.id}','open')">Reopen</button>`;
+        buttons = `<button class="reopen" onclick="pausedAction('${t.id}','open')">Reopen</button>`;
       }
       return `
         <li class="paused-item" style="${dim}">

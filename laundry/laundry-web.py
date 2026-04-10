@@ -307,6 +307,9 @@ class Handler(BaseHTTPRequestHandler):
             show_all = "all=1" in self.path
             tasks = load_tasks()
             statuses = {"paused", "completed", "cancelled"} if show_all else {"paused"}
+            filtered = [t for t in tasks if t["status"] in statuses]
+            order = {"paused": 0, "completed": 1, "cancelled": 2}
+            filtered.sort(key=lambda t: (order.get(t["status"], 9), t.get("updated_at", "")))
             result = [
                 {
                     "id": t["id"],
@@ -315,7 +318,7 @@ class Handler(BaseHTTPRequestHandler):
                     "age": _relative_time(t.get("updated_at", "")),
                     "status": t["status"],
                 }
-                for t in tasks if t["status"] in statuses
+                for t in filtered
             ]
             self._json_response(200, result)
         else:
