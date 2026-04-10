@@ -1140,12 +1140,21 @@ def cmd_wall(args):
         title = t.get("title") or t.get("initial_prompt", "")[:40] or t["id"]
         project = Path(t["project"]).name if t.get("project") else ""
         header = f"{project}: {title}"
-        # watch runs capture-pane in a loop; -t for no title bar; -c for color
-        # Use $((LINES-2)) to fit the pane height minus header lines
+        # Capture target pane content, clean it for the wall tile:
+        # -J joins soft-wraps, sed strips trailing empty lines + Claude TUI
+        # chrome (status bar with │, ──), cut truncates to tile width
         cmd = (
-            f"watch -n1 -t -c "
-            f"'echo \"\\033[1;34m{header}\\033[0m\"; "
-            f"tmux capture-pane -t \"{target}\" -p -e | tail -$((LINES-2))'"
+            f"watch -n1 -t "
+            f"'w=$(tput cols 2>/dev/null || echo 80); "
+            f"h=$(tput lines 2>/dev/null || echo 15); "
+            f"echo \"\\033[1;34m{header}\\033[0m\"; "
+            f"tmux capture-pane -t \"{target}\" -p -J "
+            f"| grep -v \"^─\\{{4,\\}}\" "
+            f"| grep -v \"^[[:space:]]*$\" "
+            f"| grep -v \"^❯\" "
+            f"| grep -v \"auto mode on\" "
+            f"| grep -v \"Opus [0-9]\" "
+            f"| cut -c1-$w | tail -$((h-2))'"
         )
         wall_cmds.append(cmd)
 
