@@ -24,7 +24,9 @@ STATUS_ORDER = {"active": 0, "pending": 1, "paused": 2, "completed": 3, "cancell
 _pr_cache = {}
 _pr_cache_lock = Lock()
 
-HTML = """<!DOCTYPE html>
+HTML_FILE = Path(__file__).resolve().parent / "laundry-web.html"
+
+_HTML_BUILTIN = """<!DOCTYPE html>
 <html>
 <head>
 <meta charset="utf-8">
@@ -216,6 +218,13 @@ connect();
 </html>"""
 
 
+def _load_html():
+    """Load HTML from external file if exists, otherwise use builtin."""
+    if HTML_FILE.exists():
+        return HTML_FILE.read_text()
+    return _HTML_BUILTIN
+
+
 def load_tasks():
     if not TASKS_FILE.exists():
         return []
@@ -355,7 +364,7 @@ class Handler(BaseHTTPRequestHandler):
             self.send_response(200)
             self.send_header("Content-Type", "text/html")
             self.end_headers()
-            self.wfile.write(HTML.encode())
+            self.wfile.write(_load_html().encode())
         elif self.path == "/events":
             self.send_response(200)
             self.send_header("Content-Type", "text/event-stream")
