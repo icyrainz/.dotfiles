@@ -1,3 +1,5 @@
+watch = 2
+
 [metadata]
 name = "laundry"
 description = "Task list — jump to Claude workspaces"
@@ -9,8 +11,6 @@ command = [
 ]
 no_sort = true
 ansi = true
-
-watch = 2
 
 [preview]
 command = [
