@@ -1251,6 +1251,9 @@ def cmd_wall(args):
                     pass
                 time.sleep(0.1)
 
+    # Python curses reports COLOR_PAIRS=0 under TERM=tmux-256color
+    if "tmux" in os.environ.get("TERM", ""):
+        os.environ["TERM"] = "xterm-256color"
     curses.wrapper(run_wall)
 
 
