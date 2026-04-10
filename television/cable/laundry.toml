@@ -4,17 +4,14 @@ description = "Task list — jump to Claude workspaces"
 
 [source]
 command = [
-  "laundry list --format tv",          # active/pending/paused (default)
-  "laundry list --all --format tv",    # all tasks including completed/cancelled
+  "laundry list --format tv",       # active/pending/paused (default)
+  "laundry list --all --format tv", # all tasks including completed/cancelled
 ]
 no_sort = true
 ansi = true
 
 [preview]
-command = [
-  "laundry show '{split:\t:0}'",
-  "laundry pane '{split:\t:0}'",
-]
+command = ["laundry show '{split:\t:0}'", "laundry pane '{split:\t:0}'"]
 
 [keybindings]
 enter = "actions:1-open"
