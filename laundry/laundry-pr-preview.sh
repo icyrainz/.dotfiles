@@ -5,15 +5,6 @@ set -euo pipefail
 
 TASK_ID="${1:?Usage: laundry-pr-preview.sh <task-id>}"
 
-# Colors
-G='\033[32m'  # green
-Y='\033[33m'  # yellow
-R='\033[31m'  # red
-B='\033[34m'  # blue
-D='\033[2m'   # dim
-N='\033[0m'   # reset
-BOLD='\033[1m'
-
 # Get linked PRs from task JSON
 PRS=$(python3 -c "
 import json
@@ -28,102 +19,116 @@ for t in data['tasks']:
 ")
 
 if [ -z "$PRS" ]; then
-    echo -e "${D}No PRs linked to this task.${N}"
+    echo -e '\033[2mNo PRs linked to this task.\033[0m'
     echo ""
-    echo -e "Link a PR: ${BOLD}laundry link $TASK_ID --pr owner/repo#N${N}"
+    echo -e "Link a PR: \033[1mlaundry link $TASK_ID --pr owner/repo#N\033[0m"
     exit 0
 fi
 
+# Fetch all PRs in parallel (single gh call per PR with statusCheckRollup)
+WORK=$(mktemp -d)
+trap 'rm -rf "$WORK"' EXIT
+
+i=0
 while IFS= read -r pr_ref; do
     [ -z "$pr_ref" ] && continue
-
-    # Parse owner/repo#number
     repo="${pr_ref%#*}"
     number="${pr_ref#*#}"
-
-    echo -e "${BOLD}${pr_ref}${N}"
-    echo -e "${D}$(printf '%.0s─' {1..60})${N}"
-
-    # Fetch PR details
-    pr_json=$(gh pr view "$number" -R "$repo" --json title,state,reviewDecision,headRefName,isDraft,mergeable,additions,deletions,url 2>/dev/null) || {
-        echo -e "  ${R}Failed to fetch PR${N}"
-        echo ""
-        continue
-    }
-
-    title=$(echo "$pr_json" | python3 -c "import json,sys; d=json.load(sys.stdin); print(d.get('title',''))")
-    state=$(echo "$pr_json" | python3 -c "import json,sys; d=json.load(sys.stdin); print(d.get('state',''))")
-    review=$(echo "$pr_json" | python3 -c "import json,sys; d=json.load(sys.stdin); print(d.get('reviewDecision',''))")
-    branch=$(echo "$pr_json" | python3 -c "import json,sys; d=json.load(sys.stdin); print(d.get('headRefName',''))")
-    draft=$(echo "$pr_json" | python3 -c "import json,sys; d=json.load(sys.stdin); print(d.get('isDraft',False))")
-    adds=$(echo "$pr_json" | python3 -c "import json,sys; d=json.load(sys.stdin); print(d.get('additions',0))")
-    dels=$(echo "$pr_json" | python3 -c "import json,sys; d=json.load(sys.stdin); print(d.get('deletions',0))")
-    url=$(echo "$pr_json" | python3 -c "import json,sys; d=json.load(sys.stdin); print(d.get('url',''))")
-
-    # State indicator
-    case "$state" in
-        MERGED)  state_str="${B}MERGED${N}" ;;
-        CLOSED)  state_str="${D}CLOSED${N}" ;;
-        OPEN)
-            if [ "$draft" = "True" ]; then
-                state_str="${D}DRAFT${N}"
-            else
-                state_str="${G}OPEN${N}"
-            fi
-            ;;
-        *)       state_str="$state" ;;
-    esac
-
-    # Review indicator
-    case "$review" in
-        APPROVED)          review_str="${G}✓ Approved${N}" ;;
-        CHANGES_REQUESTED) review_str="${R}✗ Changes requested${N}" ;;
-        REVIEW_REQUIRED)   review_str="${Y}○ Review required${N}" ;;
-        *)                 review_str="${D}No reviews${N}" ;;
-    esac
-
-    echo -e "  ${title}"
-    echo -e "  ${state_str}  ${review_str}  ${G}+${adds}${N} ${R}-${dels}${N}"
-    echo -e "  ${D}${branch}${N}"
-    echo ""
-
-    # CI checks (only for open PRs)
-    if [ "$state" = "OPEN" ]; then
-        checks_json=$(gh pr checks "$number" -R "$repo" --json name,state,bucket 2>/dev/null) || {
-            echo -e "  ${D}No CI checks${N}"
-            echo ""
-            continue
-        }
-
-        # Parse and display checks
-        python3 -c "
-import json, sys
-
-checks = json.loads('''$checks_json''')
-if not checks:
-    print('  \033[2mNo CI checks\033[0m')
-    sys.exit(0)
-
-pass_count = sum(1 for c in checks if c.get('bucket') == 'pass')
-fail_count = sum(1 for c in checks if c.get('bucket') == 'fail')
-pending_count = sum(1 for c in checks if c.get('bucket') == 'pending')
-skip_count = sum(1 for c in checks if c.get('bucket') in ('skipping', 'cancel'))
-
-# Summary line
-parts = []
-if pass_count: parts.append(f'\033[32m{pass_count} passed\033[0m')
-if fail_count: parts.append(f'\033[31m{fail_count} failed\033[0m')
-if pending_count: parts.append(f'\033[33m{pending_count} pending\033[0m')
-if skip_count: parts.append(f'\033[2m{skip_count} skipped\033[0m')
-print(f'  CI: {\"  \".join(parts)}')
-
-# Show failed checks in detail
-for c in checks:
-    if c.get('bucket') == 'fail':
-        print(f'    \033[31m✗ {c[\"name\"]}\033[0m')
-    elif c.get('bucket') == 'pending':
-        print(f'    \033[33m⟳ {c[\"name\"]}\033[0m')
-" 2>/dev/null || echo -e "  ${D}Could not parse checks${N}"
-        echo ""
-    fi
+    (
+        gh pr view "$number" -R "$repo" \
+            --json title,state,reviewDecision,headRefName,isDraft,additions,deletions,statusCheckRollup \
+            > "$WORK/$i.json" 2>/dev/null || echo '{"_error":true}' > "$WORK/$i.json"
+    ) &
+    echo "$pr_ref" > "$WORK/$i.ref"
+    i=$((i + 1))
 done <<< "$PRS"
+wait
+
+# Render all results
+python3 - "$WORK" "$i" <<'PYEOF'
+import json, sys, os
+
+work, count = sys.argv[1], int(sys.argv[2])
+
+G  = '\033[32m'
+Y  = '\033[33m'
+R  = '\033[31m'
+B  = '\033[34m'
+D  = '\033[2m'
+N  = '\033[0m'
+BD = '\033[1m'
+
+ICONS = {'pass': f'{G}✓', 'fail': f'{R}✗', 'pending': f'{Y}⟳', 'skip': f'{D}○'}
+
+def bucket(c):
+    # CheckRun uses conclusion/status; StatusContext uses state
+    conclusion = (c.get('conclusion') or '').upper()
+    status = (c.get('status') or c.get('state') or '').upper()
+    if conclusion in ('SUCCESS', 'NEUTRAL') or status == 'SUCCESS': return 'pass'
+    if conclusion in ('FAILURE', 'ERROR', 'TIMED_OUT', 'ACTION_REQUIRED') or status in ('FAILURE', 'ERROR'): return 'fail'
+    if conclusion == 'SKIPPED':               return 'skip'
+    if status in ('QUEUED', 'IN_PROGRESS', 'PENDING', 'WAITING', 'REQUESTED', 'EXPECTED'): return 'pending'
+    if conclusion: return 'pass'
+    return 'pending'
+
+for j in range(count):
+    ref = open(f'{work}/{j}.ref').read().strip()
+    with open(f'{work}/{j}.json') as f:
+        d = json.load(f)
+
+    print(f'{BD}{ref}{N}')
+    print(f'{D}{"─" * 60}{N}')
+
+    if d.get('_error'):
+        print(f'  {R}Failed to fetch PR{N}\n')
+        continue
+
+    title   = d.get('title', '')
+    state   = d.get('state', '')
+    review  = d.get('reviewDecision', '')
+    branch  = d.get('headRefName', '')
+    draft   = d.get('isDraft', False)
+    adds    = d.get('additions', 0)
+    dels    = d.get('deletions', 0)
+
+    # State
+    if state == 'MERGED':     state_s = f'{B}MERGED{N}'
+    elif state == 'CLOSED':   state_s = f'{D}CLOSED{N}'
+    elif draft:               state_s = f'{D}DRAFT{N}'
+    elif state == 'OPEN':     state_s = f'{G}OPEN{N}'
+    else:                     state_s = state
+
+    # Review
+    review_map = {
+        'APPROVED': f'{G}✓ Approved{N}',
+        'CHANGES_REQUESTED': f'{R}✗ Changes requested{N}',
+        'REVIEW_REQUIRED': f'{Y}○ Review required{N}',
+    }
+    review_s = review_map.get(review, f'{D}No reviews{N}')
+
+    print(f'  {title}')
+    print(f'  {state_s}  {review_s}  {G}+{adds}{N} {R}-{dels}{N}')
+    print(f'  {D}{branch}{N}')
+    print()
+
+    # CI checks
+    checks = d.get('statusCheckRollup', [])
+    if state != 'OPEN' or not checks:
+        continue
+
+    buckets = [bucket(c) for c in checks]
+    counts = {k: buckets.count(k) for k in ('pass', 'fail', 'pending', 'skip')}
+
+    parts = []
+    if counts['pass']:    parts.append(f'{G}{counts["pass"]} passed{N}')
+    if counts['fail']:    parts.append(f'{R}{counts["fail"]} failed{N}')
+    if counts['pending']: parts.append(f'{Y}{counts["pending"]} pending{N}')
+    if counts['skip']:    parts.append(f'{D}{counts["skip"]} skipped{N}')
+    print(f'  CI: {"  ".join(parts)}')
+
+    for c, b in zip(checks, buckets):
+        name = c.get('name') or c.get('context') or '?'
+        icon = ICONS.get(b, ' ')
+        print(f'    {icon} {name}{N}')
+    print()
+PYEOF
