@@ -293,9 +293,19 @@ def capture_pane(target):
         ["tmux", "capture-pane", "-t", target, "-p", "-J"],
         capture_output=True, text=True,
     )
+    raw = (result.stdout or "").rstrip()
+    lines = raw.splitlines()
     # Drop last 6 lines (Claude TUI chrome)
-    lines = (result.stdout or "").rstrip().splitlines()
-    return "\n".join(lines[:-6]) if len(lines) > 6 else result.stdout or ""
+    content = "\n".join(lines[:-6]) if len(lines) > 6 else raw
+    # Detect session state from the raw output (including chrome)
+    tail = "\n".join(lines[-10:]).lower() if lines else ""
+    if any(s in tail for s in ["clauding", "stewing", "thinking", "running"]):
+        state = "thinking"
+    elif "allow" in tail and ("y/n" in tail or "permission" in tail):
+        state = "permission"
+    else:
+        state = "idle"
+    return content, state
 
 
 def get_dashboard_data():
@@ -313,7 +323,7 @@ def get_dashboard_data():
     ))
     result = []
     for t in active:
-        content = capture_pane(t["tmux_window_id"])
+        content, session_state = capture_pane(t["tmux_window_id"])
         project = Path(t["project"]).name if t.get("project") else ""
         title = t.get("title") or t.get("initial_prompt", "")[:40] or t["id"]
         # Build compact link labels
@@ -339,6 +349,7 @@ def get_dashboard_data():
             "target": t["tmux_window_id"],
             "content": content,
             "links": links,
+            "state": session_state,
         })
     return result
 
