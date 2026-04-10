@@ -1141,10 +1141,11 @@ def cmd_wall(args):
         project = Path(t["project"]).name if t.get("project") else ""
         header = f"{project}: {title}"
         # watch runs capture-pane in a loop; -t for no title bar; -c for color
+        # Use $((LINES-2)) to fit the pane height minus header lines
         cmd = (
             f"watch -n1 -t -c "
-            f"'echo \"\\033[1m{header}\\033[0m\"; echo \"─────────────────────────────────\"; "
-            f"tmux capture-pane -t \"{target}\" -p -e | tail -30'"
+            f"'echo \"\\033[1;34m{header}\\033[0m\"; "
+            f"tmux capture-pane -t \"{target}\" -p -e | tail -$((LINES-2))'"
         )
         wall_cmds.append(cmd)
 
