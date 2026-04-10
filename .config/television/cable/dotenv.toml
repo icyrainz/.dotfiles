@@ -1,0 +1,38 @@
+[metadata]
+name = "dotenv"
+description = "Edit .env variables"
+
+[source]
+command = "cat .env 2>/dev/null | grep -v '^\\s*#' | grep -v '^\\s*$'"
+no_sort = true
+
+[preview]
+command = "echo '{split:=:1..}'"
+
+[keybindings]
+enter = "toggle_action_picker"
+
+[ui]
+layout = "portrait"
+input_header = ".env editor"
+preview_panel = { size = 20, header = "{split:=:0}" }
+
+[actions.copy]
+description = "Copy value to clipboard"
+command = "printf '%s' '{split:=:1..}' | pbcopy"
+mode = "fork"
+
+[actions.paste]
+description = "Set from clipboard"
+command = "bash ~/.config/tmux/env-set.sh paste '{split:=:0}'"
+mode = "fork"
+
+[actions.edit]
+description = "Edit in nvim"
+command = "bash ~/.config/tmux/env-set.sh edit '{split:=:0}' '{split:=:1..}'"
+mode = "fork"
+
+[actions.new]
+description = "Add new variable"
+command = "bash ~/.config/tmux/env-set.sh new"
+mode = "fork"
