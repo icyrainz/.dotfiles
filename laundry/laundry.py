@@ -1292,6 +1292,17 @@ def cmd_serve(args):
     daemon.serve()
 
 
+def cmd_web(args):
+    web_script = Path(__file__).resolve().parent / "laundry-web.py"
+    if not web_script.exists():
+        print(f"laundry-web.py not found at {web_script}", file=sys.stderr)
+        sys.exit(1)
+    env = os.environ.copy()
+    if args.port:
+        env["LAUNDRY_WEB_PORT"] = str(args.port)
+    os.execvpe(sys.executable, [sys.executable, str(web_script)], env)
+
+
 # --- main ---
 
 
@@ -1383,6 +1394,10 @@ def main():
     # serve
     sub.add_parser("serve", help="Start the laundry daemon")
 
+    # web
+    p_web = sub.add_parser("web", help="Launch web dashboard")
+    p_web.add_argument("--port", "-p", type=int, help="Port (default: 7777)")
+
     # reset
     sub.add_parser("reset", help="Wipe all tasks and notes")
 
@@ -1411,6 +1426,7 @@ def main():
         "pane": cmd_pane,
         "status": cmd_status,
         "serve": cmd_serve,
+        "web": cmd_web,
         "reset": cmd_reset,
     }
     commands[args.command](args)
