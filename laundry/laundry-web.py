@@ -49,17 +49,18 @@ HTML = """<!DOCTYPE html>
   }
   .tile-header .project { color: #565f89; margin-right: 8px; }
   .tile-header .status { font-size: 11px; color: #565f89; }
-  .tile-header .links { display: flex; gap: 6px; }
+  .tile-header .links { display: flex; gap: 8px; align-items: center; }
   .tile-header .links a {
-    text-decoration: none; font-size: 11px; font-weight: normal;
+    text-decoration: none; font-size: 12px; font-weight: 600;
+    padding: 1px 6px; border-radius: 3px;
   }
   .tile-header .links a:hover { text-decoration: underline; }
-  .tile-header .links a.jira { color: #7aa2f7; }
-  .tile-header .links a.pr-PENDING { color: #e0af68; }
-  .tile-header .links a.pr-REVIEW_REQUIRED { color: #e0af68; }
-  .tile-header .links a.pr-APPROVED { color: #9ece6a; }
-  .tile-header .links a.pr-CHANGES_REQUESTED { color: #f7768e; }
-  .tile-header .links a.pr-MERGED { color: #bb9af7; }
+  .tile-header .links a.jira { color: #7dcfff; }
+  .tile-header .links a.pr-PENDING { color: #e0af68; background: rgba(224,175,104,0.1); }
+  .tile-header .links a.pr-REVIEW_REQUIRED { color: #e0af68; background: rgba(224,175,104,0.1); }
+  .tile-header .links a.pr-APPROVED { color: #73daca; background: rgba(115,218,202,0.1); }
+  .tile-header .links a.pr-CHANGES_REQUESTED { color: #f7768e; background: rgba(247,118,142,0.1); }
+  .tile-header .links a.pr-MERGED { color: #bb9af7; background: rgba(187,154,247,0.1); }
   .tile-header .links a.pr-CLOSED { color: #565f89; }
   .tile-content {
     flex: 1; overflow-y: auto; padding: 6px 10px;
