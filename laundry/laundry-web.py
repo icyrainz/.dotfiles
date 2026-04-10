@@ -9,13 +9,19 @@ import sys
 import time
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from pathlib import Path
-from threading import Thread
+from threading import Thread, Lock
 
 PORT = int(os.environ.get("LAUNDRY_WEB_PORT", 7777))
+JIRA_DOMAIN = os.environ.get("LAUNDRY_JIRA_DOMAIN", "captain401.atlassian.net")
 TASKS_FILE = Path.home() / ".local" / "share" / "laundry" / "tasks.json"
 REFRESH_INTERVAL = 1.5  # seconds between SSE pushes
+PR_CACHE_TTL = 60       # seconds between PR status refreshes
 
 STATUS_ORDER = {"active": 0, "pending": 1, "paused": 2, "completed": 3, "cancelled": 4}
+
+# PR status cache: {"owner/repo#123": "APPROVED"} — refreshed by background thread
+_pr_cache = {}
+_pr_cache_lock = Lock()
 
 HTML = """<!DOCTYPE html>
 <html>
@@ -45,9 +51,16 @@ HTML = """<!DOCTYPE html>
   .tile-header .status { font-size: 11px; color: #565f89; }
   .tile-header .links { display: flex; gap: 6px; }
   .tile-header .links a {
-    color: #9ece6a; text-decoration: none; font-size: 11px; font-weight: normal;
+    text-decoration: none; font-size: 11px; font-weight: normal;
   }
   .tile-header .links a:hover { text-decoration: underline; }
+  .tile-header .links a.jira { color: #7aa2f7; }
+  .tile-header .links a.pr-PENDING { color: #e0af68; }
+  .tile-header .links a.pr-REVIEW_REQUIRED { color: #e0af68; }
+  .tile-header .links a.pr-APPROVED { color: #9ece6a; }
+  .tile-header .links a.pr-CHANGES_REQUESTED { color: #f7768e; }
+  .tile-header .links a.pr-MERGED { color: #bb9af7; }
+  .tile-header .links a.pr-CLOSED { color: #565f89; }
   .tile-content {
     flex: 1; overflow-y: auto; padding: 6px 10px;
     white-space: pre-wrap; word-break: break-all;
@@ -109,9 +122,10 @@ function updateGrid(tasks) {
       // Create new tile
       const tile = document.createElement('div');
       tile.className = 'tile';
-      const linksHtml = (t.links || []).map(l =>
-        `<a href="${esc(l.url)}" target="_blank">${esc(l.label)}</a>`
-      ).join('');
+      const linksHtml = (t.links || []).map(l => {
+        const cls = l.type === 'jira' ? 'jira' : `pr-${l.status || 'PENDING'}`;
+        return `<a href="${esc(l.url)}" target="_blank" class="${cls}">${esc(l.label)}</a>`;
+      }).join('');
       tile.innerHTML = `
         <div class="tile-header">
           <span><span class="project">${esc(t.project)}</span>${esc(t.title)}</span>
@@ -221,6 +235,44 @@ def tmux_window_info():
         return {}
 
 
+def _fetch_pr_status(pr_ref):
+    """Fetch PR review status from GitHub. Returns APPROVED/CHANGES_REQUESTED/MERGED/CLOSED/PENDING."""
+    try:
+        repo, num = pr_ref.rsplit("#", 1) if "#" in pr_ref else ("", pr_ref)
+        result = subprocess.run(
+            ["gh", "pr", "view", num, "-R", repo, "--json", "state,reviewDecision"],
+            capture_output=True, text=True, timeout=10,
+        )
+        if result.returncode == 0:
+            d = json.loads(result.stdout)
+            if d.get("state") == "MERGED":
+                return "MERGED"
+            if d.get("state") == "CLOSED":
+                return "CLOSED"
+            return d.get("reviewDecision") or "PENDING"
+    except Exception:
+        pass
+    return "PENDING"
+
+
+def _pr_cache_loop():
+    """Background thread: refresh PR statuses every PR_CACHE_TTL seconds."""
+    while True:
+        try:
+            tasks = load_tasks()
+            all_prs = set()
+            for t in tasks:
+                for pr in t.get("links", {}).get("prs", []):
+                    all_prs.add(pr)
+            for pr in all_prs:
+                status = _fetch_pr_status(pr)
+                with _pr_cache_lock:
+                    _pr_cache[pr] = status
+        except Exception:
+            pass
+        time.sleep(PR_CACHE_TTL)
+
+
 def capture_pane(target):
     result = subprocess.run(
         ["tmux", "capture-pane", "-t", target, "-p", "-J"],
@@ -254,11 +306,17 @@ def get_dashboard_data():
         jiras = t.get("links", {}).get("jira", [])
         links = []
         for j in jiras:
-            links.append({"label": j, "url": f"https://jira.atlassian.net/browse/{j}"})
-        for i, pr in enumerate(prs):
-            # owner/repo#123 → PR#123 linking to github
+            links.append({"label": j, "url": f"https://{JIRA_DOMAIN}/browse/{j}", "type": "jira"})
+        for pr in prs:
             repo, num = pr.rsplit("#", 1) if "#" in pr else ("", pr)
-            links.append({"label": f"PR#{num}", "url": f"https://github.com/{repo}/pull/{num}"})
+            with _pr_cache_lock:
+                status = _pr_cache.get(pr, "PENDING")
+            links.append({
+                "label": f"PR#{num}",
+                "url": f"https://github.com/{repo}/pull/{num}",
+                "type": "pr",
+                "status": status,
+            })
         result.append({
             "id": t["id"],
             "project": project,
@@ -324,6 +382,10 @@ class Handler(BaseHTTPRequestHandler):
 
 
 def main():
+    # Start background PR status fetcher
+    pr_thread = Thread(target=_pr_cache_loop, daemon=True)
+    pr_thread.start()
+
     server = HTTPServer(("127.0.0.1", PORT), Handler)
     print(f"laundry-web → http://localhost:{PORT}")
     try:
