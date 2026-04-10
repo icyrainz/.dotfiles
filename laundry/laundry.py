@@ -1138,9 +1138,9 @@ def cmd_wall(args):
             ["tmux", "capture-pane", "-t", target, "-p", "-J"],
             capture_output=True, text=True,
         )
-        # Drop last 4 lines (Claude TUI chrome: separator, status bar, mode, prompt)
+        # Drop last 6 lines (Claude TUI chrome)
         all_lines = (result.stdout or "").rstrip().splitlines()
-        lines = [l.rstrip()[:width] for l in all_lines[:-4]]
+        lines = [l.rstrip()[:width] for l in all_lines[:-6]]
         return lines
 
     def tile_layout(n, rows, cols):
