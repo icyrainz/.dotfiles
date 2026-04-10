@@ -9,7 +9,6 @@
 **/*.local.conf
 
 # Claude Code
-claude/settings.machine.json
 claude/HUMAN.md
 docs/plans/
 .playwright-mcp/
