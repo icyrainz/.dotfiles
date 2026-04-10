@@ -277,7 +277,6 @@ function updateGrid(tasks) {
         <div class="tile-input">
           <input type="text" placeholder="send input..." id="input-${t.id}"
                  onkeydown="if(event.key==='Enter')sendInput('${t.id}',this.value,this)">
-          <button onclick="sendInput('${t.id}',document.getElementById('input-${t.id}').value,document.getElementById('input-${t.id}'))">send</button>
         </div>`;
       grid.appendChild(tile);
       tiles[t.id] = tile;
