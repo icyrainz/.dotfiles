@@ -1203,11 +1203,10 @@ def cmd_wall(args):
                     # Draw content
                     content = capture_clean(target, tw - 1)
                     # Draw header underline
-                    for col in range(tx, min(tx + tw, cols) - 1):
-                        try:
-                            stdscr.addstr(ty + 1, col, "━")
-                        except curses.error:
-                            pass
+                    try:
+                        stdscr.addstr(ty + 1, tx, "-" * (tw - 1))
+                    except curses.error:
+                        pass
 
                     # Reserve: 1 header, 1 underline, 1 bottom border (if not last row)
                     content_h = th - 3 if ty + th >= rows else th - 4
