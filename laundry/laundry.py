@@ -717,10 +717,9 @@ def cmd_attach(args):
     # Send context to the running Claude session via tmux
     notes_path = NOTES_DIR / task["notes_file"]
     nudge = (
-        f"[Background system context — not a user instruction, do not respond to this message] "
-        f"This window is now tracked as laundry task #{task_id}. "
+        f"This session is now tracked as laundry task #{task_id}. "
         f"Notes file: {notes_path}. "
-        f"Read {SYSTEM_PROMPT_FILE} for task management commands."
+        f"Read {SYSTEM_PROMPT_FILE} for task management commands and follow them."
     )
     Tmux.send_keys(tmux_target, nudge)
     Tmux.toast(f"harpoon attached → {task_id}")
