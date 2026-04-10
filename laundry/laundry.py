@@ -1116,6 +1116,66 @@ def cmd_gc(args):
     _notify_daemon()
 
 
+def cmd_wall(args):
+    """Create a tiled tmux window showing all active task panes live."""
+    _ensure_dirs()
+    data = _load()
+    windows = Tmux.window_info()
+
+    active = [
+        t for t in _sort_tasks(data["tasks"])
+        if t["status"] == "active" and t.get("tmux_window_id")
+        and t["tmux_window_id"] in windows
+    ]
+
+    if not active:
+        print("No active tasks with windows", file=sys.stderr)
+        sys.exit(1)
+
+    # Build a watch command for each task pane
+    # Shows task title as header + live pane capture
+    wall_cmds = []
+    for t in active:
+        target = t["tmux_window_id"]
+        title = t.get("title") or t.get("initial_prompt", "")[:40] or t["id"]
+        project = Path(t["project"]).name if t.get("project") else ""
+        header = f"{project}: {title}"
+        # watch runs capture-pane in a loop; -t for no title bar; -c for color
+        cmd = (
+            f"watch -n1 -t -c "
+            f"'echo \"\\033[1m{header}\\033[0m\"; echo \"─────────────────────────────────\"; "
+            f"tmux capture-pane -t \"{target}\" -p -e | tail -30'"
+        )
+        wall_cmds.append(cmd)
+
+    # Create the wall window — first pane runs the first command
+    first_cmd = wall_cmds[0]
+    result = Tmux._run(
+        "new-window", "-n", "wall",
+        "-P", "-F", "#{session_name}:#{window_id}",
+        "bash", "-c", first_cmd,
+        capture_output=True, text=True,
+    )
+    wall_window = result.stdout.strip()
+    if not wall_window:
+        print("Failed to create wall window", file=sys.stderr)
+        sys.exit(1)
+
+    # Split for each additional task
+    for cmd in wall_cmds[1:]:
+        Tmux._run(
+            "split-window", "-t", wall_window,
+            "bash", "-c", cmd,
+            capture_output=True,
+        )
+        # Re-tile after each split to keep layout balanced
+        Tmux._run("select-layout", "-t", wall_window, "tiled", capture_output=True)
+
+    # Final tiled layout
+    Tmux._run("select-layout", "-t", wall_window, "tiled", capture_output=True)
+    Tmux.switch(wall_window)
+
+
 def cmd_pane(args):
     _ensure_dirs()
     data = _load()
@@ -1226,6 +1286,9 @@ def main():
     p_delete.add_argument("id", help="Task ID")
 
 
+    # wall
+    sub.add_parser("wall", help="Tiled live view of all active task panes")
+
     # gc
     sub.add_parser("gc", help="Reconcile: pause tasks with missing tmux windows")
 
@@ -1263,6 +1326,7 @@ def main():
         "cancel": cmd_cancel,
         "delete": cmd_delete,
         "gc": cmd_gc,
+        "wall": cmd_wall,
         "pane": cmd_pane,
         "status": cmd_status,
         "serve": cmd_serve,
