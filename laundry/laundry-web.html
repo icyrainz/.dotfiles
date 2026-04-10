@@ -153,11 +153,11 @@ function updateGrid(tasks) {
             <span class="tile-menu">
               <button class="tile-menu-btn" onclick="toggleMenu(this)">⋮</button>
               <div class="tile-dropdown">
-                <button onclick="taskAction('${t.id}','pause',this)">|| Pause</button>
-                <button onclick="taskAction('${t.id}','done',this)">+ Done</button>
-                <button onclick="taskAction('${t.id}','cancel',this)">x Cancel</button>
+                <button onclick="taskAction('${t.id}','pause',this)">Pause</button>
+                <button onclick="taskAction('${t.id}','done',this)">Done</button>
+                <button onclick="taskAction('${t.id}','cancel',this)">Cancel</button>
                 <hr>
-                <button class="danger" onclick="taskAction('${t.id}','delete',this)">- Delete</button>
+                <button class="danger" onclick="taskAction('${t.id}','delete',this)">Delete</button>
               </div>
             </span>
           </span>
