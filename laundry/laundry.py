@@ -81,27 +81,32 @@ def _generate_id(data):
     raise RuntimeError("Could not generate unique task ID")
 
 
-def _relative_time(iso_str):
-    """Convert ISO timestamp to relative time string like '2m ago', '3h ago'."""
+def _relative_time(iso_str, short=False):
+    """Convert ISO timestamp to relative time string.
+
+    short=False: '2m ago', '3h ago' (for show output)
+    short=True:  '2m', '3h' (for compact TV list)
+    """
     try:
         dt = datetime.strptime(iso_str, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
         delta = datetime.now(timezone.utc) - dt
         secs = int(delta.total_seconds())
+        suffix = "" if short else " ago"
         if secs < 0:
-            return "just now"
+            return "now" if short else "just now"
         if secs < 60:
-            return f"{secs}s ago"
+            return f"{secs}s{suffix}"
         mins = secs // 60
         if mins < 60:
-            return f"{mins}m ago"
+            return f"{mins}m{suffix}"
         hours = mins // 60
         if hours < 24:
-            return f"{hours}h ago"
+            return f"{hours}h{suffix}"
         days = hours // 24
         if days < 30:
-            return f"{days}d ago"
+            return f"{days}d{suffix}"
         months = days // 30
-        return f"{months}mo ago"
+        return f"{months}mo{suffix}"
     except (ValueError, TypeError):
         return ""
 
@@ -187,7 +192,9 @@ class Tmux:
             "capture-pane", "-t", target, "-p", "-S", f"-{lines}",
             capture_output=True, text=True,
         )
-        return result.stdout or ""
+        # Strip leading blank lines so preview shows content at the top
+        text = result.stdout or ""
+        return text.lstrip("\n")
 
     @staticmethod
     def display(fmt, target=None):
@@ -304,6 +311,18 @@ def _harpoon_slots():
     return slots
 
 
+STATUS_ORDER = {"active": 0, "pending": 1, "paused": 2, "completed": 3, "cancelled": 4}
+
+
+def _sort_tasks(tasks):
+    """Sort by status priority (active first), then most recently updated."""
+    return sorted(tasks, key=lambda t: (
+        STATUS_ORDER.get(t["status"], 9),
+        -(datetime.strptime(t["updated_at"], "%Y-%m-%dT%H:%M:%SZ").timestamp()
+          if t.get("updated_at") else 0),
+    ))
+
+
 def _format_list(data, status_filter=None, show_all=False, parent=None, fmt=None):
     """Generate list output as a string."""
     tasks = data["tasks"]
@@ -316,6 +335,8 @@ def _format_list(data, status_filter=None, show_all=False, parent=None, fmt=None
     if parent:
         tasks = [t for t in tasks if t.get("parent_id") == parent]
 
+    tasks = _sort_tasks(tasks)
+
     out = StringIO()
     if fmt == "tv":
         if not tasks:
@@ -327,16 +348,18 @@ def _format_list(data, status_filter=None, show_all=False, parent=None, fmt=None
         slots = _harpoon_slots()
         for t in tasks:
             icon = STATUS_ICONS.get(t["status"], "?")
-            project = (Path(t["project"]).name[:15] if t["project"] else "").ljust(15)
+            project = (Path(t["project"]).name[:12] if t["project"] else "").ljust(12)
             title = t["title"] or t.get("initial_prompt", "")[:40] or "(untitled)"
             target = t.get("tmux_window_id") or ""
             pin = str(slots[target]) if target in slots else " "
+            age = _relative_time(t.get("updated_at", ""), short=True).rjust(4)
+            # ID is first field (hidden by display template, used by {split: :0})
             if t["status"] in ("completed", "cancelled"):
-                out.write(f"{t['id']} {DIM}{icon} {pin} {project} {title}{RESET}\n")
+                out.write(f"{t['id']} {DIM}{icon} {pin} {project} {title}  {age}{RESET}\n")
             elif t["status"] == "paused":
-                out.write(f"{t['id']} {YELLOW}{icon} {pin} {project} {title}{RESET}\n")
+                out.write(f"{t['id']} {YELLOW}{icon} {pin} {project} {title}  {age}{RESET}\n")
             else:
-                out.write(f"{t['id']} {icon} {pin} {project} {title}\n")
+                out.write(f"{t['id']} {icon} {pin} {project} {title}  {age}\n")
     else:
         for t in tasks:
             icon = STATUS_ICONS.get(t["status"], "?")
