@@ -11,7 +11,11 @@ no_sort = true
 ansi = true
 
 [preview]
-command = ["laundry show '{split: :0}'", "laundry pane '{split: :0}'"]
+command = [
+  "laundry show '{split: :0}'",
+  "laundry pane '{split: :0}'",
+  "bash ~/.config/laundry/laundry-pr-preview.sh '{split: :0}'",
+]
 
 [keybindings]
 enter = "actions:1-open"

@@ -74,8 +74,8 @@
       path: laundry/laundry.py
     ~/.local/share/laundry/system-prompt.md:
       path: laundry/system-prompt.md
-    ~/.config/tmux/laundry-new.sh:
-      path: laundry/laundry-new.sh
+    ~/.config/laundry:
+      path: laundry
     ~/.config/television:
       path: television
     ~/.config/sesh/sesh.toml:
