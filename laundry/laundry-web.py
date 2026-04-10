@@ -347,10 +347,18 @@ def send_to_pane(task_id, text):
     tasks = load_tasks()
     for t in tasks:
         if t["id"] == task_id and t.get("tmux_window_id"):
-            subprocess.run(
-                ["tmux", "send-keys", "-t", t["tmux_window_id"], text, "Enter"],
-                capture_output=True,
-            )
+            target = t["tmux_window_id"]
+            if text:
+                subprocess.run(
+                    ["tmux", "send-keys", "-t", target, text, "Enter"],
+                    capture_output=True,
+                )
+            else:
+                # Bare Enter (quick approve)
+                subprocess.run(
+                    ["tmux", "send-keys", "-t", target, "Enter"],
+                    capture_output=True,
+                )
             return True
     return False
 

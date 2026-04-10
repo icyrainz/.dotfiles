@@ -21,17 +21,20 @@
     padding: 6px 10px; font-weight: bold; color: #7aa2f7;
     border-bottom: 1px solid #292e42; flex-shrink: 0;
     display: flex; justify-content: space-between; align-items: center;
+    gap: 8px;
+  }
+  .tile-header .title-left {
+    min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
   .tile-header .project { color: #565f89; margin-right: 8px; }
-  .tile-header .status { font-size: 11px; color: #565f89; }
-  .tile-header .links { display: flex; gap: 8px; align-items: center; }
+  .tile-header .links { display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
   .tile-header .links a,
   .tile-header .links a:link,
   .tile-header .links a:visited,
   .tile-header .links a:active {
     text-decoration: none !important; font-size: 11px; font-weight: 600;
     padding: 2px 8px; border-radius: 10px;
-    color: #1a1b26 !important;
+    color: #1a1b26 !important; white-space: nowrap;
   }
   .tile-header .links a:hover { opacity: 0.85; }
   .tile-header .links a.jira { background: #7dcfff !important; }
@@ -43,7 +46,7 @@
   .tile-header .links a.pr-CLOSED { background: #3b4261 !important; color: #c0caf5 !important; }
   .tile-content {
     flex: 1; overflow-y: auto; padding: 6px 10px;
-    white-space: pre-wrap; word-break: break-all;
+    white-space: pre-wrap; overflow-wrap: break-word;
     font-size: 12px; line-height: 1.4;
   }
   .tile-content::-webkit-scrollbar { width: 4px; }
@@ -57,7 +60,7 @@
     padding: 4px 8px; font-family: inherit; font-size: 12px;
     border-radius: 3px; outline: none;
   }
-  .tile-input input:focus { border-color: #7aa2f7; }
+  .tile-input input:focus { border-color: #7aa2f7; background: #292e42; }
   .tile-input button {
     background: #292e42; color: #7aa2f7; border: none; padding: 4px 10px;
     cursor: pointer; border-radius: 3px; font-family: inherit; font-size: 12px;
@@ -86,6 +89,8 @@ function renderLinks(links) {
 }
 
 function updateGrid(tasks) {
+  document.title = tasks.length ? `laundry (${tasks.length})` : 'laundry';
+
   if (tasks.length === 0) {
     grid.style.display = 'none';
     empty.style.display = 'flex';
@@ -108,7 +113,7 @@ function updateGrid(tasks) {
       tile.className = 'tile';
       tile.innerHTML = `
         <div class="tile-header">
-          <span><span class="project">${esc(t.project)}</span>${esc(t.title)}</span>
+          <span class="title-left"><span class="project">${esc(t.project)}</span>${esc(t.title)}</span>
           <span class="links">${renderLinks(t.links)}</span>
         </div>
         <div class="tile-content" id="content-${t.id}"></div>
@@ -126,6 +131,12 @@ function updateGrid(tasks) {
         const atBottom = content.scrollHeight - content.scrollTop - content.clientHeight < 30;
         autoScroll[t.id] = atBottom;
       });
+    }
+
+    // Update title + project (may change mid-session)
+    const titleEl = tiles[t.id].querySelector('.title-left');
+    if (titleEl) {
+      titleEl.innerHTML = `<span class="project">${esc(t.project)}</span>${esc(t.title)}`;
     }
 
     // Update content
@@ -161,12 +172,15 @@ function esc(s) {
 }
 
 function sendInput(taskId, text, input) {
-  if (!text) return;
+  // Empty text sends a bare Enter (quick approve)
   fetch('/send', {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify({task_id: taskId, text: text})
-  });
+  }).then(r => {
+    if (!r.ok) input.style.background = '#3b2030';
+    else input.style.background = '';
+  }).catch(() => { input.style.background = '#3b2030'; });
   input.value = '';
 }
 
