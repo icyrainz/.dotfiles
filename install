@@ -16,11 +16,11 @@ TMPFILES=()
 cleanup() { rm -f "${TMPFILES[@]}"; }
 trap cleanup EXIT
 
-QUICK=false
+ALL=false
 FORCE=false
 for arg in "$@"; do
     case "$arg" in
-        --quick|-q) QUICK=true; shift ;;
+        --all|-a) ALL=true; shift ;;
         --force|-f) FORCE=true; shift ;;
     esac
 done
@@ -33,12 +33,13 @@ if [ "$FORCE" = true ]; then
     echo "Force mode: existing files will be replaced with symlinks"
 fi
 
-if [ "$QUICK" = true ]; then
-    QUICK_CONFIG=$(mktemp)
-    TMPFILES+=("$QUICK_CONFIG")
-    sed '/^- shell:/,$d' "$CONFIG" > "$QUICK_CONFIG"
-    CONFIG="$QUICK_CONFIG"
-    echo "Quick mode: skipping tool installation"
+if [ "$ALL" = false ]; then
+    SYMLINK_CONFIG=$(mktemp)
+    TMPFILES+=("$SYMLINK_CONFIG")
+    sed '/^- shell:/,$d' "$CONFIG" > "$SYMLINK_CONFIG"
+    CONFIG="$SYMLINK_CONFIG"
+else
+    echo "Full install: including tool installation"
 fi
 
 "${BASEDIR}/${DOTBOT_DIR}/${DOTBOT_BIN}" -d "${BASEDIR}" -c "${CONFIG}" "${@}"
