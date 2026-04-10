@@ -1,5 +1,6 @@
 **/.luarc.json
 .DS_Store
+__pycache__/
 
 # Machine-specific local overrides
 **/*.local.lua
