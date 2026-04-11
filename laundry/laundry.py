@@ -252,15 +252,23 @@ def _kill_task_window(task):
 SYSTEM_PROMPT_FILE = DATA_DIR / "system-prompt.md"
 
 
-def _build_system_prompt(task):
+def _task_prompt_file(task):
+    """Write a per-task prompt file (dynamic header + static body) and return its path.
+
+    The file is tiny (task ID + notes path + shared instructions) and is
+    overwritten each launch so it stays current.
+    """
     tid = task["id"]
     notes_path = NOTES_DIR / task["notes_file"]
     header = f"Laundry task ID: {tid}\nNotes file: {notes_path}\n\n"
     try:
-        body = SYSTEM_PROMPT_FILE.read_text().replace("<ID>", tid)
+        body = SYSTEM_PROMPT_FILE.read_text()
     except FileNotFoundError:
         body = ""
-    return header + body
+    prompt_file = DATA_DIR / "prompts" / f"{tid}.md"
+    prompt_file.parent.mkdir(parents=True, exist_ok=True)
+    prompt_file.write_text(header + body)
+    return str(prompt_file)
 
 
 # --- daemon client ---
@@ -953,7 +961,7 @@ def cmd_launch(args):
         print(f"Task {args.id} not found", file=sys.stderr)
         sys.exit(1)
 
-    system_prompt = _build_system_prompt(task)
+    prompt_file = _task_prompt_file(task)
     session_id = task["claude_session_id"]
     is_resume = task.get("launched", False)
 
@@ -966,17 +974,19 @@ def cmd_launch(args):
         _save(data)
     _notify_daemon()
 
+    prompt_args = ["--append-system-prompt-file", prompt_file]
+
     if is_resume and _claude_session_exists(session_id):
         os.execvp("claude", [
             "claude", "--resume", session_id,
-            "--append-system-prompt", system_prompt,
+            *prompt_args,
         ])
 
     # Fresh start (first launch or session was lost)
     cmd = [
         "claude",
         "--session-id", session_id,
-        "--append-system-prompt", system_prompt,
+        *prompt_args,
         "-n", f"L{task['id']}",
     ]
     if task.get("initial_prompt"):
@@ -1091,6 +1101,66 @@ def cmd_reset(args):
     NOTES_DIR.mkdir(parents=True, exist_ok=True)
     _notify_daemon()
     print("All tasks wiped")
+
+
+def cmd_which(args):
+    """Print the task ID for the current tmux window, if any."""
+    try:
+        target = Tmux.display("#{session_name}:#{window_id}")
+    except (FileNotFoundError, OSError):
+        sys.exit(1)
+    if not target:
+        sys.exit(1)
+    data = _load()
+    for task in data["tasks"]:
+        if task.get("tmux_window_id") == target and task["status"] in ("active", "paused"):
+            print(task["id"])
+            return
+    sys.exit(1)
+
+
+def cmd_worktree(args):
+    """Print the git worktree path for the current task, or the fallback path."""
+    fallback = args.fallback or "."
+    try:
+        target = Tmux.display("#{session_name}:#{window_id}")
+    except (FileNotFoundError, OSError):
+        print(fallback)
+        return
+    if not target:
+        print(fallback)
+        return
+
+    # Find task for this window
+    data = _load()
+    task_id = None
+    project = None
+    for task in data["tasks"]:
+        if task.get("tmux_window_id") == target and task["status"] in ("active", "paused"):
+            task_id = task["id"]
+            project = task.get("project", "")
+            break
+    if not task_id or not project:
+        print(fallback)
+        return
+
+    # Look for worktree on branch laundry/<task-id>
+    try:
+        result = subprocess.run(
+            ["git", "-C", project, "worktree", "list", "--porcelain"],
+            capture_output=True, text=True,
+        )
+        wt_path = None
+        for line in result.stdout.splitlines():
+            if line.startswith("worktree "):
+                wt_path = line[len("worktree "):]
+            elif line == f"branch refs/heads/laundry/{task_id}" and wt_path:
+                print(wt_path)
+                return
+    except (FileNotFoundError, OSError):
+        pass
+
+    print(fallback)
 
 
 def cmd_gc(args):
@@ -1403,6 +1473,13 @@ def main():
     # reset
     sub.add_parser("reset", help="Wipe all tasks and notes")
 
+    # which
+    sub.add_parser("which", help="Print task ID for the current tmux window")
+
+    # worktree
+    p_wt = sub.add_parser("worktree", help="Print worktree path for current task")
+    p_wt.add_argument("fallback", nargs="?", default=".", help="Fallback path if no worktree found")
+
 
     args = parser.parse_args()
     if args.command is None:
@@ -1430,6 +1507,8 @@ def main():
         "serve": cmd_serve,
         "web": cmd_web,
         "reset": cmd_reset,
+        "which": cmd_which,
+        "worktree": cmd_worktree,
     }
     commands[args.command](args)
 
