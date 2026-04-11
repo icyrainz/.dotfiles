@@ -52,14 +52,17 @@ def _ensure_dirs():
     NOTES_DIR.mkdir(parents=True, exist_ok=True)
 
 
-def _load():
+def _load(strict=True):
     if not TASKS_FILE.exists():
         return {"version": 1, "tasks": []}
     try:
         with open(TASKS_FILE) as f:
             return json.load(f)
     except (json.JSONDecodeError, ValueError) as e:
-        print(f"Warning: tasks.json is corrupt ({e}), starting fresh", file=sys.stderr)
+        if strict:
+            print(f"Error: tasks.json is corrupt ({e}). Fix or remove the file.", file=sys.stderr)
+            sys.exit(1)
+        print(f"Warning: tasks.json is corrupt ({e}), returning empty", file=sys.stderr)
         return {"version": 1, "tasks": []}
 
 
@@ -452,7 +455,7 @@ class LaundryDaemon:
             mtime = 0
         if mtime != self.data_mtime:
             with self._lock:
-                self.data = _load()
+                self.data = _load(strict=False)
                 self.data_mtime = mtime
 
     def gc_loop(self):
@@ -467,7 +470,7 @@ class LaundryDaemon:
     def _gc_once(self):
         with self._lock:
             # Quick check without file lock — skip if nothing to do
-            self.data = _load()
+            self.data = _load(strict=False)
             active_tasks = [
                 t for t in self.data["tasks"]
                 if t["status"] == "active" and t.get("tmux_window_id")
@@ -511,7 +514,7 @@ class LaundryDaemon:
 
         if cmd == "reload":
             with self._lock:
-                self.data = _load()
+                self.data = _load(strict=False)
                 self.data_mtime = TASKS_FILE.stat().st_mtime if TASKS_FILE.exists() else 0
             return {"output": "ok"}
 
@@ -699,7 +702,7 @@ def _detect_task_in_pane():
 
         # 3. Window name matches a task title (slug name synced by daemon)
         if window_name:
-            data = _load()
+            data = _load(strict=False)
             for task in data["tasks"]:
                 if task.get("title") == window_name and task["status"] in ("active", "paused"):
                     return task["id"]
@@ -764,7 +767,7 @@ def cmd_attach(args):
 
 def cmd_list(args):
     _ensure_dirs()
-    data = _load()
+    data = _load(strict=False)
     sys.stdout.write(_format_list(
         data,
         status_filter=args.status,
@@ -776,7 +779,7 @@ def cmd_list(args):
 
 def cmd_show(args):
     _ensure_dirs()
-    data = _load()
+    data = _load(strict=False)
     output = _format_show(data, args.id, notes_file_only=args.notes_file)
     if output is None:
         print(f"Task {args.id} not found", file=sys.stderr)
@@ -853,7 +856,7 @@ def cmd_open(args):
     windows = Tmux.window_info()
 
     # Quick check without lock — if already active with valid window, just switch
-    data = _load()
+    data = _load(strict=False)
     task = _find_task(data, args.id)
     if not task:
         print(f"Task {args.id} not found", file=sys.stderr)
@@ -960,7 +963,7 @@ def cmd_launch(args):
     """Internal: executed as tmux window command. Replaces itself with claude via execvp."""
     _ensure_dirs()
 
-    data = _load()
+    data = _load(strict=False)
     task = _find_task(data, args.id)
     if not task:
         print(f"Task {args.id} not found", file=sys.stderr)
@@ -1072,6 +1075,9 @@ def cmd_delete(args):
     if not task:
         print(f"Task {args.id} not found", file=sys.stderr)
         sys.exit(1)
+    if task["status"] == "active":
+        print(f"Cannot delete active task. Pause or complete it first.", file=sys.stderr)
+        sys.exit(1)
     if not args.yes:
         title = task.get("title") or args.id
         confirm = input(f"Delete task '{title}' and its notes? [y/N] ")
@@ -1131,7 +1137,7 @@ def cmd_which(args):
         sys.exit(1)
     if not target:
         sys.exit(1)
-    data = _load()
+    data = _load(strict=False)
     for task in data["tasks"]:
         if task.get("tmux_window_id") == target and task["status"] in ("active", "paused"):
             print(task["id"])
@@ -1152,7 +1158,7 @@ def cmd_worktree(args):
         return
 
     # Find task for this window
-    data = _load()
+    data = _load(strict=False)
     task_id = None
     project = None
     for task in data["tasks"]:
@@ -1216,7 +1222,7 @@ def cmd_wall(args):
 
 
     def get_active_tasks():
-        data = _load()
+        data = _load(strict=False)
         windows = Tmux.window_info()
         return [
             t for t in _sort_tasks(data["tasks"])
@@ -1351,7 +1357,7 @@ def cmd_wall(args):
 
 def cmd_pane(args):
     _ensure_dirs()
-    data = _load()
+    data = _load(strict=False)
     output = _format_pane(data, args.id)
     if output is None:
         print(f"Task {args.id} not found", file=sys.stderr)
@@ -1361,7 +1367,7 @@ def cmd_pane(args):
 
 def cmd_status(args):
     _ensure_dirs()
-    data = _load()
+    data = _load(strict=False)
     counts = {}
     for t in data["tasks"]:
         counts[t["status"]] = counts.get(t["status"], 0) + 1

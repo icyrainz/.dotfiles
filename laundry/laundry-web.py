@@ -175,7 +175,8 @@ def get_dashboard_data():
         jiras = t.get("links", {}).get("jira", [])
         links = []
         for j in jiras:
-            links.append({"label": j, "url": f"https://{JIRA_DOMAIN}/browse/{j}", "type": "jira"})
+            url = f"https://{JIRA_DOMAIN}/browse/{j}" if JIRA_DOMAIN else ""
+            links.append({"label": j, "url": url, "type": "jira"})
         for pr in prs:
             repo, num = pr.rsplit("#", 1) if "#" in pr else ("", pr)
             with _pr_cache_lock:
