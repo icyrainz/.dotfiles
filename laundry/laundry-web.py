@@ -13,12 +13,13 @@ from pathlib import Path
 from threading import Thread, Lock
 
 PORT = int(os.environ.get("LAUNDRY_WEB_PORT", 7777))
-JIRA_DOMAIN = os.environ.get("LAUNDRY_JIRA_DOMAIN", "captain401.atlassian.net")
-TASKS_FILE = Path.home() / ".local" / "share" / "laundry" / "tasks.json"
+JIRA_DOMAIN = os.environ.get("LAUNDRY_JIRA_DOMAIN", "")
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from laundry import TASKS_FILE, LOCK_FILE, STATUS_ORDER, Tmux
 REFRESH_INTERVAL = 1.5  # seconds between SSE pushes
 PR_CACHE_TTL = 60       # seconds between PR status refreshes
 
-STATUS_ORDER = {"active": 0, "pending": 1, "paused": 2, "completed": 3, "cancelled": 4}
+
 
 # PR status cache: {"owner/repo#123": "APPROVED"} — refreshed by background thread
 _pr_cache = {}
@@ -46,26 +47,19 @@ def _load_html():
 def load_tasks():
     if not TASKS_FILE.exists():
         return []
-    with open(TASKS_FILE) as f:
-        data = json.load(f)
-    return data.get("tasks", [])
+    try:
+        import fcntl
+        with open(LOCK_FILE, "w") as lock:
+            fcntl.flock(lock, fcntl.LOCK_SH)
+            with open(TASKS_FILE) as f:
+                data = json.load(f)
+        return data.get("tasks", [])
+    except (json.JSONDecodeError, ValueError, OSError):
+        return []
 
 
 def tmux_window_info():
-    try:
-        result = subprocess.run(
-            ["tmux", "list-windows", "-a", "-F",
-             "#{session_name}:#{window_id}\t#{window_name}"],
-            capture_output=True, text=True,
-        )
-        windows = {}
-        for line in result.stdout.splitlines():
-            parts = line.split("\t", 1)
-            if parts:
-                windows[parts[0]] = parts[1] if len(parts) >= 2 else ""
-        return windows
-    except FileNotFoundError:
-        return {}
+    return Tmux.window_info()
 
 
 def _fetch_pr_status(pr_ref):

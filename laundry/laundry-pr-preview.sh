@@ -7,16 +7,13 @@ TASK_ID="${1:?Usage: laundry-pr-preview.sh <task-id>}"
 
 # Get linked PRs from task JSON
 PRS=$(python3 -c "
-import json
-from pathlib import Path
-with open(Path.home() / '.local/share/laundry/tasks.json') as f:
-    data = json.load(f)
-for t in data['tasks']:
-    if t['id'] == '$TASK_ID':
-        for pr in t.get('links', {}).get('prs', []):
-            print(pr)
-        break
-")
+import sys; sys.path.insert(0, '$(dirname "$0")')
+from laundry import _load, _find_task
+task = _find_task(_load(), sys.argv[1])
+if task:
+    for pr in task.get('links', {}).get('prs', []):
+        print(pr)
+" "$TASK_ID")
 
 if [ -z "$PRS" ]; then
     echo -e '\033[2mNo PRs linked to this task.\033[0m'

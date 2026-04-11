@@ -55,8 +55,12 @@ def _ensure_dirs():
 def _load():
     if not TASKS_FILE.exists():
         return {"version": 1, "tasks": []}
-    with open(TASKS_FILE) as f:
-        return json.load(f)
+    try:
+        with open(TASKS_FILE) as f:
+            return json.load(f)
+    except (json.JSONDecodeError, ValueError) as e:
+        print(f"Warning: tasks.json is corrupt ({e}), starting fresh", file=sys.stderr)
+        return {"version": 1, "tasks": []}
 
 
 def _save(data):
@@ -264,6 +268,7 @@ def _task_prompt_file(task):
     try:
         body = SYSTEM_PROMPT_FILE.read_text()
     except FileNotFoundError:
+        print(f"Warning: system prompt not found at {SYSTEM_PROMPT_FILE}", file=sys.stderr)
         body = ""
     prompt_file = DATA_DIR / "prompts" / f"{tid}.md"
     prompt_file.parent.mkdir(parents=True, exist_ok=True)
@@ -456,8 +461,8 @@ class LaundryDaemon:
             time.sleep(2)
             try:
                 self._gc_once()
-            except Exception:
-                pass
+            except Exception as e:
+                print(f"GC error: {e}", file=sys.stderr)
 
     def _gc_once(self):
         with self._lock:
@@ -1062,6 +1067,16 @@ def cmd_cancel(args):
 
 def cmd_delete(args):
     _ensure_dirs()
+    data = _load()
+    task = _find_task(data, args.id)
+    if not task:
+        print(f"Task {args.id} not found", file=sys.stderr)
+        sys.exit(1)
+    title = task.get("title") or args.id
+    confirm = input(f"Delete task '{title}' and its notes? [y/N] ")
+    if confirm.lower() not in ("y", "yes"):
+        print("Aborted")
+        sys.exit(0)
     with open(LOCK_FILE, "w") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX)
         data = _load()
@@ -1083,6 +1098,10 @@ def cmd_delete(args):
 
 def cmd_reset(args):
     import shutil
+    confirm = input("This will wipe ALL tasks and notes. Type YES to confirm: ")
+    if confirm != "YES":
+        print("Aborted")
+        sys.exit(0)
     _ensure_dirs()
     with open(LOCK_FILE, "w") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX)
