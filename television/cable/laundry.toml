@@ -4,8 +4,7 @@ description = "Task list — jump to Claude workspaces"
 
 [source]
 command = [
-  "laundry list -s active --format tv",  # active only (default)
-  "laundry list --format tv",            # active/pending/paused
+  "laundry list --format tv",            # active + paused
   "laundry list --all --format tv",      # all including completed/cancelled
 ]
 no_sort = true

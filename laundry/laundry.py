@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Laundry — task-driven Claude workspace manager."""
 
+import glob
 import json
 import os
 import sys
@@ -930,6 +931,18 @@ def cmd_open(args):
     Tmux.switch(window_id)
 
 
+def _claude_session_exists(session_id):
+    """Check if a Claude conversation file exists on disk.
+
+    Claude stores conversations as ~/.claude/projects/<slug>/<id>.jsonl.
+    If the file doesn't exist, the session was never started (e.g. task was
+    paused before the user sent any message) and --resume will fail.
+    """
+    return bool(glob.glob(
+        str(Path.home() / ".claude" / "projects" / "*" / f"{session_id}.jsonl")
+    ))
+
+
 def cmd_launch(args):
     """Internal: executed as tmux window command. Replaces itself with claude via execvp."""
     _ensure_dirs()
@@ -953,33 +966,22 @@ def cmd_launch(args):
         _save(data)
     _notify_daemon()
 
-    if is_resume:
-        # Try resume; only fall back to fresh start if session not found
-        result = subprocess.run(
-            ["claude", "--resume", session_id, "--append-system-prompt", system_prompt],
-            capture_output=False, text=True, stderr=subprocess.PIPE,
-        )
-        if result.returncode != 0 and "No conversation found" in (result.stderr or ""):
-            # Session doesn't exist — start fresh with the same session ID
-            cmd = [
-                "claude",
-                "--session-id", session_id,
-                "--append-system-prompt", system_prompt,
-                "-n", f"L{task['id']}",
-            ]
-            if task.get("initial_prompt"):
-                cmd.append(task["initial_prompt"])
-            os.execvp("claude", cmd)
-    else:
-        cmd = [
-            "claude",
-            "--session-id", session_id,
+    if is_resume and _claude_session_exists(session_id):
+        os.execvp("claude", [
+            "claude", "--resume", session_id,
             "--append-system-prompt", system_prompt,
-            "-n", f"L{task['id']}",
-        ]
-        if task.get("initial_prompt"):
-            cmd.append(task["initial_prompt"])
-        os.execvp("claude", cmd)
+        ])
+
+    # Fresh start (first launch or session was lost)
+    cmd = [
+        "claude",
+        "--session-id", session_id,
+        "--append-system-prompt", system_prompt,
+        "-n", f"L{task['id']}",
+    ]
+    if task.get("initial_prompt"):
+        cmd.append(task["initial_prompt"])
+    os.execvp("claude", cmd)
 
 
 def cmd_pause(args):
