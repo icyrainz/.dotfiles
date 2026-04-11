@@ -1072,11 +1072,12 @@ def cmd_delete(args):
     if not task:
         print(f"Task {args.id} not found", file=sys.stderr)
         sys.exit(1)
-    title = task.get("title") or args.id
-    confirm = input(f"Delete task '{title}' and its notes? [y/N] ")
-    if confirm.lower() not in ("y", "yes"):
-        print("Aborted")
-        sys.exit(0)
+    if not args.yes:
+        title = task.get("title") or args.id
+        confirm = input(f"Delete task '{title}' and its notes? [y/N] ")
+        if confirm.lower() not in ("y", "yes"):
+            print("Aborted")
+            sys.exit(0)
     with open(LOCK_FILE, "w") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX)
         data = _load()
@@ -1467,6 +1468,7 @@ def main():
     # delete
     p_delete = sub.add_parser("delete", help="Delete a single task")
     p_delete.add_argument("id", help="Task ID")
+    p_delete.add_argument("--yes", "-y", action="store_true", help="Skip confirmation")
 
 
     # wall

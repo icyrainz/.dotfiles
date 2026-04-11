@@ -40,7 +40,7 @@ command = "laundry cancel '{split: :0}'"
 
 [actions.5-delete]
 description = "Delete task"
-command = "laundry delete '{split: :0}'"
+command = "laundry delete -y '{split: :0}'"
 
 [actions.h1-pin1]
 description = "Pin → harpoon [1]"

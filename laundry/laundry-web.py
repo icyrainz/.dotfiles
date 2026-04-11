@@ -262,10 +262,10 @@ def run_task_action(task_id, action):
     if action not in ALLOWED_ACTIONS:
         return False
     laundry_bin = Path(__file__).resolve().parent / "laundry.py"
-    result = subprocess.run(
-        [sys.executable, str(laundry_bin), action, task_id],
-        capture_output=True, text=True,
-    )
+    cmd = [sys.executable, str(laundry_bin), action, task_id]
+    if action == "delete":
+        cmd.append("--yes")
+    result = subprocess.run(cmd, capture_output=True, text=True)
     return result.returncode == 0
 
 
